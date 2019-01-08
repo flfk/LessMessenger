@@ -1,6 +1,9 @@
 import {} from './user.types';
 
-const initialState = {};
+const initialState = {
+  id: 'abc',
+  displayName: 'Sammy',
+};
 
 const reducerUser = (state = initialState, action) => {
   switch (action.type) {

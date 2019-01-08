@@ -6,6 +6,8 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
 import store from './data/Store';
 
+import Room from './containers/Room';
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -34,7 +36,7 @@ class App extends Component {
         <BrowserRouter>
           <div>
             <Switch>
-              <Route path="/" component={() => <div>test</div>} />
+              <Route path="/" component={Room} />
             </Switch>
           </div>
         </BrowserRouter>
@@ -44,4 +46,3 @@ class App extends Component {
 }
 
 export default App;
-
