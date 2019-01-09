@@ -1,8 +1,12 @@
+import _ from 'lodash';
+import moment from 'moment-timezone';
 // import mixpanel from 'mixpanel-browser';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Content from '../components/Content';
+import Fonts from '../utils/Fonts';
 import Message from '../components/Message';
 
 const propTypes = {};
@@ -21,18 +25,31 @@ class Messages extends React.Component {
   render() {
     const { messages } = this.props;
 
-    // XX TODO: sort by timestamp
-    // break into sections by day
-    const messagesContainer = messages
+    const messagesContainer = _.chain(messages)
       .sort((a, b) => a.timestamp - b.timestamp)
-      .map(msg => (
-        <Message
-          key={msg.timestamp}
-          content={msg.content}
-          senderName={msg.senderName}
-          timestamp={msg.timestamp}
-        />
-      ));
+      .map(order => ({ ...order, date: moment(order.timestamp).format('MMM Do') }))
+      .groupBy('date')
+      .map((group, date) => {
+        const messages = group.map(msg => (
+          <Message
+            key={msg.timestamp}
+            content={msg.content}
+            senderName={msg.senderName}
+            timestamp={msg.timestamp}
+          />
+        ));
+        return (
+          <div key={date}>
+            <Fonts.P centered>
+              <strong>{date}</strong>
+            </Fonts.P>
+            <Content.Spacing16px />
+            {messages}
+            <Content.Spacing16px />
+          </div>
+        );
+      })
+      .value();
 
     return <div>{messagesContainer}</div>;
   }
