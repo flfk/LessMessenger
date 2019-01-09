@@ -1,4 +1,4 @@
-import { ADD_MESSAGE } from './messages.types';
+import { ADD_MESSAGE, GET_MESSAGES } from './messages.types';
 
 const initialState = [
   { content: 'testeeng \n multiple rows', senderName: 'Felix', timestamp: 1546989457516 },
@@ -9,6 +9,8 @@ const reducerMessages = (state = initialState, action) => {
   switch (action.type) {
     case ADD_MESSAGE.SUCCESS:
       return [...state, action.payload];
+    case GET_MESSAGES.SUCCESS:
+      return [...state, ...action.payload];
     default:
       return state;
   }

@@ -12,6 +12,8 @@ const Spinner = () => {
       <Content.Row justifyCenter>
         <BounceLoader sizeUnit="px" size={24} color={Colors.primary.red} />
       </Content.Row>
+      <Content.Spacing />
+      <Content.Spacing />
     </div>
   );
 };

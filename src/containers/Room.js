@@ -7,19 +7,27 @@ import Content from '../components/Content';
 import Messages from './Messages';
 import MessageInput from './MessageInput';
 
-import { addMessage } from '../data/messages/messages.actions';
+import { getMessages } from '../data/messages/messages.actions';
 
-const propTypes = {};
+const propTypes = {
+  actionGetMessages: PropTypes.func.isRequired,
+};
 
 const defaultProps = {};
 
 const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch => ({
-  actionAddMessage: message => dispatch(addMessage(message)),
+  actionGetMessages: message => dispatch(getMessages()),
 });
 
 class Room extends React.Component {
+  componentDidMount() {
+    console.log('room loaded and getting messages');
+    const { actionGetMessages } = this.props;
+    actionGetMessages();
+  }
+
   render() {
     return (
       <Content>

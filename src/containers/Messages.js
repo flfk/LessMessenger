@@ -6,6 +6,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Content from '../components/Content';
+import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 import Message from '../components/Message';
 
@@ -24,6 +25,8 @@ class Messages extends React.Component {
 
   render() {
     const { messages } = this.props;
+
+    if (messages.length === 0) return <Spinner />;
 
     const messagesContainer = _.chain(messages)
       .sort((a, b) => a.timestamp - b.timestamp)
