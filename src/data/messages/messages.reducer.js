@@ -1,14 +1,14 @@
-import {} from './messages.types';
+import { ADD_MESSAGE } from './messages.types';
 
-const initialState = {};
+const initialState = [
+  { content: 'testeeng', senderName: 'Felix', timestamp: 1546989457516 },
+  { content: 'testing', senderName: 'Felix', timestamp: 1546989357516 },
+];
 
 const reducerMessages = (state = initialState, action) => {
   switch (action.type) {
-    // case CREATE_USER.PENDING:
-    //   return {
-    //     ...state,
-    //     isPending: true,
-    //   };
+    case ADD_MESSAGE.SUCCESS:
+      return [...state, action.payload];
     default:
       return state;
   }
