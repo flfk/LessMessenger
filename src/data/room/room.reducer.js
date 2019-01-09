@@ -1,14 +1,16 @@
-import {} from './room.types';
+import { LOAD_MESSAGES } from '../messages/messages.types';
 
-const initialState = {};
+const initialState = {
+  isLoading: false,
+  messages: [],
+};
 
 const reducerRoom = (state = initialState, action) => {
   switch (action.type) {
-    // case CREATE_USER.PENDING:
-    //   return {
-    //     ...state,
-    //     isPending: true,
-    //   };
+    case LOAD_MESSAGES.PENDING:
+      return { ...state, isLoading: true };
+    case LOAD_MESSAGES.SUCCESS:
+      return { ...state, isLoading: false };
     default:
       return state;
   }

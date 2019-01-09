@@ -23,7 +23,6 @@ const mapDispatchToProps = dispatch => ({
 
 class Room extends React.Component {
   componentDidMount() {
-    console.log('room loaded and getting messages');
     const { actionLoadMessages } = this.props;
     actionLoadMessages();
   }

@@ -9,13 +9,6 @@ export const addDocMessage = async msg => {
   return addedMsg;
 };
 
-export const addListenerMessages = async roomID => {
-  const messagesRef = db
-    .collection(COLL_MESSAGES)
-    .orderBy('timestamp')
-    .limit(MESSAGES_PER_LOAD);
-};
-
 export const messagesRef = db
   .collection(COLL_MESSAGES)
   .orderBy('timestamp')

@@ -10,11 +10,14 @@ import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 import Message from '../components/Message';
 
-const propTypes = {};
+const propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+};
 
 const defaultProps = {};
 
 const mapStateToProps = state => ({
+  isLoading: state.room.isLoading,
   messages: state.messages,
 });
 
@@ -24,9 +27,9 @@ class Messages extends React.Component {
   state = {};
 
   render() {
-    const { messages } = this.props;
+    const { isLoading, messages } = this.props;
 
-    if (messages.length === 0) return <Spinner />;
+    if (isLoading) return <Spinner />;
 
     const messagesContainer = _.chain(messages)
       .sort((a, b) => a.timestamp - b.timestamp)
@@ -38,7 +41,7 @@ class Messages extends React.Component {
             index === 0 ? true : !(group[index - 1].senderName === msg.senderName);
           return (
             <Message
-              key={msg.timestamp}
+              key={msg.id}
               content={msg.content}
               isNewSender={isNewSender}
               senderName={msg.senderName}
