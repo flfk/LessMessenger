@@ -11,6 +11,7 @@ import { sendMessage } from '../data/messages/messages.actions';
 
 const propTypes = {
   actionSendMessage: PropTypes.func.isRequired,
+  roomID: PropTypes.string.isRequired,
   senderName: PropTypes.string.isRequired,
 };
 
@@ -18,6 +19,7 @@ const defaultProps = {};
 
 const mapStateToProps = state => ({
   messages: state.messages,
+  roomID: state.room.id,
   senderName: state.user.displayName,
 });
 
@@ -34,10 +36,11 @@ class MessageInput extends React.Component {
 
   handleSend = () => {
     const { message } = this.state;
-    const { actionSendMessage, senderName } = this.props;
+    const { actionSendMessage, senderName, roomID } = this.props;
     if (message) {
       const newMessage = {
         content: message,
+        roomID,
         senderName,
         timestamp: getTimestamp(),
       };

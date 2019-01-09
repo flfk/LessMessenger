@@ -9,22 +9,33 @@ import Content from '../components/Content';
 import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 import Message from '../components/Message';
+import { loadMessages } from '../data/messages/messages.actions';
 
 const propTypes = {
+  actionLoadMessages: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  roomID: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
 const mapStateToProps = state => ({
-  isLoading: state.room.isLoading,
+  isLoading: state.room.isLoadingMessages,
   messages: state.messages,
+  roomID: state.room.id,
 });
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+  actionLoadMessages: roomID => dispatch(loadMessages(roomID)),
+});
 
 class Messages extends React.Component {
   state = {};
+
+  componentDidMount() {
+    const { actionLoadMessages, roomID } = this.props;
+    actionLoadMessages(roomID);
+  }
 
   render() {
     const { isLoading, messages } = this.props;

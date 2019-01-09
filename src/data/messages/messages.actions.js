@@ -1,5 +1,8 @@
-import { addDocMessage, messagesRef } from './messages.api';
+import { MESSAGES_PER_LOAD } from '../../utils/Constants';
+import { db } from '../firebase';
 import { ADD_MESSAGE, LOAD_MESSAGES, SEND_MESSAGE } from './messages.types';
+
+const COLL_MESSAGES = 'messages';
 
 export const addMessage = msg => dispatch => {
   dispatch({
@@ -11,8 +14,7 @@ export const addMessage = msg => dispatch => {
 export const sendMessage = msg => async dispatch => {
   console.log('sending message');
   try {
-    // dispatch(addMessage(msg));
-    await addDocMessage(msg);
+    await db.collection(COLL_MESSAGES).add(msg);
     dispatch({
       type: SEND_MESSAGE.SUCCESS,
     });
@@ -29,22 +31,27 @@ export const loadMessages = roomID => async dispatch => {
     type: LOAD_MESSAGES.PENDING,
   });
   try {
-    await messagesRef.onSnapshot(snapshot => {
-      // If snapshot for changes required need to add new change type
-      snapshot.docChanges().forEach(change => {
-        if (change.type === 'added') {
-          const { doc } = change;
-          const msg = doc.data();
-          const { id } = doc;
-          msg.id = id;
-          dispatch(addMessage(msg));
-        }
+    const messagesRef = db.collection(COLL_MESSAGES).where('roomID', '==', roomID);
+
+    await messagesRef
+      .orderBy('timestamp')
+      .limit(MESSAGES_PER_LOAD)
+      .onSnapshot(snapshot => {
+        // If snapshot for changes required need to add new change type
+        snapshot.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            const { doc } = change;
+            const msg = doc.data();
+            const { id } = doc;
+            msg.id = id;
+            dispatch(addMessage(msg));
+          }
+        });
+        dispatch({
+          type: LOAD_MESSAGES.SUCCESS,
+        });
+        // }
       });
-      dispatch({
-        type: LOAD_MESSAGES.SUCCESS,
-      });
-      // }
-    });
   } catch (error) {
     console.log('Actions, messages, loadMessages');
     dispatch({

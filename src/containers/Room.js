@@ -4,32 +4,58 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Content from '../components/Content';
-import Messages from './Messages';
+import ErrorScreen from '../components/ErrorScreen';
+import { getPathname } from '../utils/Helpers';
 import MessageInput from './MessageInput';
-
-import { loadMessages } from '../data/messages/messages.actions';
+import Messages from './Messages';
+import { loadRoom } from '../data/room/room.actions';
+import Spinner from '../components/Spinner';
 
 const propTypes = {
-  actionLoadMessages: PropTypes.func.isRequired,
+  actionLoadRoom: PropTypes.func.isRequired,
+  error: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  name: PropTypes.string.isRequired,
+  pathname: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  error: state.room.error,
+  isLoading: state.room.isLoading,
+  name: state.room.name,
+  pathname: state.room.pathname,
+});
 
 const mapDispatchToProps = dispatch => ({
-  actionLoadMessages: roomID => dispatch(loadMessages(roomID)),
+  actionLoadRoom: pathname => dispatch(loadRoom(pathname)),
 });
 
 class Room extends React.Component {
   componentDidMount() {
-    const { actionLoadMessages } = this.props;
-    actionLoadMessages();
+    const pathname = getPathname(this.props);
+    console.log('pathname', pathname);
+    if (pathname) {
+      const { actionLoadRoom } = this.props;
+      actionLoadRoom(pathname);
+    }
+
+    // const { actionLoadMessages } = this.props;
+    // actionLoadMessages();
   }
 
   render() {
+    const { error, isLoading, name, pathname } = this.props;
+
+    if (error) return <ErrorScreen />;
+
+    if (isLoading) return <Spinner />;
+
     return (
       <Content>
+        <h1>name: {name} </h1>
+        <h1>pathname: {pathname}</h1>
         <Messages />
         <MessageInput />
       </Content>
