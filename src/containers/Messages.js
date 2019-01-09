@@ -30,14 +30,19 @@ class Messages extends React.Component {
       .map(order => ({ ...order, date: moment(order.timestamp).format('MMM Do') }))
       .groupBy('date')
       .map((group, date) => {
-        const messages = group.map(msg => (
-          <Message
-            key={msg.timestamp}
-            content={msg.content}
-            senderName={msg.senderName}
-            timestamp={msg.timestamp}
-          />
-        ));
+        const messages = group.map((msg, index) => {
+          const isNewSender =
+            index === 0 ? true : !(group[index - 1].senderName === msg.senderName);
+          return (
+            <Message
+              key={msg.timestamp}
+              content={msg.content}
+              isNewSender={isNewSender}
+              senderName={msg.senderName}
+              timestamp={msg.timestamp}
+            />
+          );
+        });
         return (
           <div key={date}>
             <Fonts.P centered>

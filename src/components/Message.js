@@ -10,18 +10,30 @@ const propTypes = {};
 
 const defaultProps = {};
 
-const Message = ({ content, senderName, timestamp }) => {
-  return (
+const Message = ({ content, isNewSender, senderName, timestamp }) => {
+  const header = isNewSender ? (
     <div>
+      <Content.Spacing16px />
       <Fonts.P>
         <strong> {senderName} </strong>
         {moment(timestamp).format('h:mm a')}
       </Fonts.P>
-      <Fonts.P>{content}</Fonts.P>
-      <Content.Spacing16px />
+    </div>
+  ) : null;
+
+  return (
+    <div>
+      {header}
+      <MessageText>{content}</MessageText>
     </div>
   );
 };
+
+const MessageText = styled(Fonts.P)`
+  word-wrap: break-word
+  white-space: pre-line;
+  line-height: 1.5em;
+`;
 
 Message.propTypes = propTypes;
 Message.defaultProps = defaultProps;

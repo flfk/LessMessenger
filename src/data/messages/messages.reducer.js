@@ -1,7 +1,7 @@
 import { ADD_MESSAGE } from './messages.types';
 
 const initialState = [
-  { content: 'testeeng', senderName: 'Felix', timestamp: 1546989457516 },
+  { content: 'testeeng \n multiple rows', senderName: 'Felix', timestamp: 1546989457516 },
   { content: 'testing', senderName: 'Felix', timestamp: 1546989357516 },
 ];
 

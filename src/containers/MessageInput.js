@@ -42,6 +42,7 @@ class MessageInput extends React.Component {
         timestamp: getTimestamp(),
       };
       actionAddMessage(newMessage);
+      this.setState({ message: '' });
     }
   };
 
