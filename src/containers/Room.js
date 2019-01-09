@@ -4,12 +4,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
-import Content from '../components/Content';
 import ErrorScreen from '../components/ErrorScreen';
 import { getPathname } from '../utils/Helpers';
 import MessageInput from './MessageInput';
+import { InputContainer } from '../components/MessagesPanel';
 import Messages from './Messages';
 import { loadRoom } from '../data/room/room.actions';
+import RoomContainer from '../components/RoomContainer';
 import Spinner from '../components/Spinner';
 
 const propTypes = {
@@ -70,13 +71,12 @@ class Room extends React.Component {
     if (isLoading) return <Spinner />;
 
     return (
-      <Content>
-        <h3>name: {name} </h3>
-        <h3>pathname: {pathname}</h3>
-        <h3>userID: {userID}</h3>
+      <RoomContainer>
         <Messages />
-        <MessageInput />
-      </Content>
+        <InputContainer>
+          <MessageInput />
+        </InputContainer>
+      </RoomContainer>
     );
   }
 }

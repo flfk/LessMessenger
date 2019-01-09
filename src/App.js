@@ -5,6 +5,7 @@ import mixpanel from 'mixpanel-browser';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
 import store from './data/Store';
+import Main from './components/Main';
 
 import LandingPage from './containers/LandingPage';
 import LogIn from './containers/LogIn';
@@ -38,7 +39,7 @@ class App extends Component {
     return (
       <Provider store={store}>
         <BrowserRouter>
-          <div>
+          <Main>
             <NavBar />
             <Switch>
               <Route path="/home" component={LandingPage} />
@@ -46,7 +47,7 @@ class App extends Component {
               <Route path="/signup" component={SignUp} />
               <Route path="/" component={Room} />
             </Switch>
-          </div>
+          </Main>
         </BrowserRouter>
       </Provider>
     );

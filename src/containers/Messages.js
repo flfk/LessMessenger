@@ -9,6 +9,7 @@ import Content from '../components/Content';
 import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 import Message from '../components/Message';
+import { MessagesContainer } from '../components/MessagesPanel';
 import { loadMessages } from '../data/messages/messages.actions';
 
 const propTypes = {
@@ -35,7 +36,18 @@ class Messages extends React.Component {
   componentDidMount() {
     const { actionLoadMessages, roomID } = this.props;
     actionLoadMessages(roomID);
+    this.scrollToBottom();
   }
+
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom = () => {
+    if (this.messagesEnd) {
+      this.messagesEnd.scrollIntoView({ behavior: 'auto' });
+    }
+  };
 
   render() {
     const { isLoading, messages } = this.props;
@@ -73,7 +85,17 @@ class Messages extends React.Component {
       })
       .value();
 
-    return <div>{messagesContainer}</div>;
+    return (
+      <MessagesContainer>
+        {messagesContainer}
+        <div
+          style={{ float: 'left', clear: 'both' }}
+          ref={el => {
+            this.messagesEnd = el;
+          }}
+        />
+      </MessagesContainer>
+    );
   }
 }
 
