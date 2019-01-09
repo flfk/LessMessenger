@@ -20,7 +20,7 @@ const defaultProps = {};
 const mapStateToProps = state => ({
   messages: state.messages,
   roomID: state.room.id,
-  senderName: state.user.displayName,
+  senderName: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({

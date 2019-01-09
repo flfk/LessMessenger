@@ -7,7 +7,10 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import store from './data/Store';
 
 import LandingPage from './containers/LandingPage';
+import LogIn from './containers/LogIn';
+import NavBar from './containers/NavBar';
 import Room from './containers/Room';
+import SignUp from './containers/SignUp';
 
 class App extends Component {
   constructor(props) {
@@ -36,8 +39,11 @@ class App extends Component {
       <Provider store={store}>
         <BrowserRouter>
           <div>
+            <NavBar />
             <Switch>
               <Route path="/home" component={LandingPage} />
+              <Route path="/login" component={LogIn} />
+              <Route path="/signup" component={SignUp} />
               <Route path="/" component={Room} />
             </Switch>
           </div>

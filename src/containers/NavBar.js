@@ -8,19 +8,19 @@ import NavBarWrapper from '../components/NavBarWrapper';
 import NavBarList from '../components/NavBarList';
 
 import { auth } from '../data/firebase';
-import { getLoggedInUser } from '../data/redux/user/user.actions';
+import { getLoggedInUser } from '../data/user/user.actions';
 
 const propTypes = {
   actionGetLoggedInUser: PropTypes.func.isRequired,
-  username: PropTypes.string,
+  userID: PropTypes.string,
 };
 
 const defaultProps = {
-  username: '',
+  userID: '',
 };
 
 const mapStateToProps = state => ({
-  username: state.user.username,
+  userID: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -40,17 +40,17 @@ class NavBar extends React.Component {
   };
 
   render() {
-    const { username } = this.props;
+    const { userID } = this.props;
 
-    const profileBtn = username ? (
+    const profileBtn = userID ? (
       <li>
         <Link to="/profile">
-          <Btn.Tertiary>{username}</Btn.Tertiary>
+          <Btn.Tertiary>{userID}</Btn.Tertiary>
         </Link>
       </li>
     ) : null;
 
-    const logInBtn = username ? null : (
+    const logInBtn = userID ? null : (
       <li>
         <Link to="/login">
           <Btn.Tertiary narrow short primary>
@@ -60,7 +60,7 @@ class NavBar extends React.Component {
       </li>
     );
 
-    const signUpBtn = username ? null : (
+    const signUpBtn = userID ? null : (
       <li>
         <Link to="/signup">
           <Btn narrow short primary>
@@ -75,11 +75,7 @@ class NavBar extends React.Component {
         <NavBarWrapper>
           <NavBarList>
             <li>
-              <Link to="/home">
-                <Wrapper.Logo>
-                  <img src={Icon} alt="" />
-                </Wrapper.Logo>
-              </Link>
+              <Link to="/home">Home</Link>
             </li>
             {profileBtn}
             {logInBtn}
@@ -93,8 +89,6 @@ class NavBar extends React.Component {
 
 NavBar.propTypes = propTypes;
 NavBar.defaultProps = defaultProps;
-
-// const NavBar = () => <div />;
 
 export default connect(
   mapStateToProps,

@@ -4,7 +4,6 @@ import { LOAD_ROOM } from './room.types';
 const COLL_ROOMS = 'rooms';
 
 export const loadRoom = pathname => async dispatch => {
-  console.log('Loading room');
   dispatch({
     type: LOAD_ROOM.PENDING,
   });

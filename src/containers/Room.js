@@ -18,6 +18,7 @@ const propTypes = {
   isLoading: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired,
   pathname: PropTypes.string.isRequired,
+  userID: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
@@ -27,6 +28,7 @@ const mapStateToProps = state => ({
   isLoading: state.room.isLoading,
   name: state.room.name,
   pathname: state.room.pathname,
+  userID: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -40,7 +42,6 @@ class Room extends React.Component {
 
   componentDidMount() {
     const pathname = getPathname(this.props);
-    console.log('pathname', pathname);
     if (pathname) {
       const { actionLoadRoom } = this.props;
       actionLoadRoom(pathname);
@@ -60,7 +61,7 @@ class Room extends React.Component {
 
   render() {
     const { toLandingPage } = this.state;
-    const { error, isLoading, name, pathname } = this.props;
+    const { error, isLoading, name, pathname, userID } = this.props;
 
     if (toLandingPage) return this.goToLandingPage();
 
@@ -70,8 +71,9 @@ class Room extends React.Component {
 
     return (
       <Content>
-        <h1>name: {name} </h1>
-        <h1>pathname: {pathname}</h1>
+        <h3>name: {name} </h3>
+        <h3>pathname: {pathname}</h3>
+        <h3>userID: {userID}</h3>
         <Messages />
         <MessageInput />
       </Content>
