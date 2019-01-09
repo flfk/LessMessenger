@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import Content from '../components/Content';
 import ErrorScreen from '../components/ErrorScreen';
@@ -33,20 +34,35 @@ const mapDispatchToProps = dispatch => ({
 });
 
 class Room extends React.Component {
+  state = {
+    toLandingPage: false,
+  };
+
   componentDidMount() {
     const pathname = getPathname(this.props);
     console.log('pathname', pathname);
     if (pathname) {
       const { actionLoadRoom } = this.props;
       actionLoadRoom(pathname);
+    } else {
+      this.setState({ toLandingPage: true });
     }
-
-    // const { actionLoadMessages } = this.props;
-    // actionLoadMessages();
   }
 
+  goToLandingPage = () => (
+    <Redirect
+      push
+      to={{
+        pathname: '/home',
+      }}
+    />
+  );
+
   render() {
+    const { toLandingPage } = this.state;
     const { error, isLoading, name, pathname } = this.props;
+
+    if (toLandingPage) return this.goToLandingPage();
 
     if (error) return <ErrorScreen />;
 

@@ -6,6 +6,7 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
 import store from './data/Store';
 
+import LandingPage from './containers/LandingPage';
 import Room from './containers/Room';
 
 class App extends Component {
@@ -36,6 +37,7 @@ class App extends Component {
         <BrowserRouter>
           <div>
             <Switch>
+              <Route path="/home" component={LandingPage} />
               <Route path="/" component={Room} />
             </Switch>
           </div>

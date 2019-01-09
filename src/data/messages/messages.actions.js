@@ -32,7 +32,6 @@ export const loadMessages = roomID => async dispatch => {
   });
   try {
     const messagesRef = db.collection(COLL_MESSAGES).where('roomID', '==', roomID);
-
     await messagesRef
       .orderBy('timestamp')
       .limit(MESSAGES_PER_LOAD)
