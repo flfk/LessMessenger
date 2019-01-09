@@ -7,10 +7,10 @@ import Btn from '../components/Btn';
 import InputText from '../components/InputText';
 import { getTimestamp } from '../utils/Helpers';
 
-import { addMessage } from '../data/messages/messages.actions';
+import { sendMessage } from '../data/messages/messages.actions';
 
 const propTypes = {
-  actionAddMessage: PropTypes.func.isRequired,
+  actionSendMessage: PropTypes.func.isRequired,
   senderName: PropTypes.string.isRequired,
 };
 
@@ -22,7 +22,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actionAddMessage: message => dispatch(addMessage(message)),
+  actionSendMessage: message => dispatch(sendMessage(message)),
 });
 
 class MessageInput extends React.Component {
@@ -34,14 +34,14 @@ class MessageInput extends React.Component {
 
   handleSend = () => {
     const { message } = this.state;
-    const { actionAddMessage, senderName } = this.props;
+    const { actionSendMessage, senderName } = this.props;
     if (message) {
       const newMessage = {
         content: message,
         senderName,
         timestamp: getTimestamp(),
       };
-      actionAddMessage(newMessage);
+      actionSendMessage(newMessage);
       this.setState({ message: '' });
     }
   };

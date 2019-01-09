@@ -1,16 +1,21 @@
-import { ADD_MESSAGE, GET_MESSAGES } from './messages.types';
+import _ from 'lodash';
+
+import { ADD_MESSAGE } from './messages.types';
 
 const initialState = [
-  { content: 'testeeng \n multiple rows', senderName: 'Felix', timestamp: 1546989457516 },
-  { content: 'testing', senderName: 'Felix', timestamp: 1546989357516 },
+  {
+    id: 'abc',
+    content: 'testeeng \n multiple rows',
+    senderName: 'Felix',
+    timestamp: 1546989457516,
+  },
+  { id: 'xyz', content: 'testing', senderName: 'Felix', timestamp: 1546989357516 },
 ];
 
 const reducerMessages = (state = initialState, action) => {
   switch (action.type) {
     case ADD_MESSAGE.SUCCESS:
-      return [...state, action.payload];
-    case GET_MESSAGES.SUCCESS:
-      return [...state, ...action.payload];
+      return _.uniqBy([...state, action.payload], 'id');
     default:
       return state;
   }

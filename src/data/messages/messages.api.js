@@ -1,5 +1,7 @@
 import { db } from '../firebase';
 
+import { MESSAGES_PER_LOAD } from '../../utils/Constants';
+
 const COLL_MESSAGES = 'messages';
 
 export const addDocMessage = async msg => {
@@ -7,19 +9,14 @@ export const addDocMessage = async msg => {
   return addedMsg;
 };
 
-export const fetchDocsMessages = async roomID => {
-  const messages = [];
-  try {
-    const commentersRef = db.collection(COLL_MESSAGES);
-    const snapshot = await commentersRef.get();
-    snapshot.forEach(doc => {
-      const msg = doc.data();
-      const { id } = doc;
-      msg.id = id;
-      messages.push(msg);
-    });
-  } catch (error) {
-    console.error('Error actions, fetchDocsMessages', error);
-  }
-  return messages;
+export const addListenerMessages = async roomID => {
+  const messagesRef = db
+    .collection(COLL_MESSAGES)
+    .orderBy('timestamp')
+    .limit(MESSAGES_PER_LOAD);
 };
+
+export const messagesRef = db
+  .collection(COLL_MESSAGES)
+  .orderBy('timestamp')
+  .limit(MESSAGES_PER_LOAD);
