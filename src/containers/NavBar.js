@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Btn from '../components/Btn';
+import NavBarDropdown from '../components/NavBarDropdown';
 import NavBarWrapper from '../components/NavBarWrapper';
 import NavBarList from '../components/NavBarList';
 
@@ -12,15 +13,18 @@ import { getLoggedInUser } from '../data/user/user.actions';
 
 const propTypes = {
   actionGetLoggedInUser: PropTypes.func.isRequired,
+  roomName: PropTypes.string,
   userID: PropTypes.string,
 };
 
 const defaultProps = {
+  roomName: '',
   userID: '',
 };
 
 const mapStateToProps = state => ({
   userID: state.user.id,
+  roomName: state.room.name,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -28,9 +32,17 @@ const mapDispatchToProps = dispatch => ({
 });
 
 class NavBar extends React.Component {
+  state = {
+    showDropDown: false,
+  };
+
   componentDidMount() {
     this.getSignedInUser();
   }
+
+  handleClickProfile = () => {
+    // this.setState({ showDropDown: true });
+  };
 
   getSignedInUser = async () => {
     const { actionGetLoggedInUser } = this.props;
@@ -40,12 +52,20 @@ class NavBar extends React.Component {
   };
 
   render() {
+    const { showDropDown } = this.state;
+
     const { userID } = this.props;
+
+    const dropdown = showDropDown ? (
+      <NavBarDropdown>
+        <Btn.Tertiary fill>test</Btn.Tertiary>
+      </NavBarDropdown>
+    ) : null;
 
     const profileBtn = userID ? (
       <li>
         <Link to="/profile">
-          <Btn.Tertiary>{userID}</Btn.Tertiary>
+          <Btn.Tertiary onClick={this.handleClickProfile}>{userID}</Btn.Tertiary>
         </Link>
       </li>
     ) : null;
@@ -82,6 +102,7 @@ class NavBar extends React.Component {
             {signUpBtn}
           </NavBarList>
         </NavBarWrapper>
+        {dropdown}
       </div>
     );
   }
