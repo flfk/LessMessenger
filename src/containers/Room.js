@@ -7,7 +7,6 @@ import { Redirect } from 'react-router-dom';
 import ErrorScreen from '../components/ErrorScreen';
 import { getPathname } from '../utils/Helpers';
 import MessageInput from './MessageInput';
-import { InputContainer } from '../components/MessagesPanel';
 import Messages from './Messages';
 import { loadRoom } from '../data/room/room.actions';
 import RoomContainer from '../components/RoomContainer';
@@ -73,9 +72,7 @@ class Room extends React.Component {
     return (
       <RoomContainer>
         <Messages />
-        <InputContainer>
-          <MessageInput />
-        </InputContainer>
+        <MessageInput />
       </RoomContainer>
     );
   }

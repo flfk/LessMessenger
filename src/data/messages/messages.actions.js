@@ -12,7 +12,6 @@ export const addMessage = msg => dispatch => {
 };
 
 export const sendMessage = msg => async dispatch => {
-  console.log('sending message');
   try {
     await db.collection(COLL_MESSAGES).add(msg);
     dispatch({

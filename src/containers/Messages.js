@@ -6,11 +6,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Content from '../components/Content';
-import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 import Message from '../components/Message';
 import { MessagesContainer } from '../components/MessagesPanel';
 import { loadMessages } from '../data/messages/messages.actions';
+import Scrollable from '../components/Scrollable';
+import Spinner from '../components/Spinner';
 
 const propTypes = {
   actionLoadMessages: PropTypes.func.isRequired,
@@ -87,13 +88,15 @@ class Messages extends React.Component {
 
     return (
       <MessagesContainer>
-        {messagesContainer}
-        <div
-          style={{ float: 'left', clear: 'both' }}
-          ref={el => {
-            this.messagesEnd = el;
-          }}
-        />
+        <Scrollable>
+          {messagesContainer}
+          <div
+            style={{ float: 'left', clear: 'both' }}
+            ref={el => {
+              this.messagesEnd = el;
+            }}
+          />
+        </Scrollable>
       </MessagesContainer>
     );
   }

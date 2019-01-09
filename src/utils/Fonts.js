@@ -16,7 +16,7 @@ const FONT_SIZES = {
   h1: '32px',
   h2: '24px',
   h3: '20px',
-  p: '14px',
+  p: '16px',
   finePrint: '12px',
 };
 
@@ -70,10 +70,6 @@ const P = styled.p`
   ${props => (props.isSecondary ? `color: ${Colors.greys.secondary};` : '')}
   margin: 0;
   text-align: ${props => (props.centered ? 'center' : '')};
-
-  ${Media.tablet} {
-    font-size: 14px;
-  }
 `;
 
 const FinePrint = styled.span`

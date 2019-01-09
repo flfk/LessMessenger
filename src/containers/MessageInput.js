@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Btn from '../components/Btn';
-import InputText from '../components/InputText';
+import { Input, InputContainer } from '../components/MessagesPanel';
 import { getTimestamp } from '../utils/Helpers';
 
 import { sendMessage } from '../data/messages/messages.actions';
@@ -34,7 +33,7 @@ class MessageInput extends React.Component {
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
-  handleSend = () => {
+  handleSubmit = () => {
     const { message } = this.state;
     const { actionSendMessage, senderName, roomID } = this.props;
     if (message) {
@@ -49,18 +48,28 @@ class MessageInput extends React.Component {
     }
   };
 
+  // To allows form to be submitted using enter key
+  handleKeyPress = event => {
+    if (event.keyCode === 13 && event.shiftKey === false) {
+      event.preventDefault();
+      this.handleSubmit();
+    }
+  };
+
   render() {
     const { message } = this.state;
-
     return (
-      <div>
-        <InputText.Area
-          placeholder="Type a message..."
-          onChange={this.handleChangeInput('message')}
-          value={message}
-        />
-        <Btn.Tertiary onClick={this.handleSend}>Send</Btn.Tertiary>
-      </div>
+      <InputContainer>
+        <form onSubmit={this.handleSubmit}>
+          <Input
+            type="text"
+            placeholder="Type a message..."
+            onChange={this.handleChangeInput('message')}
+            value={message}
+            onKeyDown={this.handleKeyPress}
+          />
+        </form>
+      </InputContainer>
     );
   }
 }
