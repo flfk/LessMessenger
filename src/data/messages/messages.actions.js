@@ -25,13 +25,16 @@ export const sendMessage = msg => async dispatch => {
   }
 };
 
-export const loadMessages = roomID => async dispatch => {
+export const getMessageSubscription = roomID => async dispatch => {
+  console.log('getMessageSubscription called');
   dispatch({
     type: LOAD_MESSAGES.PENDING,
   });
+  let subscription = null;
   try {
-    const messagesRef = db.collection(COLL_MESSAGES).where('roomID', '==', roomID);
-    await messagesRef
+    subscription = await db
+      .collection(COLL_MESSAGES)
+      .where('roomID', '==', roomID)
       .orderBy('timestamp')
       .limit(MESSAGES_PER_LOAD)
       .onSnapshot(snapshot => {
@@ -45,15 +48,15 @@ export const loadMessages = roomID => async dispatch => {
             dispatch(addMessage(msg));
           }
         });
-        dispatch({
-          type: LOAD_MESSAGES.SUCCESS,
-        });
-        // }
       });
+    dispatch({
+      type: LOAD_MESSAGES.SUCCESS,
+    });
   } catch (error) {
-    console.log('Actions, messages, loadMessages');
+    console.log('Actions, messages, getMessageSubscription');
     dispatch({
       type: LOAD_MESSAGES.ERROR,
     });
   }
+  return subscription;
 };

@@ -15,10 +15,9 @@ import SignUp from './SignUp';
 
 const propTypes = {
   actionLoadRoom: PropTypes.func.isRequired,
+
   error: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
-  name: PropTypes.string.isRequired,
-  pathname: PropTypes.string.isRequired,
   userID: PropTypes.string,
 };
 
@@ -29,8 +28,6 @@ const defaultProps = {
 const mapStateToProps = state => ({
   error: state.room.error,
   isLoading: state.room.isLoading,
-  name: state.room.name,
-  pathname: state.room.pathname,
   userID: state.user.id,
 });
 
@@ -64,15 +61,15 @@ class Room extends React.Component {
 
   render() {
     const { toLandingPage } = this.state;
-    const { error, isLoading, name, pathname, userID } = this.props;
+    const { error, isLoading, userID } = this.props;
 
     if (toLandingPage) return this.goToLandingPage();
 
     if (error) return <ErrorScreen />;
 
-    if (!userID) return <SignUp />;
-
     if (isLoading) return <Spinner />;
+
+    if (!userID) return <SignUp />;
 
     return (
       <RoomContainer>

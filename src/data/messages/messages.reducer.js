@@ -1,17 +1,14 @@
-// import _ from 'lodash';
-
+import { SIGNOUT_USER } from '../user/user.types';
 import { ADD_MESSAGE } from './messages.types';
 
-const initialState = [
-  // { id: 'abc', content: 'testeeng \n multiple rows', senderName: 'Felix', timestamp: 1546989457516 },
-  // { id: 'xyz', content: 'testing', senderName: 'Felix', timestamp: 1546989357516 },
-];
+const initialState = [];
 
 const reducerMessages = (state = initialState, action) => {
   switch (action.type) {
     case ADD_MESSAGE.SUCCESS:
-      // return _.uniqBy([...state, action.payload], 'id');
       return [...state, action.payload];
+    case SIGNOUT_USER.SUCCESS:
+      return [];
     default:
       return state;
   }

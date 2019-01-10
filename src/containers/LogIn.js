@@ -44,11 +44,7 @@ class LogIn extends React.Component {
   };
 
   componentDidUpdate() {
-    const { errorCode, isPending, username } = this.props;
-    if (username && !isPending && !errorCode) {
-      this.handleClose();
-    }
-    mixpanel.track('Visited Log In Page');
+    // mixpanel.track('Visited Log In Page');
   }
 
   getErrorText = errorCode => {
@@ -81,7 +77,6 @@ class LogIn extends React.Component {
       // mixpanel.identify(email);
       // mixpanel.track('Logged In');
     }
-    this.setState({ isLoading: false });
   };
 
   isFormValid = () => {

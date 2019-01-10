@@ -9,12 +9,12 @@ import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
 import Message from '../components/Message';
 import { MessagesContainer } from '../components/MessagesPanel';
-import { loadMessages } from '../data/messages/messages.actions';
+import { getMessageSubscription } from '../data/messages/messages.actions';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 
 const propTypes = {
-  actionLoadMessages: PropTypes.func.isRequired,
+  actionGetMessageSubscription: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
   roomID: PropTypes.string.isRequired,
 };
@@ -28,21 +28,34 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actionLoadMessages: roomID => dispatch(loadMessages(roomID)),
+  actionGetMessageSubscription: roomID => dispatch(getMessageSubscription(roomID)),
 });
 
 class Messages extends React.Component {
-  state = {};
+  state = {
+    unsubscribeMessages: null,
+  };
 
   componentDidMount() {
-    const { actionLoadMessages, roomID } = this.props;
-    actionLoadMessages(roomID);
-    this.scrollToBottom();
+    this.subscribeMessages();
   }
 
   componentDidUpdate() {
     this.scrollToBottom();
   }
+
+  componentWillUnmount() {
+    const { unsubscribeMessages } = this.state;
+    if (unsubscribeMessages) {
+      unsubscribeMessages();
+    }
+  }
+
+  subscribeMessages = async () => {
+    const { actionGetMessageSubscription, roomID } = this.props;
+    const unsubscribeMessages = await actionGetMessageSubscription(roomID);
+    this.setState({ unsubscribeMessages });
+  };
 
   scrollToBottom = () => {
     if (this.messagesEnd) {
