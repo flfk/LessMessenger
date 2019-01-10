@@ -18,10 +18,12 @@ const auth = firebase.auth();
 
 const db = firebase.firestore();
 
+const dbTimestamp = firebase.firestore.Timestamp.now().toMillis();
+
 const storage = firebase.storage();
 
 // To ensure ensure firestore timestamp objects supported in future
 const settings = { timestampsInSnapshots: true };
 db.settings(settings);
 
-export { auth, db, storage };
+export { auth, db, dbTimestamp, storage };

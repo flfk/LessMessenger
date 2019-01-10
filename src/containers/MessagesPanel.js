@@ -3,7 +3,6 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
 
-import { getTimestamp } from '../utils/Helpers';
 import Messages from './Messages';
 import { sendMessage } from '../data/messages/messages.actions';
 import { Container, Thumbnails, Input, InputContainer } from '../components/MessagesPanel';
@@ -38,7 +37,7 @@ class MessagePanel extends React.Component {
       content,
       roomID,
       senderName,
-      timestamp: getTimestamp(),
+      // Timestamp added in actions based on server
     };
   };
 

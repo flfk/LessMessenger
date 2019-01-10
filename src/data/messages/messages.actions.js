@@ -1,5 +1,5 @@
 import { MESSAGES_PER_LOAD } from '../../utils/Constants';
-import { db } from '../firebase';
+import { db, dbTimestamp } from '../firebase';
 import { ADD_MESSAGE, LOAD_MESSAGES, SEND_MESSAGE } from './messages.types';
 
 const COLL_MESSAGES = 'messages';
@@ -13,12 +13,12 @@ export const addMessage = msg => dispatch => {
 
 export const sendMessage = msg => async dispatch => {
   try {
-    await db.collection(COLL_MESSAGES).add(msg);
+    await db.collection(COLL_MESSAGES).add({ ...msg, timestamp: dbTimestamp });
     dispatch({
       type: SEND_MESSAGE.SUCCESS,
     });
   } catch (error) {
-    console.log('Actions, messages, addMessage');
+    console.log('Error Actions, messages, addMessage');
     dispatch({
       type: SEND_MESSAGE.ERROR,
     });
