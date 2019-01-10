@@ -2,23 +2,83 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
-import styled from 'styled-components';
 
+import { getTimestamp } from '../utils/Helpers';
 import Messages from './Messages';
-import MessageInput from './MessageInput';
-import { Container, Thumbnails } from '../components/MessagesPanel';
+import { sendMessage } from '../data/messages/messages.actions';
+import { Container, Thumbnails, Input, InputContainer } from '../components/MessagesPanel';
 
-const propTypes = {};
+const propTypes = {
+  actionSendMessage: PropTypes.func.isRequired,
+  roomID: PropTypes.string.isRequired,
+  senderName: PropTypes.string.isRequired,
+};
 
 const defaultProps = {};
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  messages: state.messages,
+  roomID: state.room.id,
+  senderName: state.user.id,
+});
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+  actionSendMessage: message => dispatch(sendMessage(message)),
+});
 
 class MessagePanel extends React.Component {
   state = {
+    message: '',
     files: [],
+  };
+
+  getNewMsg = content => {
+    const { senderName, roomID } = this.props;
+    return {
+      content,
+      roomID,
+      senderName,
+      timestamp: getTimestamp(),
+    };
+  };
+
+  getAttachmentFields = file => ({
+    isAttachment: true,
+    downloadURL: '',
+    type: file.type,
+  });
+
+  handleChangeInput = field => event => this.setState({ [field]: event.target.value });
+
+  handleSubmit = () => {
+    const { files, message } = this.state;
+    console.log('files', files);
+    const { actionSendMessage } = this.props;
+
+    if (message) {
+      const newMsg = this.getNewMsg(message);
+      actionSendMessage(newMsg);
+      this.setState({ message: '' });
+    }
+
+    if (files.length > 0) {
+      console.log('files exist');
+      files.forEach(file => {
+        const newMsg = this.getNewMsg(file.name);
+        const attachmentFields = this.getAttachmentFields(file);
+        console.log('attachment message', { ...newMsg, ...attachmentFields });
+      });
+
+      this.setState({ files: [] });
+    }
+  };
+
+  // To allows form to be submitted using enter key
+  handleKeyPress = event => {
+    if (event.keyCode === 13 && event.shiftKey === false) {
+      event.preventDefault();
+      this.handleSubmit();
+    }
   };
 
   onDrop = filesDropped => {
@@ -42,19 +102,14 @@ class MessagePanel extends React.Component {
   };
 
   render() {
-    const { files } = this.state;
+    const { files, message } = this.state;
 
     const thumbnails = files.map(file => {
-      // if file is img vs not
       if (file.type.startsWith('image/')) {
         return <Thumbnails.Img key={file.name} src={file.preview} alt="File preview" />;
       }
       return <Thumbnails.File key={file.name}>{file.name}</Thumbnails.File>;
     });
-
-    // If you want to make the zone clickable use this
-    // first get this from dropzone props getInputProps
-    // <input {...getInputProps()} />
 
     return (
       <Container>
@@ -63,7 +118,15 @@ class MessagePanel extends React.Component {
             <div {...getRootProps()}>
               <Messages />
               <Thumbnails.Container>{thumbnails}</Thumbnails.Container>
-              <MessageInput />
+              <InputContainer>
+                <Input
+                  type="text"
+                  placeholder="Type a message..."
+                  onChange={this.handleChangeInput('message')}
+                  value={message}
+                  onKeyDown={this.handleKeyPress}
+                />
+              </InputContainer>
             </div>
           )}
         </Dropzone>
