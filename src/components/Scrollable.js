@@ -5,6 +5,11 @@ const Scrollable = styled.div`
   width: 100%;
   max-width: 100%;
   overflow-y: auto;
+
+  ${props =>
+    props.alignBottom
+      ? 'display: flex; flex-direction: column; > div:first-child { margin-top: auto !important;}'
+      : ''}
 `;
 
 export default Scrollable;

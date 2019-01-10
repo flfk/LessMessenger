@@ -4,8 +4,7 @@ import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 
 const Input = styled.textarea`
-  padding: 0.5em 0.5em;
-  border-radius: 3px;
+  padding: 0;
   border: none;
   font-size: 16px;
   font-family: ${Fonts.family.body}

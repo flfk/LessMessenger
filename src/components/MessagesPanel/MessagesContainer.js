@@ -3,12 +3,9 @@ import styled from 'styled-components';
 const MessagesContainer = styled.div`
   display: flex;
   flex-direction: column;
-
-  // overflow: hidden;
-
-  // :hover {
-  //   overflow: auto;
-  // }
+  flex: 1;
+  justify-content: center;
+  align-items: flex-end;
 
   > div:first-child {
     margin-top: auto !important;

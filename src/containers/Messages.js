@@ -88,7 +88,7 @@ class Messages extends React.Component {
 
     return (
       <MessagesContainer>
-        <Scrollable>
+        <Scrollable alignBottom>
           {messagesContainer}
           <div
             style={{ float: 'left', clear: 'both' }}
