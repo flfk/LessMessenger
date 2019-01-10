@@ -8,6 +8,7 @@ import ErrorScreen from '../components/ErrorScreen';
 import { getPathname } from '../utils/Helpers';
 import MessageInput from './MessageInput';
 import Messages from './Messages';
+import { Dropzone } from '../components/MessagesPanel';
 import { loadRoom } from '../data/room/room.actions';
 import RoomContainer from '../components/RoomContainer';
 import Spinner from '../components/Spinner';
@@ -75,6 +76,7 @@ class Room extends React.Component {
       <RoomContainer>
         <Messages />
         <MessageInput />
+        <Dropzone />
       </RoomContainer>
     );
   }

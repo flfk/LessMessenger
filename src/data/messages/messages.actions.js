@@ -26,7 +26,6 @@ export const sendMessage = msg => async dispatch => {
 };
 
 export const getMessageSubscription = roomID => async dispatch => {
-  console.log('getMessageSubscription called');
   dispatch({
     type: LOAD_MESSAGES.PENDING,
   });
