@@ -3,6 +3,8 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import styled from 'styled-components';
 
+import MessageInput from '../../containers/MessageInput';
+
 const propTypes = {};
 
 const defaultProps = {};
@@ -43,14 +45,17 @@ class MessageDropzone extends React.Component {
       return <ThumbFile key={file.name}>{file.name}</ThumbFile>;
     });
 
+    // If you want to make the zone clickable use this
+    // first get this from dropzone props getInputProps
+    // <input {...getInputProps()} />
+
     return (
       <div>
         <ThumbsContainer>{thumbnails}</ThumbsContainer>
         <Dropzone onDrop={this.onDrop} onFileDialogCancel={this.onCancel}>
-          {({ getRootProps, getInputProps }) => (
+          {({ getRootProps }) => (
             <div {...getRootProps()}>
-              <input {...getInputProps()} />
-              <p>Drop files here, or click to select files</p>
+              <MessageInput />
             </div>
           )}
         </Dropzone>

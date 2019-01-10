@@ -7,6 +7,8 @@ const MessagesContainer = styled.div`
   justify-content: center;
   align-items: flex-end;
 
+  height: 400px;
+
   > div:first-child {
     margin-top: auto !important;
   }
