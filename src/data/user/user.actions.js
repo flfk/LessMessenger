@@ -42,13 +42,11 @@ export const getLoggedInUser = () => async dispatch => {
 };
 
 export const logIn = (email, password) => async dispatch => {
-  console.log('logging in');
   try {
-    const user = await auth.signInWithEmailAndPassword(email, password);
-    console.log(user);
+    const data = await auth.signInWithEmailAndPassword(email, password);
     dispatch({
       type: LOGIN_USER.SUCCESS,
-      payload: { id: user.uid },
+      payload: { id: data.user.uid },
     });
   } catch (error) {
     dispatch({

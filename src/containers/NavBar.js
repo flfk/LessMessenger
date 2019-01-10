@@ -9,10 +9,11 @@ import NavBarWrapper from '../components/NavBarWrapper';
 import NavBarList from '../components/NavBarList';
 
 import { auth } from '../data/firebase';
-import { getLoggedInUser } from '../data/user/user.actions';
+import { getLoggedInUser, signOut } from '../data/user/user.actions';
 
 const propTypes = {
   actionGetLoggedInUser: PropTypes.func.isRequired,
+  actionSignOut: PropTypes.func.isRequired,
   roomName: PropTypes.string,
   userID: PropTypes.string,
 };
@@ -29,6 +30,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   actionGetLoggedInUser: user => dispatch(getLoggedInUser(user)),
+  actionSignOut: () => dispatch(signOut()),
 });
 
 class NavBar extends React.Component {
@@ -54,7 +56,7 @@ class NavBar extends React.Component {
   render() {
     const { showDropDown } = this.state;
 
-    const { userID } = this.props;
+    const { actionSignOut, roomName, userID } = this.props;
 
     const dropdown = showDropDown ? (
       <NavBarDropdown>
@@ -64,42 +66,38 @@ class NavBar extends React.Component {
 
     const profileBtn = userID ? (
       <li>
-        <Link to="/profile">
-          <Btn.Tertiary onClick={this.handleClickProfile}>{userID}</Btn.Tertiary>
-        </Link>
+        <Btn.Tertiary onClick={actionSignOut}>Sign Out</Btn.Tertiary>
       </li>
     ) : null;
 
-    const logInBtn = userID ? null : (
-      <li>
-        <Link to="/login">
-          <Btn.Tertiary narrow short primary>
-            Log In
-          </Btn.Tertiary>
-        </Link>
-      </li>
-    );
+    // const logInBtn = userID ? null : (
+    //   <li>
+    //     <Link to="/login">
+    //       <Btn.Tertiary narrow short primary>
+    //         Log In
+    //       </Btn.Tertiary>
+    //     </Link>
+    //   </li>
+    // );
 
-    const signUpBtn = userID ? null : (
-      <li>
-        <Link to="/signup">
-          <Btn narrow short primary>
-            Sign Up
-          </Btn>
-        </Link>
-      </li>
-    );
+    // const signUpBtn = userID ? null : (
+    //   <li>
+    //     <Link to="/signup">
+    //       <Btn narrow short primary>
+    //         Sign Up
+    //       </Btn>
+    //     </Link>
+    //   </li>
+    // );
 
     return (
       <div>
         <NavBarWrapper>
           <NavBarList>
             <li>
-              <Link to="/home">Home</Link>
+              <strong>{roomName}</strong>
             </li>
             {profileBtn}
-            {logInBtn}
-            {signUpBtn}
           </NavBarList>
         </NavBarWrapper>
         {dropdown}

@@ -6,9 +6,10 @@ import validator from 'validator';
 
 import Btn from '../components/Btn';
 import Content from '../components/Content';
+import Fonts from '../utils/Fonts';
 import InputText from '../components/InputText';
 import Spinner from '../components/Spinner';
-import Fonts from '../utils/Fonts';
+import LogIn from './LogIn';
 import { getParams } from '../utils/Helpers';
 
 import { createUser } from '../data/user/user.actions';
@@ -38,10 +39,11 @@ class SignUp extends React.Component {
     email: '',
     emailErrMsg: '',
     emailIsValid: false,
-    isLoading: true,
+    isLoading: false,
     password: '',
     passwordErrMsg: '',
     passwordIsValid: false,
+    showLogIn: false,
   };
 
   componentDidMount() {
@@ -65,6 +67,8 @@ class SignUp extends React.Component {
   };
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
+
+  handleClickLogIn = () => this.setState({ showLogIn: true });
 
   handleSignUp = () => {
     this.setState({ isLoading: true });
@@ -109,30 +113,23 @@ class SignUp extends React.Component {
     return true;
   };
 
-  // setData = async () => {
-  //   const { i } = getParams(this.props);
-  //   if (i) {
-  //     const influencer = await actions.fetchDocInfluencerByID(i);
-  //     this.setState({ influencer });
-  //   }
-  //   this.setState({ isLoading: false });
-  // };
-
   render() {
     const {
       email,
       emailErrMsg,
       emailIsValid,
       isLoading,
-      item,
       password,
       passwordErrMsg,
       passwordIsValid,
+      showLogIn,
     } = this.state;
 
     const { errorCode, isPending } = this.props;
 
-    // if (isLoading || isPending) return <Spinner />;
+    if (showLogIn) return <LogIn />;
+
+    if (isLoading || isPending) return <Spinner />;
 
     const signUpErrMsg = errorCode ? (
       <Fonts.ERROR>{this.getErrorText(errorCode)}</Fonts.ERROR>
@@ -141,7 +138,7 @@ class SignUp extends React.Component {
     return (
       <Content>
         <Content.Spacing16px />
-        <Fonts.H1 centered>Sign up to message in the workspace</Fonts.H1>
+        <Fonts.H1 centered>Sign up to join this workspace</Fonts.H1>
         <InputText
           errMsg={emailErrMsg}
           label="Tell us your email"
@@ -166,6 +163,11 @@ class SignUp extends React.Component {
         <Btn primary short onClick={this.handleSignUp}>
           Sign Up
         </Btn>
+        <Content.Spacing16px />
+        <Content.Centered>
+          <Fonts.P>Already using Meetsta?</Fonts.P>{' '}
+          <Btn.Tertiary onClick={this.handleClickLogIn}>Log In</Btn.Tertiary>
+        </Content.Centered>
       </Content>
     );
   }

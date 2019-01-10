@@ -27,6 +27,7 @@ const NoPadding = styled(Content)`
 const Centered = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
 `;
 
 const CenteredBothAxis = styled(Content)`
