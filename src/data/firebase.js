@@ -18,7 +18,7 @@ const auth = firebase.auth();
 
 const db = firebase.firestore();
 
-const dbTimestamp = firebase.firestore.Timestamp.now().toMillis();
+const dbTimestamp = firebase.firestore.Timestamp;
 
 const storage = firebase.storage();
 

@@ -13,7 +13,7 @@ export const addMessage = msg => dispatch => {
 
 export const sendMessage = msg => async dispatch => {
   try {
-    await db.collection(COLL_MESSAGES).add({ ...msg, timestamp: dbTimestamp });
+    await db.collection(COLL_MESSAGES).add({ ...msg, timestamp: dbTimestamp.now().toMillis() });
     dispatch({
       type: SEND_MESSAGE.SUCCESS,
     });
