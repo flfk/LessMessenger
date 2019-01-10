@@ -1,0 +1,18 @@
+{
+  "indexes": [
+    {
+      "collectionId": "messages",
+      "state": "READY",
+      "fields": [
+        {
+          "fieldPath": "roomID",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "mode": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}
