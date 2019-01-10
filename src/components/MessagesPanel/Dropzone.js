@@ -12,14 +12,18 @@ class MessageDropzone extends React.Component {
     files: [],
   };
 
-  onDrop = files => {
-    this.setState({
-      files: files.map(file =>
+  onDrop = filesDropped => {
+    console.log(filesDropped);
+    const { files } = this.state;
+    const filesUpdated = files.slice();
+    filesDropped.map(file => {
+      filesUpdated.push(
         Object.assign(file, {
           preview: URL.createObjectURL(file),
         })
-      ),
+      );
     });
+    this.setState({ files: filesUpdated });
   };
 
   onCancel = () => {
@@ -31,19 +35,17 @@ class MessageDropzone extends React.Component {
   render() {
     const { files } = this.state;
 
-    const filesList = files.map(file => (
-      <li key={file.name}>
-        {file.name} - {file.size} bytes
-      </li>
-    ));
-
-    const thumbs = files.map(file => (
-      <ThumbImg key={file.name} src={file.preview} alt="File preview" />
-    ));
+    const thumbnails = files.map(file => {
+      // if file is img vs not
+      if (file.type.startsWith('image/')) {
+        return <ThumbImg key={file.name} src={file.preview} alt="File preview" />;
+      }
+      return <ThumbFile key={file.name}>{file.name}</ThumbFile>;
+    });
 
     return (
       <div>
-        <ThumbsContainer>{thumbs}</ThumbsContainer>
+        <ThumbsContainer>{thumbnails}</ThumbsContainer>
         <Dropzone onDrop={this.onDrop} onFileDialogCancel={this.onCancel}>
           {({ getRootProps, getInputProps }) => (
             <div {...getRootProps()}>
@@ -52,26 +54,30 @@ class MessageDropzone extends React.Component {
             </div>
           )}
         </Dropzone>
-        <div>{filesList}</div>
       </div>
     );
   }
 }
 
-const Container = styled.div`
-  width: 200px;
-  height: 200px;
-  border: 1px solid red;
-`;
-
-const ThumbsContainer = styled.aside`
+const ThumbsContainer = styled.div`
   border: 1px solid blue;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 `;
 
-const ThumbImg = styled.div`
+const ThumbFile = styled.div`
+  border: 1px solid orange;
+  height: 96px;
+  width: 96px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 16px;
+`;
+
+const ThumbImg = styled(ThumbFile)`
   border: 1px solid orange;
   height: 96px;
   width: 96px;
