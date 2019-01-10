@@ -1,5 +1,5 @@
 import { MESSAGES_PER_LOAD } from '../../utils/Constants';
-import { db, dbTimestamp } from '../firebase';
+import { db, dbTimestamp, storage } from '../firebase';
 import { ADD_MESSAGE, LOAD_MESSAGES, SEND_MESSAGE } from './messages.types';
 
 const COLL_MESSAGES = 'messages';
@@ -13,12 +13,14 @@ export const addMessage = msg => dispatch => {
 
 export const sendMessage = msg => async dispatch => {
   try {
-    await db.collection(COLL_MESSAGES).add({ ...msg, timestamp: dbTimestamp.now().toMillis() });
+    const timestamp = dbTimestamp.now().toMillis();
+    console.log('timestamp', timestamp);
+    await db.collection(COLL_MESSAGES).add({ ...msg, timestamp });
     dispatch({
       type: SEND_MESSAGE.SUCCESS,
     });
   } catch (error) {
-    console.log('Error Actions, messages, addMessage');
+    console.log('Error Actions, messages, sendMessage', error);
     dispatch({
       type: SEND_MESSAGE.ERROR,
     });
@@ -52,10 +54,28 @@ export const getMessageSubscription = roomID => async dispatch => {
       type: LOAD_MESSAGES.SUCCESS,
     });
   } catch (error) {
-    console.log('Actions, messages, getMessageSubscription');
+    console.log('Actions, messages, getMessageSubscription', error);
     dispatch({
       type: LOAD_MESSAGES.ERROR,
     });
   }
   return subscription;
+};
+
+export const uploadFile = async (file, roomID) => {
+  try {
+    const timestamp = dbTimestamp.now().toMillis();
+    const uploadTask = storage
+      .ref()
+      .child(`${roomID}/${timestamp}_${file.name}`)
+      .put(file);
+
+    uploadTask.on('state_changed', {
+      complete: () => uploadTask.snapshot.ref,
+    });
+
+    return uploadTask;
+  } catch (error) {
+    console.log('messages.actions, messages, uploadFile', error);
+  }
 };

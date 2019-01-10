@@ -4,7 +4,7 @@ import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
 
 import Messages from './Messages';
-import { sendMessage } from '../data/messages/messages.actions';
+import { sendMessage, uploadFile } from '../data/messages/messages.actions';
 import { Container, Thumbnails, Input, InputContainer } from '../components/MessagesPanel';
 
 const propTypes = {
@@ -41,18 +41,18 @@ class MessagePanel extends React.Component {
     };
   };
 
-  getAttachmentFields = file => ({
+  getAttachmentFields = (downloadURL, file) => ({
     isAttachment: true,
-    downloadURL: '',
+    downloadURL,
     type: file.type,
   });
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     const { files, message } = this.state;
     console.log('files', files);
-    const { actionSendMessage } = this.props;
+    const { actionSendMessage, roomID } = this.props;
 
     if (message) {
       const newMsg = this.getNewMsg(message);
@@ -61,14 +61,18 @@ class MessagePanel extends React.Component {
     }
 
     if (files.length > 0) {
-      console.log('files exist');
-      files.forEach(file => {
-        const newMsg = this.getNewMsg(file.name);
-        const attachmentFields = this.getAttachmentFields(file);
-        console.log('attachment message', { ...newMsg, ...attachmentFields });
-      });
-
-      this.setState({ files: [] });
+      await Promise.all(
+        files.map(async file => {
+          const newMsg = this.getNewMsg(file.name);
+          this.setState({ files: [] });
+          const uploadTask = await uploadFile(file, roomID);
+          console.log('uploadTask', uploadTask);
+          const downloadURL = await uploadTask.ref.getDownloadURL();
+          const attachmentFields = this.getAttachmentFields(downloadURL, file);
+          console.log('attachment message', { ...newMsg, ...attachmentFields });
+          actionSendMessage({ ...newMsg, ...attachmentFields });
+        })
+      );
     }
   };
 

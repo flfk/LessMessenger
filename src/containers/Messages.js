@@ -7,8 +7,7 @@ import { connect } from 'react-redux';
 
 import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
-import Message from '../components/Message';
-import { MessagesContainer } from '../components/MessagesPanel';
+import { Message, MessagesContainer } from '../components/MessagesPanel';
 import { getMessageSubscription } from '../data/messages/messages.actions';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
@@ -80,9 +79,12 @@ class Messages extends React.Component {
             <Message
               key={msg.id}
               content={msg.content}
+              downloadURL={msg.downloadURL}
+              isAttachment={msg.isAttachment}
               isNewSender={isNewSender}
               senderName={msg.senderName}
               timestamp={msg.timestamp}
+              type={msg.type}
             />
           );
         });
