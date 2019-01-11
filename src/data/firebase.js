@@ -18,6 +18,8 @@ const auth = firebase.auth();
 
 const db = firebase.firestore();
 
+const { firestore } = firebase;
+
 const dbTimestamp = firebase.firestore.Timestamp;
 
 const storage = firebase.storage();
@@ -26,4 +28,4 @@ const storage = firebase.storage();
 const settings = { timestampsInSnapshots: true };
 db.settings(settings);
 
-export { auth, db, dbTimestamp, storage };
+export { auth, db, dbTimestamp, firestore, storage };

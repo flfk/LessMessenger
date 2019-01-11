@@ -42,7 +42,7 @@ const Message = ({
       if (word[0] !== '#') return <span key={`${timestamp}${index}`}>{word} </span>;
       return (
         <Fonts.A key={`${timestamp}${index}`} onClick={selectTag(word)}>
-          {word}
+          {word}{' '}
         </Fonts.A>
       );
     });

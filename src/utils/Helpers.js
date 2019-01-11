@@ -30,6 +30,8 @@ export const getTags = text => {
 
 export const getTimestamp = () => moment().valueOf();
 
+export const getTimestampFirestoreToUnix = timestamp => moment(timestamp).valueOf();
+
 export const getShortenedNumber = num => {
   if (num === 0) {
     return '-';

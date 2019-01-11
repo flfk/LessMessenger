@@ -1,5 +1,5 @@
 import { MESSAGES_PER_LOAD } from '../../utils/Constants';
-import { db, dbTimestamp, storage } from '../firebase';
+import { db, dbTimestamp, firestore, storage } from '../firebase';
 import { getTags } from '../../utils/Helpers';
 import { addTag } from '../tags/tags.actions';
 import { ADD_MESSAGE, LOAD_MESSAGES, SEND_MESSAGE } from './messages.types';
@@ -19,8 +19,12 @@ export const addMessage = msg => dispatch => {
 
 export const sendMessage = msg => async dispatch => {
   try {
-    const timestamp = dbTimestamp.now().toMillis();
-    await db.collection(COLL_MESSAGES).add({ ...msg, timestamp });
+    // RESOLVE - remove when no longer needed
+    // const timestamp = dbTimestamp.now().toMillis();
+
+    await db
+      .collection(COLL_MESSAGES)
+      .add({ ...msg, timestamp: firestore.FieldValue.serverTimestamp() });
     dispatch({
       type: SEND_MESSAGE.SUCCESS,
     });
@@ -51,6 +55,8 @@ export const getMessageSubscription = roomID => async dispatch => {
             const msg = doc.data();
             const { id } = doc;
             msg.id = id;
+            // convert firestore timestamp to unix
+            msg.timestamp = msg.timestamp.toMillis();
             dispatch(addMessage(msg));
           }
         });

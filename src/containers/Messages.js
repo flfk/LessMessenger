@@ -112,14 +112,14 @@ class Messages extends React.Component {
             let isMsgTagSelected = false;
             const msgTags = getTags(msg.content);
             msgTags.forEach(msgTag => {
-              isMsgTagSelected = selectedTagNames.indexOf(msgTag) > -1;
+              isMsgTagSelected = isMsgTagSelected || selectedTagNames.indexOf(msgTag) > -1;
             });
             return isMsgTagSelected;
           });
 
     const messagesContainer = _.chain(messagesFiltered)
       .sort((a, b) => a.timestamp - b.timestamp)
-      .map(order => ({ ...order, date: moment(order.timestamp).format('MMM Do') }))
+      .map(msg => ({ ...msg, date: moment(msg.timestamp).format('MMM Do') }))
       .groupBy('date')
       .map((group, date) => {
         const msgs = group.map((msg, index) => {
