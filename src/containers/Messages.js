@@ -12,9 +12,11 @@ import { Message, MessagesContainer } from '../components/MessagesPanel';
 import { getMessageSubscription } from '../data/messages/messages.actions';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
+import { toggleTag } from '../data/tags/tags.actions';
 
 const propTypes = {
   actionGetMessageSubscription: PropTypes.func.isRequired,
+  actionToggleTag: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(
     PropTypes.shape({
@@ -33,6 +35,9 @@ const propTypes = {
     })
   ).isRequired,
   roomID: PropTypes.string.isRequired,
+  tags: PropTypes.arrayOf(
+    PropTypes.shape({ name: PropTypes.string.isRequired, isSelected: PropTypes.bool.isRequired })
+  ).isRequired,
 };
 
 const defaultProps = {};
@@ -42,9 +47,11 @@ const mapStateToProps = state => ({
   members: state.members,
   messages: state.messages,
   roomID: state.room.id,
+  tags: state.tags,
 });
 
 const mapDispatchToProps = dispatch => ({
+  actionToggleTag: tagName => dispatch(toggleTag(tagName)),
   actionGetMessageSubscription: roomID => dispatch(getMessageSubscription(roomID)),
 });
 
@@ -73,8 +80,9 @@ class Messages extends React.Component {
     }
   }
 
-  selectTag = tag => () => {
-    console.log('selected tag', tag);
+  selectTag = tagName => () => {
+    const { actionToggleTag } = this.props;
+    actionToggleTag(tagName.toLowerCase());
   };
 
   subscribeMessages = async () => {
@@ -90,11 +98,32 @@ class Messages extends React.Component {
   };
 
   render() {
-    const { isLoading, members, messages } = this.props;
+    const { isLoading, members, messages, tags } = this.props;
 
     if (isLoading) return <Spinner />;
 
-    const messagesContainer = _.chain(messages)
+    const tagsSelected = tags.filter(tag => tag.isSelected);
+    const selectedTagNames = tagsSelected.map(tag => tag.name);
+
+    console.log('selectedTagNames', selectedTagNames);
+
+    const messagesFiltered =
+      selectedTagNames.length === 0
+        ? messages
+        : messages.filter(msg => {
+            let isMsgTagSelected = false;
+            const msgTags = getTags(msg.content);
+            console.log('msgTags', msgTags);
+            msgTags.forEach(msgTag => {
+              isMsgTagSelected = selectedTagNames.indexOf(msgTag) > -1;
+              console.log('msgTag is', msgTag, isMsgTagSelected);
+            });
+            return isMsgTagSelected;
+          });
+
+    console.log('messagesFiltered', messagesFiltered);
+
+    const messagesContainer = _.chain(messagesFiltered)
       .sort((a, b) => a.timestamp - b.timestamp)
       .map(order => ({ ...order, date: moment(order.timestamp).format('MMM Do') }))
       .groupBy('date')

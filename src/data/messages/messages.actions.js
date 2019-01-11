@@ -1,5 +1,7 @@
 import { MESSAGES_PER_LOAD } from '../../utils/Constants';
 import { db, dbTimestamp, storage } from '../firebase';
+import { getTags } from '../../utils/Helpers';
+import { addTag } from '../tags/tags.actions';
 import { ADD_MESSAGE, LOAD_MESSAGES, SEND_MESSAGE } from './messages.types';
 
 const COLL_MESSAGES = 'messages';
@@ -9,6 +11,10 @@ export const addMessage = msg => dispatch => {
     type: ADD_MESSAGE.SUCCESS,
     payload: msg,
   });
+  if (!msg.isAttachment) {
+    const tags = getTags(msg.content);
+    tags.map(tagName => dispatch(addTag(tagName)));
+  }
 };
 
 export const sendMessage = msg => async dispatch => {

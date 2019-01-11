@@ -1,3 +1,5 @@
 import { createActionSet } from '../../utils/Helpers';
 
-// export const CREATE_USER = createActionSet('CREATE_USER');
+export const ADD_TAG = createActionSet('ADD_TAG');
+export const TOGGLE_TAG = createActionSet('TOGGLE_TAG');
+

@@ -24,7 +24,7 @@ export const getPathname = props => {
 export const getTags = text => {
   const regEx = /(?:^|\s)(#[a-z0-9]\w*)/gi;
   const tags = text.match(regEx);
-  if (tags) return tags.map(x => x.trim());
+  if (tags) return tags.map(x => x.trim().toLowerCase());
   return [];
 };
 
