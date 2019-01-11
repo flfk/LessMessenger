@@ -15,6 +15,22 @@ import Spinner from '../components/Spinner';
 const propTypes = {
   actionGetMessageSubscription: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  members: PropTypes.arrayOf(
+    PropTypes.shape({
+      email: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  messages: PropTypes.arrayOf(
+    PropTypes.shape({
+      content: PropTypes.string.isRequired,
+      downloadURL: PropTypes.string,
+      isAttachment: PropTypes.bool,
+      senderUserID: PropTypes.string.isRequired,
+      type: PropTypes.string,
+      timestamp: PropTypes.number.isRequired,
+    })
+  ).isRequired,
   roomID: PropTypes.string.isRequired,
 };
 
@@ -22,6 +38,7 @@ const defaultProps = {};
 
 const mapStateToProps = state => ({
   isLoading: state.room.isLoadingMessages,
+  members: state.members,
   messages: state.messages,
   roomID: state.room.id,
 });
@@ -63,7 +80,7 @@ class Messages extends React.Component {
   };
 
   render() {
-    const { isLoading, messages } = this.props;
+    const { isLoading, members, messages } = this.props;
 
     if (isLoading) return <Spinner />;
 
@@ -72,9 +89,11 @@ class Messages extends React.Component {
       .map(order => ({ ...order, date: moment(order.timestamp).format('MMM Do') }))
       .groupBy('date')
       .map((group, date) => {
-        const messages = group.map((msg, index) => {
+        const msgs = group.map((msg, index) => {
+          const sender = members.find(member => member.id === msg.senderUserID);
+          const senderName = sender ? sender.name : 'NO-NAME';
           const isNewSender =
-            index === 0 ? true : !(group[index - 1].senderName === msg.senderName);
+            index === 0 ? true : !(group[index - 1].senderUserID === msg.senderUserID);
           return (
             <Message
               key={msg.id}
@@ -82,7 +101,7 @@ class Messages extends React.Component {
               downloadURL={msg.downloadURL}
               isAttachment={msg.isAttachment}
               isNewSender={isNewSender}
-              senderName={msg.senderName}
+              senderName={senderName}
               timestamp={msg.timestamp}
               type={msg.type}
             />
@@ -94,7 +113,7 @@ class Messages extends React.Component {
               <strong>{date}</strong>
             </Fonts.P>
             <Content.Spacing16px />
-            {messages}
+            {msgs}
             <Content.Spacing16px />
           </div>
         );

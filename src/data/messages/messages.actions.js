@@ -14,7 +14,6 @@ export const addMessage = msg => dispatch => {
 export const sendMessage = msg => async dispatch => {
   try {
     const timestamp = dbTimestamp.now().toMillis();
-    console.log('timestamp', timestamp);
     await db.collection(COLL_MESSAGES).add({ ...msg, timestamp });
     dispatch({
       type: SEND_MESSAGE.SUCCESS,

@@ -14,7 +14,6 @@ import SignUp from './SignUp';
 
 const propTypes = {
   actionLoadRoom: PropTypes.func.isRequired,
-
   error: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
   userID: PropTypes.string,

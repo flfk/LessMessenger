@@ -1,8 +1,9 @@
 import { CREATE_USER, GET_LOGGED_IN_USER, LOGIN_USER, SIGNOUT_USER } from './user.types';
 
 const initialState = {
+  email: '',
   id: '',
-  displayName: '',
+  name: '',
   errorCode: '',
 };
 

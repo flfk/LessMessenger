@@ -10,7 +10,7 @@ import { Container, Thumbnails, Input, InputContainer } from '../components/Mess
 const propTypes = {
   actionSendMessage: PropTypes.func.isRequired,
   roomID: PropTypes.string.isRequired,
-  senderName: PropTypes.string.isRequired,
+  senderUserID: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
@@ -18,7 +18,7 @@ const defaultProps = {};
 const mapStateToProps = state => ({
   messages: state.messages,
   roomID: state.room.id,
-  senderName: state.user.id,
+  senderUserID: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -32,11 +32,11 @@ class MessagePanel extends React.Component {
   };
 
   getNewMsg = content => {
-    const { senderName, roomID } = this.props;
+    const { senderUserID, roomID } = this.props;
     return {
       content,
       roomID,
-      senderName,
+      senderUserID,
       // Timestamp added in actions based on server
     };
   };

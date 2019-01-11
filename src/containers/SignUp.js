@@ -31,11 +31,14 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actionSignUp: (email, password) => dispatch(createUser(email, password)),
+  actionSignUp: (email, name, password) => dispatch(createUser(email, name, password)),
 });
 
 class SignUp extends React.Component {
   state = {
+    name: '',
+    nameErrMsg: '',
+    nameIsValid: false,
     email: '',
     emailErrMsg: '',
     emailIsValid: false,
@@ -52,6 +55,7 @@ class SignUp extends React.Component {
   }
 
   getErrorText = errorCode => {
+    console.log(errorCode);
     if (errorCode === 'auth/email-already-in-use') {
       return 'You already have an account with this email. Try logging in.';
     }
@@ -61,6 +65,7 @@ class SignUp extends React.Component {
   handleBlur = field => () => {
     let isValid = false;
     if (field === 'email') isValid = this.isEmailValid();
+    if (field === 'name') isValid = this.isNameValid();
     if (field === 'password') isValid = this.isPasswordValid();
     const validFieldID = `${field}IsValid`;
     this.setState({ [validFieldID]: isValid });
@@ -73,9 +78,9 @@ class SignUp extends React.Component {
   handleSignUp = () => {
     this.setState({ isLoading: true });
     if (this.isFormValid()) {
-      const { email, password } = this.state;
+      const { email, name, password } = this.state;
       const { actionSignUp } = this.props;
-      actionSignUp(email, password);
+      actionSignUp(email, name, password);
       // mixpanel.alias(email);
       // mixpanel.people.set({
       //   $name: usernameFormatted,
@@ -87,7 +92,7 @@ class SignUp extends React.Component {
   };
 
   isFormValid = () => {
-    if (this.isEmailValid() && this.isPasswordValid()) {
+    if (this.isEmailValid() && this.isNameValid() && this.isPasswordValid()) {
       return true;
     }
     return false;
@@ -100,6 +105,16 @@ class SignUp extends React.Component {
       return false;
     }
     this.setState({ emailErrMsg: '' });
+    return true;
+  };
+
+  isNameValid = () => {
+    const { name } = this.state;
+    if (name === '') {
+      this.setState({ nameErrMsg: "Don't forget to include your name." });
+      return false;
+    }
+    this.setState({ nameErrMsg: '' });
     return true;
   };
 
@@ -119,6 +134,9 @@ class SignUp extends React.Component {
       emailErrMsg,
       emailIsValid,
       isLoading,
+      name,
+      nameErrMsg,
+      nameIsValid,
       password,
       passwordErrMsg,
       passwordIsValid,
@@ -139,6 +157,15 @@ class SignUp extends React.Component {
       <Content>
         <Content.Spacing16px />
         <Fonts.H1 centered>Sign up to join this workspace</Fonts.H1>
+        <InputText
+          errMsg={nameErrMsg}
+          label="First off, What's your name?"
+          placeholder="Jane Doe"
+          onBlur={this.handleBlur('name')}
+          onChange={this.handleChangeInput('name')}
+          value={name}
+          isValid={nameIsValid}
+        />
         <InputText
           errMsg={emailErrMsg}
           label="Tell us your email"

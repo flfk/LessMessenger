@@ -1,4 +1,5 @@
 import { db } from '../firebase';
+import { loadMembers } from '../members/members.actions';
 import { LOAD_ROOM } from './room.types';
 
 const COLL_ROOMS = 'rooms';
@@ -17,8 +18,9 @@ export const loadRoom = pathname => async dispatch => {
       });
     }
 
+    let room = null;
     snapshot.forEach(doc => {
-      const room = doc.data();
+      room = doc.data();
       const { id } = doc;
       room.id = id;
       dispatch({
@@ -26,6 +28,8 @@ export const loadRoom = pathname => async dispatch => {
         payload: room,
       });
     });
+
+    dispatch(loadMembers(room.memberUserIDs));
   } catch (error) {
     console.error('Error actions, loadRoom', error);
     dispatch({
