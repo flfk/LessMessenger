@@ -3,8 +3,11 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import moment from 'moment-timezone';
 
+import Btn from '../Btn';
 import Content from '../Content';
 import Fonts from '../../utils/Fonts';
+
+import { storage } from '../../data/firebase';
 
 const propTypes = {
   content: PropTypes.string.isRequired,
@@ -30,6 +33,10 @@ const Message = ({
   timestamp,
   type,
 }) => {
+  const handleDownload = downloadURL => {
+    window.open(downloadURL);
+  };
+
   const header = isNewSender ? (
     <div>
       <Content.Spacing16px />
@@ -42,7 +49,7 @@ const Message = ({
 
   const text = isAttachment ? (
     <MessageText>
-      <a href={downloadURL} download>
+      <a href={downloadURL} download={content}>
         {content}
       </a>
     </MessageText>
