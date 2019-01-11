@@ -105,23 +105,17 @@ class Messages extends React.Component {
     const tagsSelected = tags.filter(tag => tag.isSelected);
     const selectedTagNames = tagsSelected.map(tag => tag.name);
 
-    console.log('selectedTagNames', selectedTagNames);
-
     const messagesFiltered =
       selectedTagNames.length === 0
         ? messages
         : messages.filter(msg => {
             let isMsgTagSelected = false;
             const msgTags = getTags(msg.content);
-            console.log('msgTags', msgTags);
             msgTags.forEach(msgTag => {
               isMsgTagSelected = selectedTagNames.indexOf(msgTag) > -1;
-              console.log('msgTag is', msgTag, isMsgTagSelected);
             });
             return isMsgTagSelected;
           });
-
-    console.log('messagesFiltered', messagesFiltered);
 
     const messagesContainer = _.chain(messagesFiltered)
       .sort((a, b) => a.timestamp - b.timestamp)
