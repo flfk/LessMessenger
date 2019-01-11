@@ -8,14 +8,15 @@ import axios from 'axios';
 import Btn from '../Btn';
 import Content from '../Content';
 import Fonts from '../../utils/Fonts';
-
-import { storage } from '../../data/firebase';
+import { getTags } from '../../utils/Helpers';
 
 const propTypes = {
   content: PropTypes.string.isRequired,
   downloadURL: PropTypes.string,
   isAttachment: PropTypes.bool,
   isNewSender: PropTypes.bool.isRequired,
+  selectTag: PropTypes.func.isRequired,
+  senderName: PropTypes.string.isRequired,
   timestamp: PropTypes.number.isRequired,
   type: PropTypes.string,
 };
@@ -31,19 +32,22 @@ const Message = ({
   downloadURL,
   isAttachment,
   isNewSender,
+  selectTag,
   senderName,
   timestamp,
   type,
 }) => {
-  const header = isNewSender ? (
-    <div>
-      <Content.Spacing16px />
-      <Fonts.P>
-        <strong> {senderName} </strong>
-        {moment(timestamp).format('h:mm a')}
-      </Fonts.P>
-    </div>
-  ) : null;
+  const getTextWithTags = text => {
+    const words = text.split(' ').map((word, index) => {
+      if (word[0] !== '#') return <span key={`${timestamp}${index}`}>{word} </span>;
+      return (
+        <Fonts.A key={`${timestamp}${index}`} onClick={selectTag(word)}>
+          {word}
+        </Fonts.A>
+      );
+    });
+    return <Fonts.P>{words}</Fonts.P>;
+  };
 
   const handleDownload = () => {
     axios({
@@ -60,12 +64,22 @@ const Message = ({
     });
   };
 
+  const header = isNewSender ? (
+    <div>
+      <Content.Spacing16px />
+      <Fonts.P>
+        <strong> {senderName} </strong>
+        {moment(timestamp).format('h:mm a')}
+      </Fonts.P>
+    </div>
+  ) : null;
+
   const text = isAttachment ? (
     <MessageText>
       <Btn.Tertiary onClick={handleDownload}>{content}</Btn.Tertiary>
     </MessageText>
   ) : (
-    <MessageText>{content}</MessageText>
+    getTextWithTags(content)
   );
 
   return (

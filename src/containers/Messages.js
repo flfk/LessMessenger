@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 
 import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
+import { getTags } from '../utils/Helpers';
 import { Message, MessagesContainer } from '../components/MessagesPanel';
 import { getMessageSubscription } from '../data/messages/messages.actions';
 import Scrollable from '../components/Scrollable';
@@ -58,6 +59,11 @@ class Messages extends React.Component {
 
   componentDidUpdate() {
     this.scrollToBottom();
+    // const { messages } = this.props;
+    // messages.forEach(msg => {
+    //   console.log('getting tags', msg);
+    //   console.log('tags are', getTags(msg.content));
+    // });
   }
 
   componentWillUnmount() {
@@ -66,6 +72,10 @@ class Messages extends React.Component {
       unsubscribeMessages();
     }
   }
+
+  selectTag = tag => () => {
+    console.log('selected tag', tag);
+  };
 
   subscribeMessages = async () => {
     const { actionGetMessageSubscription, roomID } = this.props;
@@ -101,6 +111,7 @@ class Messages extends React.Component {
               downloadURL={msg.downloadURL}
               isAttachment={msg.isAttachment}
               isNewSender={isNewSender}
+              selectTag={this.selectTag}
               senderName={senderName}
               timestamp={msg.timestamp}
               type={msg.type}

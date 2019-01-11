@@ -21,6 +21,13 @@ export const getPathname = props => {
   return pathnameFormatted;
 };
 
+export const getTags = text => {
+  const regEx = /(?:^|\s)(#[a-z0-9]\w*)/gi;
+  const tags = text.match(regEx);
+  if (tags) return tags.map(x => x.trim());
+  return [];
+};
+
 export const getTimestamp = () => moment().valueOf();
 
 export const getShortenedNumber = num => {
