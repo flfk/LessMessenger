@@ -2,7 +2,7 @@ import { MESSAGES_PER_LOAD } from '../../utils/Constants';
 import { db, dbTimestamp, firestore, storage } from '../firebase';
 import { getTags } from '../../utils/Helpers';
 import { addTag } from '../tags/tags.actions';
-import { ADD_MESSAGE, LOAD_MESSAGES, SEND_MESSAGE } from './messages.types';
+import { ADD_MESSAGE, LOAD_MESSAGES, SEND_MESSAGE, UPDATE_MESSAGE } from './messages.types';
 
 const COLL_MESSAGES = 'messages';
 
@@ -21,7 +21,6 @@ export const sendMessage = msg => async dispatch => {
   try {
     // RESOLVE - remove when no longer needed
     // const timestamp = dbTimestamp.now().toMillis();
-
     await db
       .collection(COLL_MESSAGES)
       .add({ ...msg, timestamp: firestore.FieldValue.serverTimestamp() });
@@ -33,6 +32,17 @@ export const sendMessage = msg => async dispatch => {
     dispatch({
       type: SEND_MESSAGE.ERROR,
     });
+  }
+};
+
+export const updateMessage = msg => dispatch => {
+  dispatch({
+    type: UPDATE_MESSAGE.SUCCESS,
+    payload: msg,
+  });
+  if (!msg.isAttachment) {
+    const tags = getTags(msg.content);
+    tags.map(tagName => dispatch(addTag(tagName)));
   }
 };
 
@@ -56,8 +66,19 @@ export const getMessageSubscription = roomID => async dispatch => {
             const { id } = doc;
             msg.id = id;
             // convert firestore timestamp to unix
-            msg.timestamp = msg.timestamp.toMillis();
+            // console.log('about to add message', msg);
+            msg.timestamp = msg.timestamp ? msg.timestamp.toMillis() : dbTimestamp.now().toMillis();
             dispatch(addMessage(msg));
+          }
+          if (change.type === 'modified') {
+            // will be modified when the timestamp updates
+            const { doc } = change;
+            const msg = doc.data();
+            const { id } = doc;
+            msg.id = id;
+            msg.timestamp = msg.timestamp.toMillis();
+            // console.log('modified', msg);
+            dispatch(updateMessage(msg));
           }
         });
       });
