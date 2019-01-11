@@ -62,10 +62,7 @@ const Message = ({
 
   const text = isAttachment ? (
     <MessageText>
-      <a href={downloadURL} download={content}>
-        {content}
-      </a>
-      <Btn.Tertiary onClick={handleDownload}>Test </Btn.Tertiary>
+      <Btn.Tertiary onClick={handleDownload}>{content}</Btn.Tertiary>
     </MessageText>
   ) : (
     <MessageText>{content}</MessageText>
