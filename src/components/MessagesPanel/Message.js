@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import moment from 'moment-timezone';
 
+import axios from 'axios';
+
 import Btn from '../Btn';
 import Content from '../Content';
 import Fonts from '../../utils/Fonts';
@@ -33,10 +35,6 @@ const Message = ({
   timestamp,
   type,
 }) => {
-  const handleDownload = downloadURL => {
-    window.open(downloadURL);
-  };
-
   const header = isNewSender ? (
     <div>
       <Content.Spacing16px />
@@ -47,11 +45,27 @@ const Message = ({
     </div>
   ) : null;
 
+  const handleDownload = () => {
+    axios({
+      url: downloadURL,
+      method: 'GET',
+      responseType: 'blob', // important
+    }).then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', content);
+      document.body.appendChild(link);
+      link.click();
+    });
+  };
+
   const text = isAttachment ? (
     <MessageText>
       <a href={downloadURL} download={content}>
         {content}
       </a>
+      <Btn.Tertiary onClick={handleDownload}>Test </Btn.Tertiary>
     </MessageText>
   ) : (
     <MessageText>{content}</MessageText>
