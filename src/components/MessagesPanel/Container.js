@@ -11,6 +11,10 @@ const RoomContainer = styled.div`
   padding-left: 16px;
   padding-right: 16px;
 
+  > div:focus {
+    outline: none;
+  }
+
   ${Media.tablet} {
     width: auto;
     margin: 0;
