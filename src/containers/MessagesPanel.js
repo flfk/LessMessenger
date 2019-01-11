@@ -51,7 +51,6 @@ class MessagePanel extends React.Component {
 
   handleSubmit = async () => {
     const { files, message } = this.state;
-    console.log('files', files);
     const { actionSendMessage, roomID } = this.props;
 
     if (message) {

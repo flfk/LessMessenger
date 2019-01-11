@@ -16,6 +16,7 @@ const propTypes = {
   actionLoadRoom: PropTypes.func.isRequired,
   error: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  memberUserIDs: PropTypes.arrayOf(PropTypes.string).isRequired,
   userID: PropTypes.string,
 };
 
@@ -26,6 +27,7 @@ const defaultProps = {
 const mapStateToProps = state => ({
   error: state.room.error,
   isLoading: state.room.isLoading,
+  memberUserIDs: state.room.memberUserIDs,
   userID: state.user.id,
 });
 
@@ -59,7 +61,7 @@ class Room extends React.Component {
 
   render() {
     const { toLandingPage } = this.state;
-    const { error, isLoading, userID } = this.props;
+    const { error, isLoading, memberUserIDs, userID } = this.props;
 
     if (toLandingPage) return this.goToLandingPage();
 
@@ -68,6 +70,15 @@ class Room extends React.Component {
     if (isLoading) return <Spinner />;
 
     if (!userID) return <SignUp />;
+
+    const hasRoomAccess = memberUserIDs.indexOf(userID) > -1;
+    if (!hasRoomAccess)
+      return (
+        <div>
+          Oops, looks like you don't have access to this room. Contact your room administrator to
+          request an invitation.
+        </div>
+      );
 
     return (
       <RoomContainer>

@@ -6,7 +6,7 @@ const initialState = {
   id: '',
   isLoading: true,
   isLoadingMessages: false,
-  members: [],
+  memberUserIDs: [],
   name: '',
   pathname: '',
 };
