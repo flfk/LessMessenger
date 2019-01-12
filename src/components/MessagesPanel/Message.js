@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import Btn from '../Btn';
 import Content from '../Content';
+import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 import { getTags } from '../../utils/Helpers';
 
@@ -39,7 +40,7 @@ const Message = ({
 }) => {
   const getTextWithTags = text => {
     const words = text.split(' ').map((word, index) => {
-      if (word[0] !== '#') return <span key={`${timestamp}${index}`}>{word} </span>;
+      if (word[0] !== '#') return (word += ' ');
       return (
         <Fonts.A key={`${timestamp}${index}`} onClick={selectTag(word)}>
           {word}{' '}
@@ -66,7 +67,7 @@ const Message = ({
 
   const header = isNewSender ? (
     <div>
-      <Content.Spacing16px />
+      <Content.Spacing />
       <Fonts.P>
         <strong> {senderName} </strong>
         {moment(timestamp).format('h:mm a')}
@@ -83,17 +84,24 @@ const Message = ({
   );
 
   return (
-    <div>
+    <Container>
       {header}
       {text}
-    </div>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  :hover {
+    background-color: ${Colors.greys.light};
+  }
+`;
 
 const MessageText = styled(Fonts.P)`
   word-wrap: break-word
   white-space: pre-line;
-  line-height: 1.5em;
+  line-height: 2em;
+  font-size: 14px;
 `;
 
 Message.propTypes = propTypes;

@@ -3,14 +3,14 @@ import styled from 'styled-components';
 import Colors from '../../utils/Colors';
 
 const Container = styled.div`
-  border: 1px solid blue;
+  border-top: 1px solid ${Colors.greys.light};
+  padding-top: 16px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 `;
 
 const File = styled.div`
-  border: 1px solid orange;
   height: 96px;
   width: 96px;
   border-radius: 10px;
@@ -21,7 +21,6 @@ const File = styled.div`
 `;
 
 const Img = styled(File)`
-  border: 1px solid orange;
   height: 96px;
   width: 96px;
   border-radius: 10px;

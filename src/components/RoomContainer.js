@@ -6,7 +6,7 @@ const RoomContainer = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  width: 600px;
+  // width: 600px;
   margin: auto;
   padding-left: 16px;
   padding-right: 16px;

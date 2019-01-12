@@ -2,11 +2,11 @@ import styled from 'styled-components';
 
 import Media from '../../utils/Media';
 
-const RoomContainer = styled.div`
+const Container = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  width: 600px;
+  width: 1000px;
   margin: auto;
   padding-left: 16px;
   padding-right: 16px;
@@ -21,4 +21,4 @@ const RoomContainer = styled.div`
   }
 `;
 
-export default RoomContainer;
+export default Container;

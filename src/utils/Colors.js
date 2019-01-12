@@ -8,7 +8,7 @@ const COLORS = {
     primary: '#484848',
     secondary: '#757575',
     supporting: '#A1A1A1',
-    light: '#EBEBEB',
+    light: '#F9F9F9',
   },
   error: {
     primary: '#D93901',
