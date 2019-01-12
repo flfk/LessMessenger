@@ -6,7 +6,7 @@ const COLORS = {
     blue: '#4285F4',
   },
   greys: {
-    primary: '#484848',
+    primary: '#262626',
     secondary: '#757575',
     supporting: '#A1A1A1',
     light: '#F9F9F9',

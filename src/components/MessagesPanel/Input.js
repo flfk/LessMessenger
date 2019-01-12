@@ -8,7 +8,7 @@ const Input = styled.textarea`
   padding-left: 56px;
   padding-right: 56px;
   border: none;
-  font-size: 16px;
+  font-size: 14px;
   font-family: ${Fonts.family.body};
   color: ${Colors.greys.primary};
 

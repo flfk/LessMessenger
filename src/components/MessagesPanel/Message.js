@@ -76,10 +76,9 @@ const Message = ({
   const profileImg = isNewSender ? <ProfileImg src={profileImgURL} /> : null;
 
   const header = isNewSender ? (
-    <MessageText hasProfileImg={isNewSender}>
-      <strong> {senderName} </strong>
-      <Timestamp>{moment(timestamp).format('h:mm a')}</Timestamp>
-    </MessageText>
+    <HeaderText hasProfileImg={isNewSender}>
+      {senderName} <Timestamp>{moment(timestamp).format('h:mm a')}</Timestamp>
+    </HeaderText>
   ) : null;
 
   const text = isAttachment ? (
@@ -95,7 +94,7 @@ const Message = ({
     <MessageText hasProfileImg={isNewSender}>{getTextWithTags(content)}</MessageText>
   );
 
-  const spacing = isNewSender ? <Content.Spacing /> : <Content.Spacing16px />;
+  const spacing = isNewSender ? <Content.Spacing /> : null;
 
   return (
     <div>
@@ -129,21 +128,28 @@ const DownloadIcon = styled.span`
 
 const AttachmentText = styled(Fonts.A)`
   color: ${Colors.greys.secondary};
-  border: 1px solid ${Colors.greys.secondary};
+  border: 1px solid ${Colors.greys.supporting};
   border-radius: 5px;
   padding: 0.5em;
 `;
 
 const Timestamp = styled.span`
   color: ${Colors.greys.supporting};
+  font-weight: 400;
 `;
 
 const MessageText = styled(Fonts.P)`
   word-wrap: break-word
   white-space: pre-line;
-  line-height: ${props => (props.hasAttachment ? '2em' : '1.5em')};
+  font-size: 14px;
+  line-height: ${props => (props.hasAttachment ? '2.5em' : '2em')};
   margin-left: ${props => (props.hasProfileImg ? '16px' : '56px')};
   margin-right: 56px;
+`;
+
+const HeaderText = styled(MessageText)`
+  line-height: 1em;
+  font-weight: bold;
 `;
 
 Message.propTypes = propTypes;
