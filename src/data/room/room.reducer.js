@@ -1,11 +1,13 @@
 import { LOAD_ROOM } from './room.types';
 import { LOAD_MESSAGES } from '../messages/messages.types';
+import { LOAD_MEMBERS } from '../members/members.types';
 
 const initialState = {
   error: false,
   id: '',
   isLoading: true,
   isLoadingMessages: false,
+  isLoadingMembers: true,
   memberUserIDs: [],
   name: '',
   pathname: '',
@@ -17,6 +19,8 @@ const reducerRoom = (state = initialState, action) => {
       return { ...state, isLoadingMessages: true };
     case LOAD_MESSAGES.SUCCESS:
       return { ...state, isLoadingMessages: false };
+    case LOAD_MEMBERS.SUCCESS:
+      return { ...state, isLoadingMembers: false };
     case LOAD_ROOM.PENDING:
       return { ...state, isLoading: true };
     case LOAD_ROOM.SUCCESS:

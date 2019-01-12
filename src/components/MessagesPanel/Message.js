@@ -72,7 +72,7 @@ const Message = ({
   const header = isNewSender ? (
     <MessageText hasProfileImg={isNewSender}>
       <strong> {senderName} </strong>
-      {moment(timestamp).format('h:mm a')}
+      <Timestamp>{moment(timestamp).format('h:mm a')}</Timestamp>
     </MessageText>
   ) : null;
 
@@ -108,13 +108,15 @@ const Container = styled.div`
   }
 `;
 
-const MessageWrapper = styled.div``;
+const Timestamp = styled.span`
+  color: ${Colors.greys.supporting};
+`;
 
 const MessageText = styled(Fonts.P)`
   word-wrap: break-word
   white-space: pre-line;
   line-height: 1.5em;
-  margin-left: ${props => (props.hasProfileImg ? '8px' : '48px')};
+  margin-left: ${props => (props.hasProfileImg ? '16px' : '56px')};
 `;
 
 Message.propTypes = propTypes;

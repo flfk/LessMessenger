@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Colors from '../../utils/Colors';
 
 const Container = styled.div`
-  border-top: 1px solid ${Colors.greys.light};
+  border-top: 1px solid ${Colors.greys.supporting};
   padding-top: 16px;
   display: flex;
   flex-direction: row;

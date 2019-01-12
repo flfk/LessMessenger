@@ -17,7 +17,8 @@ import { toggleTag } from '../data/tags/tags.actions';
 const propTypes = {
   actionGetMessageSubscription: PropTypes.func.isRequired,
   actionToggleTag: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool.isRequired,
+  isLoadingMessages: PropTypes.bool.isRequired,
+  isLoadingMembers: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(
     PropTypes.shape({
       email: PropTypes.string.isRequired,
@@ -43,7 +44,8 @@ const propTypes = {
 const defaultProps = {};
 
 const mapStateToProps = state => ({
-  isLoading: state.room.isLoadingMessages,
+  isLoadingMessages: state.room.isLoadingMessages,
+  isLoadingMembers: state.room.isLoadingMembers,
   members: state.members,
   messages: state.messages,
   roomID: state.room.id,
@@ -98,9 +100,9 @@ class Messages extends React.Component {
   };
 
   render() {
-    const { isLoading, members, messages, tags } = this.props;
+    const { isLoadingMessages, isLoadingMembers, members, messages, tags } = this.props;
 
-    if (isLoading) return <Spinner />;
+    if (isLoadingMessages || isLoadingMembers) return <Spinner />;
 
     const tagsSelected = tags.filter(tag => tag.isSelected);
     const selectedTagNames = tagsSelected.map(tag => tag.name);

@@ -6,7 +6,7 @@ const Container = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  width: 1000px;
+  max-width: 1000px;
   margin: auto;
 
   > div:focus {
