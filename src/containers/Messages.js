@@ -124,7 +124,6 @@ class Messages extends React.Component {
       .map((group, date) => {
         const msgs = group.map((msg, index) => {
           const sender = members.find(member => member.id === msg.senderUserID);
-          const senderName = sender ? sender.name : 'NO-NAME';
           const isNewSender =
             index === 0 ? true : !(group[index - 1].senderUserID === msg.senderUserID);
           return (
@@ -134,8 +133,9 @@ class Messages extends React.Component {
               downloadURL={msg.downloadURL}
               isAttachment={msg.isAttachment}
               isNewSender={isNewSender}
+              profileImgURL={sender.profileImgURL}
               selectTag={this.selectTag}
-              senderName={senderName}
+              senderName={sender.name}
               timestamp={msg.timestamp}
               type={msg.type}
             />

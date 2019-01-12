@@ -8,8 +8,8 @@ const RoomContainer = styled.div`
   flex-direction: column;
   // width: 600px;
   margin: auto;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding-left: 48px;
+  padding-right: 48px;
 
   ${Media.tablet} {
     width: auto;

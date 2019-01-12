@@ -9,12 +9,14 @@ import Btn from '../Btn';
 import Content from '../Content';
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
+import ProfileImg from './ProfileImg';
 
 const propTypes = {
   content: PropTypes.string.isRequired,
   downloadURL: PropTypes.string,
   isAttachment: PropTypes.bool,
   isNewSender: PropTypes.bool.isRequired,
+  profileImgURL: PropTypes.string.isRequired,
   selectTag: PropTypes.func.isRequired,
   senderName: PropTypes.string.isRequired,
   timestamp: PropTypes.number.isRequired,
@@ -32,6 +34,7 @@ const Message = ({
   downloadURL,
   isAttachment,
   isNewSender,
+  profileImgURL,
   selectTag,
   senderName,
   timestamp,
@@ -46,11 +49,7 @@ const Message = ({
         </Fonts.A>
       );
     });
-    return (
-      <Linkify properties={{ target: '_blank' }}>
-        <Fonts.P>{words}</Fonts.P>
-      </Linkify>
-    );
+    return <Linkify properties={{ target: '_blank' }}>{words}</Linkify>;
   };
 
   const handleDownload = () => {
@@ -68,43 +67,54 @@ const Message = ({
     });
   };
 
+  const profileImg = isNewSender ? <ProfileImg src={profileImgURL} /> : null;
+
   const header = isNewSender ? (
-    <div>
-      <Content.Spacing />
-      <Fonts.P>
-        <strong> {senderName} </strong>
-        {moment(timestamp).format('h:mm a')}
-      </Fonts.P>
-    </div>
+    <MessageText hasProfileImg={isNewSender}>
+      <strong> {senderName} </strong>
+      {moment(timestamp).format('h:mm a')}
+    </MessageText>
   ) : null;
 
   const text = isAttachment ? (
-    <MessageText>
+    <MessageText hasProfileImg={isNewSender}>
       <Btn.Tertiary onClick={handleDownload}>{content}</Btn.Tertiary>
     </MessageText>
   ) : (
-    getTextWithTags(content)
+    <MessageText hasProfileImg={isNewSender}>{getTextWithTags(content)}</MessageText>
   );
 
+  const spacing = isNewSender ? <Content.Spacing /> : <Content.Spacing16px />;
+
   return (
-    <Container>
-      {header}
-      {text}
-    </Container>
+    <div>
+      {spacing}
+      <Container>
+        {profileImg}
+        <div>
+          {header}
+          {text}
+        </div>
+      </Container>
+    </div>
   );
 };
 
 const Container = styled.div`
+  display: flex;
+
   :hover {
     background-color: ${Colors.greys.light};
   }
 `;
 
+const MessageWrapper = styled.div``;
+
 const MessageText = styled(Fonts.P)`
   word-wrap: break-word
   white-space: pre-line;
-  line-height: 2em;
-  font-size: 14px;
+  line-height: 1.5em;
+  margin-left: ${props => (props.hasProfileImg ? '8px' : '48px')};
 `;
 
 Message.propTypes = propTypes;

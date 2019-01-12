@@ -8,8 +8,6 @@ const Container = styled.div`
   flex-direction: column;
   width: 1000px;
   margin: auto;
-  padding-left: 16px;
-  padding-right: 16px;
 
   > div:focus {
     outline: none;
