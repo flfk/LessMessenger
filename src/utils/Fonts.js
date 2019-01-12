@@ -64,7 +64,7 @@ const H3 = styled.h3`
 const P = styled.p`
   font-size: ${FONT_SIZES.p};
   font-family: ${FONT_FAMILY.body};
-  font-weight: 300;
+  font-weight: 400;
   color: ${Colors.greys.primary};
   ${props => (props.isSupporting ? `color: ${Colors.greys.supporting};` : '')}
   ${props => (props.isSecondary ? `color: ${Colors.greys.secondary};` : '')}

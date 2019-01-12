@@ -2,13 +2,13 @@ import styled from 'styled-components';
 import COLORS from '../utils/Colors';
 
 const NavBar = styled.ul`
-  flex: 0 1 600px;
+  flex: 0 1 100%;
 
   display: flex;
   align-items: center;
 
   margin: 0;
-  padding: 0 8px;
+  padding: 0 36px;
 
   // logo
   li:first-child {
