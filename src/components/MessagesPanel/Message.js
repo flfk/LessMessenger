@@ -1,15 +1,14 @@
+import axios from 'axios';
 import React from 'react';
+import Linkify from 'react-linkify';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import moment from 'moment-timezone';
-
-import axios from 'axios';
 
 import Btn from '../Btn';
 import Content from '../Content';
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
-import { getTags } from '../../utils/Helpers';
 
 const propTypes = {
   content: PropTypes.string.isRequired,
@@ -47,7 +46,11 @@ const Message = ({
         </Fonts.A>
       );
     });
-    return <Fonts.P>{words}</Fonts.P>;
+    return (
+      <Linkify properties={{ target: '_blank' }}>
+        <Fonts.P>{words}</Fonts.P>
+      </Linkify>
+    );
   };
 
   const handleDownload = () => {
