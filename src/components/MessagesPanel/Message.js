@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Emojify from 'react-emojione';
 import React from 'react';
 import { FaFileDownload } from 'react-icons/fa';
 import Linkify from 'react-linkify';
@@ -52,7 +53,7 @@ const Message = ({
     });
     return (
       <Linkify properties={{ target: '_blank', style: { color: Colors.primary.blue } }}>
-        {words}
+        <Emojify style={{ height: 16, width: 16 }}>{words}</Emojify>
       </Linkify>
     );
   };
