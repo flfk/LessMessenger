@@ -68,11 +68,6 @@ class Messages extends React.Component {
 
   componentDidUpdate() {
     this.scrollToBottom();
-    // const { messages } = this.props;
-    // messages.forEach(msg => {
-    //   console.log('getting tags', msg);
-    //   console.log('tags are', getTags(msg.content));
-    // });
   }
 
   componentWillUnmount() {

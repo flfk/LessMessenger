@@ -44,9 +44,9 @@ const Message = ({
     const words = text.split(' ').map((word, index) => {
       if (word[0] !== '#') return (word += ' ');
       return (
-        <Fonts.A key={`${timestamp}${index}`} onClick={selectTag(word)}>
+        <TagText key={`${timestamp}${index}`} isSelected={false} onClick={selectTag(word)}>
           {word}{' '}
-        </Fonts.A>
+        </TagText>
       );
     });
     return <Linkify properties={{ target: '_blank' }}>{words}</Linkify>;
@@ -108,6 +108,10 @@ const Container = styled.div`
   }
 `;
 
+const TagText = styled(Fonts.A)`
+  color: ${props => (props.isSelected ? Colors.primary.red : Colors.greys.secondary)};
+`;
+
 const Timestamp = styled.span`
   color: ${Colors.greys.supporting};
 `;
@@ -117,6 +121,7 @@ const MessageText = styled(Fonts.P)`
   white-space: pre-line;
   line-height: 1.5em;
   margin-left: ${props => (props.hasProfileImg ? '16px' : '56px')};
+  margin-right: 56px;
 `;
 
 Message.propTypes = propTypes;
