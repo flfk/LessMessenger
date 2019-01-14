@@ -10,7 +10,7 @@ import moment from 'moment-timezone';
 
 import Colors from '../utils/Colors';
 import Content from '../components/Content';
-import { ContainerMsg, DownloadIcon, ProfileImg, Text } from '../components/Message';
+import { ContainerMsg, DownloadIcon, ProfileImg, Text } from '../components/message';
 import { replyToMsg } from '../data/messages/messages.actions';
 
 const propTypes = {

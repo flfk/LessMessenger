@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 
 import Messages from './Messages';
 import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
-import { Container, Thumbnails, Input, InputContainer } from '../components/MessagesPanel';
-import { ContainerMsg, Text } from '../components/Message';
+import { Container, Thumbnails, Input, InputContainer } from '../components/messagesPanel';
+import { ContainerMsg, Text } from '../components/message';
 
 const propTypes = {
   actionCancelReply: PropTypes.func.isRequired,

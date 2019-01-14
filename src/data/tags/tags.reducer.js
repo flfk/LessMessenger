@@ -8,7 +8,7 @@ const reducerTags = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TAG.SUCCESS:
       // If already included don't add again
-      if (_.findIndex(state, { name: action.payload }) > 0) {
+      if (_.findIndex(state, { name: action.payload }) > -1) {
         return state;
       }
       return [...state, { name: action.payload, isSelected: false }];

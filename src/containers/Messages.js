@@ -9,7 +9,7 @@ import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
 import { getTags } from '../utils/Helpers';
 import Msg from './Msg';
-import { MessagesContainer } from '../components/MessagesPanel';
+import { MessagesContainer } from '../components/messagesPanel';
 import { getMessageSubscription } from '../data/messages/messages.actions';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';

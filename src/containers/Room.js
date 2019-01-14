@@ -11,6 +11,7 @@ import { loadRoom } from '../data/room/room.actions';
 import RoomContainer from '../components/RoomContainer';
 import Spinner from '../components/Spinner';
 import SignUp from './SignUp';
+import TagPanel from './TagPanel';
 
 const propTypes = {
   actionLoadRoom: PropTypes.func.isRequired,
@@ -82,6 +83,7 @@ class Room extends React.Component {
 
     return (
       <RoomContainer>
+        <TagPanel />
         <MessagesPanel />
       </RoomContainer>
     );
