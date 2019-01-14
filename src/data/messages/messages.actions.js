@@ -4,6 +4,7 @@ import { getTags } from '../../utils/Helpers';
 import { addTag } from '../tags/tags.actions';
 import {
   ADD_MESSAGE,
+  CANCEL_REPLY,
   LOAD_MESSAGES,
   SEND_MESSAGE,
   REPLY_TO_MESSAGE,
@@ -23,11 +24,14 @@ export const addMessage = msg => dispatch => {
   }
 };
 
+export const cancelReply = () => dispatch => {
+  dispatch({
+    type: CANCEL_REPLY.SUCCESS,
+  });
+};
+
 export const sendMessage = msg => async dispatch => {
   try {
-    // RESOLVE - remove when no longer needed
-    // const timestamp = dbTimestamp.now().toMillis();
-    console.log('sending message');
     await db
       .collection(COLL_MESSAGES)
       .add({ ...msg, timestamp: firestore.FieldValue.serverTimestamp() });

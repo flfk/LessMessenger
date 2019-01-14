@@ -25,6 +25,7 @@ const Reply = styled.div`
   padding-top: 8px;
   padding-bottom: 8px;
   background-color: ${Colors.greys.light};
+  width: 100%;
 `;
 
 const Wrapper = styled.div``;

@@ -4,11 +4,12 @@ import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
 
 import Messages from './Messages';
-import { sendMessage, uploadFile } from '../data/messages/messages.actions';
+import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
 import { Container, Thumbnails, Input, InputContainer } from '../components/MessagesPanel';
 import { ContainerMsg, Text } from '../components/Message';
 
 const propTypes = {
+  actionCancelReply: PropTypes.func.isRequired,
   actionSendMessage: PropTypes.func.isRequired,
   msgIDBeingRepliedTo: PropTypes.string.isRequired,
   roomID: PropTypes.string.isRequired,
@@ -26,6 +27,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  actionCancelReply: () => dispatch(cancelReply()),
   actionSendMessage: message => dispatch(sendMessage(message)),
 });
 
@@ -42,11 +44,12 @@ class MessagePanel extends React.Component {
   };
 
   getNewMsg = content => {
-    const { senderUserID, roomID } = this.props;
+    const { senderUserID, roomID, msgIDBeingRepliedTo } = this.props;
     return {
       content,
       roomID,
       senderUserID,
+      msgIDBeingRepliedTo,
       // Timestamp added in actions based on server
     };
   };
@@ -61,7 +64,7 @@ class MessagePanel extends React.Component {
 
   handleSubmit = async () => {
     const { files, message } = this.state;
-    const { actionSendMessage, roomID } = this.props;
+    const { actionCancelReply, actionSendMessage, roomID } = this.props;
 
     if (message) {
       const newMsg = this.getNewMsg(message);
@@ -83,6 +86,9 @@ class MessagePanel extends React.Component {
         })
       );
     }
+
+    // remove ID of message being replied to
+    actionCancelReply();
   };
 
   // To allows form to be submitted using enter key

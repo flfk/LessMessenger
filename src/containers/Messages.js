@@ -124,6 +124,16 @@ class Messages extends React.Component {
           const sender = members.find(member => member.id === msg.senderUserID);
           const isNewSender =
             index === 0 ? true : !(group[index - 1].senderUserID === msg.senderUserID);
+
+          let msgBeingRepliedTo = {};
+          let senderBeingRepliedTo = {};
+          if (msg.msgIDBeingRepliedTo) {
+            msgBeingRepliedTo = messages.find(item => item.id === msg.msgIDBeingRepliedTo);
+            senderBeingRepliedTo = msgBeingRepliedTo
+              ? members.find(member => member.id === msgBeingRepliedTo.senderUserID)
+              : null;
+          }
+
           return (
             <Msg
               key={msg.id}
@@ -132,6 +142,8 @@ class Messages extends React.Component {
               id={msg.id}
               isAttachment={msg.isAttachment}
               isNewSender={isNewSender}
+              msgBeingRepliedTo={msgBeingRepliedTo ? msgBeingRepliedTo.content : ''}
+              senderBeingRepliedTo={senderBeingRepliedTo ? senderBeingRepliedTo.name : ''}
               profileImgURL={sender.profileImgURL}
               selectTag={this.selectTag}
               senderName={sender.name}

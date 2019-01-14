@@ -20,6 +20,8 @@ const propTypes = {
   id: PropTypes.string.isRequired,
   isAttachment: PropTypes.bool,
   isNewSender: PropTypes.bool.isRequired,
+  msgBeingRepliedTo: PropTypes.string,
+  senderBeingRepliedTo: PropTypes.string,
   profileImgURL: PropTypes.string.isRequired,
   selectTag: PropTypes.func.isRequired,
   senderName: PropTypes.string.isRequired,
@@ -30,6 +32,8 @@ const propTypes = {
 const defaultProps = {
   downloadURL: '',
   isAttachment: false,
+  msgBeingRepliedTo: '',
+  senderBeingRepliedTo: '',
   type: '',
 };
 
@@ -82,6 +86,8 @@ class Msg extends React.Component {
       id,
       isAttachment,
       isNewSender,
+      msgBeingRepliedTo,
+      senderBeingRepliedTo,
       profileImgURL,
       senderName,
       timestamp,
@@ -111,6 +117,14 @@ class Msg extends React.Component {
 
     const spacing = isNewSender ? <Content.Spacing /> : <Content.Spacing8px />;
 
+    const replyPreview = msgBeingRepliedTo ? (
+      <ContainerMsg.Reply>
+        <Text.Message isReplyPreview>
+          {`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}
+        </Text.Message>
+      </ContainerMsg.Reply>
+    ) : null;
+
     const replyBtn = (
       <button onClick={() => actionReplyToMsg(id)}>
         <FaReply />
@@ -124,6 +138,7 @@ class Msg extends React.Component {
           {profileImg}
           <Text.Wrapper>
             {header}
+            {replyPreview}
             {text}
           </Text.Wrapper>
           <ContainerMsg.Buttons>{replyBtn}</ContainerMsg.Buttons>
