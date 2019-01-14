@@ -17,11 +17,6 @@ const Message = styled(Fonts.P)`
   line-height: ${props => (props.hasAttachment ? '2.5em' : '2em')};
   margin-left: ${props => (props.hasProfileImg ? '16px' : '56px')};
   margin-right: 56px;
-
-  ${props => (props.isReplyPreview ? 'max-height: 2em;' : '')}
-  ${props => (props.isReplyPreview ? 'overflow: hidden;' : '')}
-  ${props => (props.isReplyPreview ? 'white-space: nowrap;' : '')}
-  ${props => (props.isReplyPreview ? 'text-overflow: ellipsis;' : '')}
 `;
 
 const Header = styled(Message)`
@@ -38,6 +33,15 @@ const Timestamp = styled.span`
   font-weight: 400;
 `;
 
+const Reply = styled(Message)`
+  background-color: ${Colors.greys.light};
+  color: ${Colors.greys.supporting};
+  max-height: 2em;
+  overflow: hidden;
+  white-space- nowrap;
+  text-overflow: ellipsis;
+`;
+
 const Wrapper = styled.div`
   margin-right: auto;
 `;
@@ -48,6 +52,7 @@ Text.Message = Message;
 Text.Header = Header;
 Text.Tag = Tag;
 Text.Timestamp = Timestamp;
+Text.Reply = Reply;
 Text.Wrapper = Wrapper;
 
 export default Text;

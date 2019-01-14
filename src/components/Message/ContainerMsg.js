@@ -21,11 +21,13 @@ const Buttons = styled.div`
   }
 `;
 
-const Reply = styled.div`
-  // padding-top: 8px;
-  // padding-bottom: 8px;
+const Reply = styled.span`
   background-color: ${Colors.greys.light};
-  width: 100%;
+  display: block
+  width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Wrapper = styled.div``;

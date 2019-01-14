@@ -118,11 +118,9 @@ class Msg extends React.Component {
     const spacing = isNewSender ? <Content.Spacing /> : <Content.Spacing8px />;
 
     const replyPreview = msgBeingRepliedTo ? (
-      <ContainerMsg.Reply>
-        <Text.Message isReplyPreview>
-          {`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}
-        </Text.Message>
-      </ContainerMsg.Reply>
+      <Text.Reply
+        hasProfileImg={isNewSender}
+      >{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
     ) : null;
 
     const replyBtn = (

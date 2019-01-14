@@ -31,7 +31,7 @@ class TagPanel extends React.Component {
   state = {};
 
   handleToggleTag = event => {
-    console.log('handling toggle tag', event.target.value);
+    console.log('handling toggle tag', event.currentTarget.value);
     const { actionToggleTag } = this.props;
     actionToggleTag(event.target.value);
   };
@@ -41,12 +41,16 @@ class TagPanel extends React.Component {
 
     const hasTagsSelected = tags.filter(tag => tag.isSelected).length > 0;
 
-    const tagsList = tags.map(tag => (
-      <TagItem key={tag.name} onClick={this.handleToggleTag} value={tag.name}>
-        <TagHeader isSelected={hasTagsSelected ? tag.isSelected : true}>{tag.name}</TagHeader>
-        <TagPreview>preview</TagPreview>
-      </TagItem>
-    ));
+    const tagsList = tags.map(tag => {
+      const isSelected = hasTagsSelected ? tag.isSelected : true;
+      // console.log(tag);
+      return (
+        <TagItem key={tag.name} onClick={this.handleToggleTag} value={tag.name}>
+          <TagHeader isSelected={isSelected}>{tag.name}</TagHeader>
+          <TagPreview>preview</TagPreview>
+        </TagItem>
+      );
+    });
 
     return (
       <Wrapper>
