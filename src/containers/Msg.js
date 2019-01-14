@@ -11,8 +11,10 @@ import moment from 'moment-timezone';
 import Colors from '../utils/Colors';
 import Content from '../components/Content';
 import { ContainerMsg, DownloadIcon, ProfileImg, Text } from '../components/Message';
+import { replyToMsg } from '../data/messages/messages.actions';
 
 const propTypes = {
+  actionReplyToMsg: PropTypes.func.isRequired,
   content: PropTypes.string.isRequired,
   downloadURL: PropTypes.string,
   id: PropTypes.string.isRequired,
@@ -33,7 +35,9 @@ const defaultProps = {
 
 const mapStateToProps = state => ({});
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+  actionReplyToMsg: msgID => dispatch(replyToMsg(msgID)),
+});
 
 class Msg extends React.Component {
   state = {};
@@ -73,6 +77,7 @@ class Msg extends React.Component {
 
   render() {
     const {
+      actionReplyToMsg,
       content,
       id,
       isAttachment,
@@ -107,7 +112,7 @@ class Msg extends React.Component {
     const spacing = isNewSender ? <Content.Spacing /> : <Content.Spacing8px />;
 
     const replyBtn = (
-      <button onClick={() => console.log('replying to', id)}>
+      <button onClick={() => actionReplyToMsg(id)}>
         <FaReply />
       </button>
     );

@@ -2,7 +2,13 @@ import { MESSAGES_PER_LOAD } from '../../utils/Constants';
 import { db, dbTimestamp, firestore, storage } from '../firebase';
 import { getTags } from '../../utils/Helpers';
 import { addTag } from '../tags/tags.actions';
-import { ADD_MESSAGE, LOAD_MESSAGES, SEND_MESSAGE, UPDATE_MESSAGE } from './messages.types';
+import {
+  ADD_MESSAGE,
+  LOAD_MESSAGES,
+  SEND_MESSAGE,
+  REPLY_TO_MESSAGE,
+  UPDATE_MESSAGE,
+} from './messages.types';
 
 const COLL_MESSAGES = 'messages';
 
@@ -45,6 +51,14 @@ export const updateMessage = msg => dispatch => {
     const tags = getTags(msg.content);
     tags.map(tagName => dispatch(addTag(tagName)));
   }
+};
+
+export const replyToMsg = msgID => dispatch => {
+  console.log('replying to msg', msgID);
+  dispatch({
+    type: REPLY_TO_MESSAGE.SUCCESS,
+    payload: msgID,
+  });
 };
 
 export const getMessageSubscription = roomID => async dispatch => {

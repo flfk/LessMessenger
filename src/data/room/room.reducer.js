@@ -1,5 +1,5 @@
 import { LOAD_ROOM } from './room.types';
-import { LOAD_MESSAGES } from '../messages/messages.types';
+import { LOAD_MESSAGES, REPLY_TO_MESSAGE } from '../messages/messages.types';
 import { LOAD_MEMBERS } from '../members/members.types';
 
 const initialState = {
@@ -11,6 +11,7 @@ const initialState = {
   memberUserIDs: [],
   name: '',
   pathname: '',
+  msgIDBeingRepliedTo: '',
 };
 
 const reducerRoom = (state = initialState, action) => {
@@ -27,6 +28,8 @@ const reducerRoom = (state = initialState, action) => {
       return { ...state, ...action.payload, isLoading: false };
     case LOAD_ROOM.ERROR:
       return { ...state, error: true, isLoading: false };
+    case REPLY_TO_MESSAGE.SUCCESS:
+      return { ...state, msgIDBeingRepliedTo: action.payload };
     default:
       return state;
   }

@@ -10,6 +10,7 @@ import { ContainerMsg, Text } from '../components/Message';
 
 const propTypes = {
   actionSendMessage: PropTypes.func.isRequired,
+  msgIDBeingRepliedTo: PropTypes.string.isRequired,
   roomID: PropTypes.string.isRequired,
   senderUserID: PropTypes.string.isRequired,
 };
@@ -19,6 +20,7 @@ const defaultProps = {};
 const mapStateToProps = state => ({
   messages: state.messages,
   members: state.members,
+  msgIDBeingRepliedTo: state.room.msgIDBeingRepliedTo,
   roomID: state.room.id,
   senderUserID: state.user.id,
 });
@@ -31,7 +33,6 @@ class MessagePanel extends React.Component {
   state = {
     message: '',
     files: [],
-    inReplyToMsgID: 'feVokn61FkstPVKAgqPR',
   };
 
   getMsg = msgID => {
@@ -113,8 +114,8 @@ class MessagePanel extends React.Component {
   };
 
   render() {
-    const { files, message, inReplyToMsgID } = this.state;
-    const { messages, members } = this.props;
+    const { files, message } = this.state;
+    const { messages, members, msgIDBeingRepliedTo } = this.props;
 
     const thumbnails = files.map(file => {
       if (file.type.startsWith('image/')) {
@@ -124,15 +125,15 @@ class MessagePanel extends React.Component {
     });
 
     let reply = null;
-    const inReplyToMsg = this.getMsg(inReplyToMsgID);
-    const inReplyToSender = inReplyToMsg
-      ? members.find(member => member.id === inReplyToMsg.senderUserID)
+    const msgBeingRepliedTo = this.getMsg(msgIDBeingRepliedTo);
+    const senderBeingRepliedTo = msgBeingRepliedTo
+      ? members.find(member => member.id === msgBeingRepliedTo.senderUserID)
       : null;
-    if (inReplyToMsg && inReplyToSender) {
+    if (msgBeingRepliedTo && senderBeingRepliedTo) {
       reply = (
         <ContainerMsg.Reply>
           <Text.Message isReplyPreview>
-            {`${inReplyToSender.name}: ${inReplyToMsg.content}`}
+            {`${senderBeingRepliedTo.name}: ${msgBeingRepliedTo.content}`}
           </Text.Message>
         </ContainerMsg.Reply>
       );
