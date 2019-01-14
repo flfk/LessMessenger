@@ -8,7 +8,8 @@ import { connect } from 'react-redux';
 import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
 import { getTags } from '../utils/Helpers';
-import { Message, MessagesContainer } from '../components/MessagesPanel';
+import Msg from './Msg';
+import { MessagesContainer } from '../components/MessagesPanel';
 import { getMessageSubscription } from '../data/messages/messages.actions';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
@@ -124,10 +125,11 @@ class Messages extends React.Component {
           const isNewSender =
             index === 0 ? true : !(group[index - 1].senderUserID === msg.senderUserID);
           return (
-            <Message
+            <Msg
               key={msg.id}
               content={msg.content}
               downloadURL={msg.downloadURL}
+              id={msg.id}
               isAttachment={msg.isAttachment}
               isNewSender={isNewSender}
               profileImgURL={sender.profileImgURL}

@@ -1,10 +1,9 @@
 import styled from 'styled-components';
 
-import Colors from '../../utils/Colors';
-
 const Container = styled.div`
-  border-top: 1px solid ${Colors.greys.supporting};
-  padding-top: 16px;
+  padding-bottom: 16px;
+  padding-left: 56px;
+  padding-right: 56px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

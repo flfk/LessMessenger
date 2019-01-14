@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import Messages from './Messages';
 import { sendMessage, uploadFile } from '../data/messages/messages.actions';
 import { Container, Thumbnails, Input, InputContainer } from '../components/MessagesPanel';
+import { ContainerMsg, Text } from '../components/Message';
 
 const propTypes = {
   actionSendMessage: PropTypes.func.isRequired,
@@ -17,6 +18,7 @@ const defaultProps = {};
 
 const mapStateToProps = state => ({
   messages: state.messages,
+  members: state.members,
   roomID: state.room.id,
   senderUserID: state.user.id,
 });
@@ -29,6 +31,13 @@ class MessagePanel extends React.Component {
   state = {
     message: '',
     files: [],
+    inReplyToMsgID: 'feVokn61FkstPVKAgqPR',
+  };
+
+  getMsg = msgID => {
+    const { messages } = this.props;
+    const msg = messages.find(item => item.id === msgID);
+    return msg;
   };
 
   getNewMsg = content => {
@@ -104,7 +113,8 @@ class MessagePanel extends React.Component {
   };
 
   render() {
-    const { files, message } = this.state;
+    const { files, message, inReplyToMsgID } = this.state;
+    const { messages, members } = this.props;
 
     const thumbnails = files.map(file => {
       if (file.type.startsWith('image/')) {
@@ -113,14 +123,30 @@ class MessagePanel extends React.Component {
       return <Thumbnails.File key={file.name}>{file.name}</Thumbnails.File>;
     });
 
+    let reply = null;
+    const inReplyToMsg = this.getMsg(inReplyToMsgID);
+    const inReplyToSender = inReplyToMsg
+      ? members.find(member => member.id === inReplyToMsg.senderUserID)
+      : null;
+    if (inReplyToMsg && inReplyToSender) {
+      reply = (
+        <ContainerMsg.Reply>
+          <Text.Message isReplyPreview>
+            {`${inReplyToSender.name}: ${inReplyToMsg.content}`}
+          </Text.Message>
+        </ContainerMsg.Reply>
+      );
+    }
+
     return (
       <Container>
         <Dropzone onDrop={this.onDrop} onFileDialogCancel={this.onCancel}>
           {({ getRootProps }) => (
             <div {...getRootProps()}>
               <Messages />
-              <Thumbnails.Container>{thumbnails}</Thumbnails.Container>
               <InputContainer>
+                {reply}
+                <Thumbnails.Container>{thumbnails}</Thumbnails.Container>
                 <Input
                   type="text"
                   placeholder="Type a message..."

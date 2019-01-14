@@ -21,6 +21,7 @@ export const sendMessage = msg => async dispatch => {
   try {
     // RESOLVE - remove when no longer needed
     // const timestamp = dbTimestamp.now().toMillis();
+    console.log('sending message');
     await db
       .collection(COLL_MESSAGES)
       .add({ ...msg, timestamp: firestore.FieldValue.serverTimestamp() });
@@ -55,7 +56,7 @@ export const getMessageSubscription = roomID => async dispatch => {
     subscription = await db
       .collection(COLL_MESSAGES)
       .where('roomID', '==', roomID)
-      .orderBy('timestamp')
+      .orderBy('timestamp', 'desc')
       .limit(MESSAGES_PER_LOAD)
       .onSnapshot(snapshot => {
         // If snapshot for changes required need to add new change type
