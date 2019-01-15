@@ -8,14 +8,14 @@ export const addMember = member => dispatch => {
   });
 };
 
-export const loadMembers = memberUserIDs => async dispatch => {
+export const loadMembers = memberUserIds => async dispatch => {
   dispatch({
     type: LOAD_MEMBERS.PENDING,
   });
   try {
     await Promise.all(
-      memberUserIDs.map(async userID => {
-        const userDoc = await fetchDocUser(userID);
+      memberUserIds.map(async userId => {
+        const userDoc = await fetchDocUser(userId);
         dispatch(addMember(userDoc));
       })
     );

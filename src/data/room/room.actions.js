@@ -29,7 +29,7 @@ export const loadRoom = pathname => async dispatch => {
       });
     });
 
-    dispatch(loadMembers(room.memberUserIDs));
+    dispatch(loadMembers(room.memberUserIds));
   } catch (error) {
     console.error('Error actions, loadRoom', error);
     dispatch({

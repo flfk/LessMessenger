@@ -62,8 +62,8 @@ class LogIn extends React.Component {
     if (field === 'email') isValid = this.isEmailValid();
     if (field === 'password') isValid = this.isPasswordValid();
     if (field === 'username') isValid = this.isUsernameValid();
-    const validFieldID = `${field}IsValid`;
-    this.setState({ [validFieldID]: isValid });
+    const validFieldId = `${field}IsValid`;
+    this.setState({ [validFieldId]: isValid });
   };
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });

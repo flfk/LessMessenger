@@ -13,9 +13,9 @@ import { getSelectorAll } from '../utils/Helpers';
 const propTypes = {
   actionCancelReply: PropTypes.func.isRequired,
   actionSendMessage: PropTypes.func.isRequired,
-  msgIDBeingRepliedTo: PropTypes.string.isRequired,
-  roomID: PropTypes.string.isRequired,
-  senderUserID: PropTypes.string.isRequired,
+  msgIdBeingRepliedTo: PropTypes.string.isRequired,
+  roomId: PropTypes.string.isRequired,
+  senderUserId: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
@@ -23,9 +23,9 @@ const defaultProps = {};
 const mapStateToProps = state => ({
   messages: getSelectorAll('messages', state),
   members: state.members,
-  msgIDBeingRepliedTo: state.room.msgIDBeingRepliedTo,
-  roomID: state.room.id,
-  senderUserID: state.user.id,
+  msgIdBeingRepliedTo: state.room.msgIdBeingRepliedTo,
+  roomId: state.room.id,
+  senderUserId: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -39,19 +39,21 @@ class MessagePanel extends React.Component {
     files: [],
   };
 
-  getMsg = msgID => {
+  getMsg = msgId => {
     const { messages } = this.props;
-    const msg = messages.find(item => item.id === msgID);
+    const msg = messages.find(item => item.id === msgId);
     return msg;
   };
 
   getNewMsg = content => {
-    const { senderUserID, roomID, msgIDBeingRepliedTo } = this.props;
+    const { senderUserId, roomId, msgIdBeingRepliedTo } = this.props;
     return {
       content,
-      roomID,
-      senderUserID,
-      msgIDBeingRepliedTo,
+      isPinned: false,
+      hasTimer: false,
+      msgIdBeingRepliedTo,
+      roomId,
+      senderUserId,
       // Timestamp added in actions based on server
     };
   };
@@ -66,7 +68,7 @@ class MessagePanel extends React.Component {
 
   handleSubmit = async () => {
     const { files, message } = this.state;
-    const { actionCancelReply, actionSendMessage, roomID } = this.props;
+    const { actionCancelReply, actionSendMessage, roomId } = this.props;
 
     if (message) {
       const newMsg = this.getNewMsg(message);
@@ -79,7 +81,7 @@ class MessagePanel extends React.Component {
         files.map(async file => {
           const newMsg = this.getNewMsg(file.name);
           this.setState({ files: [] });
-          const uploadTask = await uploadFile(file, roomID);
+          const uploadTask = await uploadFile(file, roomId);
           console.log('uploadTask', uploadTask);
           const downloadURL = await uploadTask.ref.getDownloadURL();
           const attachmentFields = this.getAttachmentFields(downloadURL, file);
@@ -89,7 +91,7 @@ class MessagePanel extends React.Component {
       );
     }
 
-    // remove ID of message being replied to
+    // remove Id of message being replied to
     actionCancelReply();
   };
 
@@ -123,7 +125,7 @@ class MessagePanel extends React.Component {
 
   render() {
     const { files, message } = this.state;
-    const { messages, members, msgIDBeingRepliedTo } = this.props;
+    const { messages, members, msgIdBeingRepliedTo } = this.props;
 
     const thumbnails = files.map(file => {
       if (file.type.startsWith('image/')) {
@@ -133,9 +135,9 @@ class MessagePanel extends React.Component {
     });
 
     let reply = null;
-    const msgBeingRepliedTo = this.getMsg(msgIDBeingRepliedTo);
+    const msgBeingRepliedTo = this.getMsg(msgIdBeingRepliedTo);
     const senderBeingRepliedTo = msgBeingRepliedTo
-      ? members.find(member => member.id === msgBeingRepliedTo.senderUserID)
+      ? members.find(member => member.id === msgBeingRepliedTo.senderUserId)
       : null;
     if (msgBeingRepliedTo && senderBeingRepliedTo) {
       reply = (

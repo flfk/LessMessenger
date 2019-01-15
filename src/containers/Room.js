@@ -17,19 +17,19 @@ const propTypes = {
   actionLoadRoom: PropTypes.func.isRequired,
   error: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
-  memberUserIDs: PropTypes.arrayOf(PropTypes.string).isRequired,
-  userID: PropTypes.string,
+  memberUserIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  userId: PropTypes.string,
 };
 
 const defaultProps = {
-  userID: '',
+  userId: '',
 };
 
 const mapStateToProps = state => ({
   error: state.room.error,
   isLoading: state.room.isLoading,
-  memberUserIDs: state.room.memberUserIDs,
-  userID: state.user.id,
+  memberUserIds: state.room.memberUserIds,
+  userId: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -62,7 +62,7 @@ class Room extends React.Component {
 
   render() {
     const { toLandingPage } = this.state;
-    const { error, isLoading, memberUserIDs, userID } = this.props;
+    const { error, isLoading, memberUserIds, userId } = this.props;
 
     if (toLandingPage) return this.goToLandingPage();
 
@@ -70,9 +70,9 @@ class Room extends React.Component {
 
     if (isLoading) return <Spinner />;
 
-    if (!userID) return <SignUp />;
+    if (!userId) return <SignUp />;
 
-    const hasRoomAccess = memberUserIDs.indexOf(userID) > -1;
+    const hasRoomAccess = memberUserIds.indexOf(userId) > -1;
     if (!hasRoomAccess)
       return (
         <div>

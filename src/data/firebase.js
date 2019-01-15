@@ -9,7 +9,7 @@ const config = {
   databaseURL: 'https://tagchat-bca37.firebaseio.com',
   projectId: 'tagchat-bca37',
   storageBucket: 'tagchat-bca37.appspot.com',
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_Id,
 };
 
 firebase.initializeApp(config);

@@ -57,15 +57,15 @@ export const updateMessage = msg => dispatch => {
   }
 };
 
-export const replyToMsg = msgID => dispatch => {
-  console.log('replying to msg', msgID);
+export const replyToMsg = msgId => dispatch => {
+  console.log('replying to msg', msgId);
   dispatch({
     type: REPLY_TO_MESSAGE.SUCCESS,
-    payload: msgID,
+    payload: msgId,
   });
 };
 
-export const getMessageSubscription = roomID => async dispatch => {
+export const getMessageSubscription = roomId => async dispatch => {
   dispatch({
     type: LOAD_MESSAGES.PENDING,
   });
@@ -73,7 +73,7 @@ export const getMessageSubscription = roomID => async dispatch => {
   try {
     subscription = await db
       .collection(COLL_MESSAGES)
-      .where('roomID', '==', roomID)
+      .where('roomId', '==', roomId)
       .orderBy('timestamp', 'desc')
       .limit(MESSAGES_PER_LOAD)
       .onSnapshot(snapshot => {
@@ -113,12 +113,12 @@ export const getMessageSubscription = roomID => async dispatch => {
   return subscription;
 };
 
-export const uploadFile = async (file, roomID) => {
+export const uploadFile = async (file, roomId) => {
   try {
     const timestamp = dbTimestamp.now().toMillis();
     const uploadTask = storage
       .ref()
-      .child(`${roomID}/${timestamp}_${file.name}`)
+      .child(`${roomId}/${timestamp}_${file.name}`)
       .put(file);
 
     uploadTask.on('state_changed', {

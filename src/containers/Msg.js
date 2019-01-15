@@ -41,7 +41,7 @@ const defaultProps = {
 const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch => ({
-  actionReplyToMsg: msgID => dispatch(replyToMsg(msgID)),
+  actionReplyToMsg: msgId => dispatch(replyToMsg(msgId)),
 });
 
 class Msg extends React.Component {

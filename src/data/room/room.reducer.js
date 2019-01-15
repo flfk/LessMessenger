@@ -8,16 +8,16 @@ const initialState = {
   isLoading: true,
   isLoadingMessages: false,
   isLoadingMembers: true,
-  memberUserIDs: [],
+  memberUserIds: [],
   name: '',
   pathname: '',
-  msgIDBeingRepliedTo: '',
+  msgIdBeingRepliedTo: '',
 };
 
 const reducerRoom = (state = initialState, action) => {
   switch (action.type) {
     case CANCEL_REPLY.SUCCESS:
-      return { ...state, msgIDBeingRepliedTo: '' };
+      return { ...state, msgIdBeingRepliedTo: '' };
     case LOAD_MESSAGES.PENDING:
       return { ...state, isLoadingMessages: true };
     case LOAD_MESSAGES.SUCCESS:
@@ -31,7 +31,7 @@ const reducerRoom = (state = initialState, action) => {
     case LOAD_ROOM.ERROR:
       return { ...state, error: true, isLoading: false };
     case REPLY_TO_MESSAGE.SUCCESS:
-      return { ...state, msgIDBeingRepliedTo: action.payload };
+      return { ...state, msgIdBeingRepliedTo: action.payload };
     default:
       return state;
   }

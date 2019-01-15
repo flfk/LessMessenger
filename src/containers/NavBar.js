@@ -15,16 +15,16 @@ const propTypes = {
   actionGetLoggedInUser: PropTypes.func.isRequired,
   actionSignOut: PropTypes.func.isRequired,
   roomName: PropTypes.string,
-  userID: PropTypes.string,
+  userId: PropTypes.string,
 };
 
 const defaultProps = {
   roomName: '',
-  userID: '',
+  userId: '',
 };
 
 const mapStateToProps = state => ({
-  userID: state.user.id,
+  userId: state.user.id,
   roomName: state.room.name,
 });
 
@@ -56,7 +56,7 @@ class NavBar extends React.Component {
   render() {
     const { showDropDown } = this.state;
 
-    const { actionSignOut, roomName, userID } = this.props;
+    const { actionSignOut, roomName, userId } = this.props;
 
     const dropdown = showDropDown ? (
       <NavBarDropdown>
@@ -64,13 +64,13 @@ class NavBar extends React.Component {
       </NavBarDropdown>
     ) : null;
 
-    const profileBtn = userID ? (
+    const profileBtn = userId ? (
       <li>
         <Btn.Tertiary onClick={actionSignOut}>Sign Out</Btn.Tertiary>
       </li>
     ) : null;
 
-    // const logInBtn = userID ? null : (
+    // const logInBtn = userId ? null : (
     //   <li>
     //     <Link to="/login">
     //       <Btn.Tertiary narrow short primary>
@@ -80,7 +80,7 @@ class NavBar extends React.Component {
     //   </li>
     // );
 
-    // const signUpBtn = userID ? null : (
+    // const signUpBtn = userId ? null : (
     //   <li>
     //     <Link to="/signup">
     //       <Btn narrow short primary>

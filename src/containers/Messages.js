@@ -34,12 +34,12 @@ const propTypes = {
       content: PropTypes.string.isRequired,
       downloadURL: PropTypes.string,
       isAttachment: PropTypes.bool,
-      senderUserID: PropTypes.string.isRequired,
+      senderUserId: PropTypes.string.isRequired,
       type: PropTypes.string,
       timestamp: PropTypes.number.isRequired,
     })
   ).isRequired,
-  roomID: PropTypes.string.isRequired,
+  roomId: PropTypes.string.isRequired,
   tags: PropTypes.arrayOf(
     PropTypes.shape({ name: PropTypes.string.isRequired, isSelected: PropTypes.bool.isRequired })
   ).isRequired,
@@ -52,13 +52,13 @@ const mapStateToProps = state => ({
   isLoadingMembers: state.room.isLoadingMembers,
   members: state.members,
   messages: getSelectorAll('messages', state),
-  roomID: state.room.id,
+  roomId: state.room.id,
   tags: getSelectorAll('tags', state),
 });
 
 const mapDispatchToProps = dispatch => ({
   actionToggleTag: tagName => dispatch(toggleTag(tagName)),
-  actionGetMessageSubscription: roomID => dispatch(getMessageSubscription(roomID)),
+  actionGetMessageSubscription: roomId => dispatch(getMessageSubscription(roomId)),
 });
 
 class Messages extends React.Component {
@@ -87,8 +87,8 @@ class Messages extends React.Component {
   };
 
   subscribeMessages = async () => {
-    const { actionGetMessageSubscription, roomID } = this.props;
-    const unsubscribeMessages = await actionGetMessageSubscription(roomID);
+    const { actionGetMessageSubscription, roomId } = this.props;
+    const unsubscribeMessages = await actionGetMessageSubscription(roomId);
     this.setState({ unsubscribeMessages });
   };
 
@@ -124,20 +124,20 @@ class Messages extends React.Component {
       .groupBy('date')
       .map((group, date) => {
         const msgs = group.map((msg, index) => {
-          const sender = members.find(member => member.id === msg.senderUserID);
+          const sender = members.find(member => member.id === msg.senderUserId);
           const isFirstInGroup = index === 0;
           const isNewSender = isFirstInGroup
             ? true
-            : !(group[index - 1].senderUserID === msg.senderUserID);
+            : !(group[index - 1].senderUserId === msg.senderUserId);
           const timeDiffLastMsg = isFirstInGroup ? 0 : msg.timestamp - group[index - 1].timestamp;
           const hasHeader = isNewSender || timeDiffLastMsg > MIN_TIME_DIFF_UNTIL_HEADER_MILLIS;
 
           let msgBeingRepliedTo = {};
           let senderBeingRepliedTo = {};
-          if (msg.msgIDBeingRepliedTo) {
-            msgBeingRepliedTo = messages.find(item => item.id === msg.msgIDBeingRepliedTo);
+          if (msg.msgIdBeingRepliedTo) {
+            msgBeingRepliedTo = messages.find(item => item.id === msg.msgIdBeingRepliedTo);
             senderBeingRepliedTo = msgBeingRepliedTo
-              ? members.find(member => member.id === msgBeingRepliedTo.senderUserID)
+              ? members.find(member => member.id === msgBeingRepliedTo.senderUserId)
               : null;
           }
 

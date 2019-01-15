@@ -10,21 +10,21 @@ import {
 
 const COLL_USERS = 'users';
 
-export const addUserDoc = async (email, name, userID) => {
+export const addUserDoc = async (email, name, userId) => {
   try {
     await db
       .collection(COLL_USERS)
-      .doc(userID)
+      .doc(userId)
       .set({ email, name });
   } catch (error) {
     console.log('Actions, user, addUserDoc', error);
   }
 };
 
-export const fetchDocUser = async userID => {
+export const fetchDocUser = async userId => {
   let user = {};
   try {
-    const userRef = db.collection(COLL_USERS).doc(userID);
+    const userRef = db.collection(COLL_USERS).doc(userId);
     const snapshot = await userRef.get();
 
     if (snapshot.size === 0) {
@@ -45,11 +45,11 @@ export const createUser = (email, name, password) => async dispatch => {
   });
   try {
     const data = await auth.createUserWithEmailAndPassword(email, password);
-    const userID = data.user.uid;
-    await addUserDoc(email, name, userID);
+    const userId = data.user.uid;
+    await addUserDoc(email, name, userId);
     dispatch({
       type: CREATE_USER.SUCCESS,
-      payload: { email, id: userID, name },
+      payload: { email, id: userId, name },
     });
   } catch (error) {
     dispatch({
@@ -61,8 +61,8 @@ export const createUser = (email, name, password) => async dispatch => {
 
 export const getLoggedInUser = () => async dispatch => {
   try {
-    const userID = auth.currentUser.uid;
-    const userDoc = await fetchDocUser(userID);
+    const userId = auth.currentUser.uid;
+    const userDoc = await fetchDocUser(userId);
     dispatch({
       type: GET_LOGGED_IN_USER.SUCCESS,
       payload: { ...userDoc },
@@ -78,8 +78,8 @@ export const getLoggedInUser = () => async dispatch => {
 export const logIn = (email, password) => async dispatch => {
   try {
     const data = await auth.signInWithEmailAndPassword(email, password);
-    const userID = data.user.uid;
-    const userDoc = await fetchDocUser(userID);
+    const userId = data.user.uid;
+    const userDoc = await fetchDocUser(userId);
     dispatch({
       type: LOGIN_USER.SUCCESS,
       payload: { ...userDoc },
