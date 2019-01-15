@@ -1,27 +1,33 @@
-import _ from 'lodash';
+import { combineReducers } from 'redux';
+
 import { SIGNOUT_USER } from '../user/user.types';
 import { ADD_MESSAGE, UPDATE_MESSAGE } from './messages.types';
 
-const initialState = [];
-
-const reducerMessages = (state = initialState, action) => {
+const allIds = (state = [], action) => {
   switch (action.type) {
     case ADD_MESSAGE.SUCCESS:
-      return [...state, action.payload];
-    case SIGNOUT_USER.SUCCESS:
-      return [];
-    case UPDATE_MESSAGE.SUCCESS:
-      return state.map((msg, index) => {
-        // console.log(_.findIndex(state, { id: action.payload.id }));
-        if (_.findIndex(state, { id: action.payload.id }) === index) {
-          // console.log('this is the message', msg);
-          return action.payload;
-        }
-        return msg;
-      });
+      return [...state, action.payload.id];
     default:
       return state;
   }
 };
+
+const byId = (state = {}, action) => {
+  switch (action.type) {
+    case ADD_MESSAGE.SUCCESS:
+      return { ...state, [action.payload.id]: action.payload };
+    case SIGNOUT_USER.SUCCESS:
+      return {};
+    case UPDATE_MESSAGE.SUCCESS:
+      return { ...state, [action.payload.id]: action.payload };
+    default:
+      return state;
+  }
+};
+
+const reducerMessages = combineReducers({
+  allIds,
+  byId,
+});
 
 export default reducerMessages;

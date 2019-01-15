@@ -1,15 +1,15 @@
 import { ADD_TAG, TOGGLE_TAG } from './tags.types';
 
-export const addTag = tagName => dispatch => {
+export const addTag = name => dispatch => {
   dispatch({
     type: ADD_TAG.SUCCESS,
-    payload: tagName,
+    payload: name,
   });
 };
 
-export const toggleTag = tagName => dispatch => {
+export const toggleTag = name => dispatch => {
   dispatch({
     type: TOGGLE_TAG.SUCCESS,
-    payload: tagName,
+    payload: name,
   });
 };

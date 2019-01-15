@@ -11,6 +11,8 @@ import { getTags } from '../utils/Helpers';
 import Msg from './Msg';
 import { MessagesContainer } from '../components/messagesPanel';
 import { getMessageSubscription } from '../data/messages/messages.actions';
+// import { getAllMessages } from '../data/messages/messages.selectors';
+import { getSelectorAll } from '../utils/Helpers';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 import { toggleTag } from '../data/tags/tags.actions';
@@ -48,9 +50,9 @@ const mapStateToProps = state => ({
   isLoadingMessages: state.room.isLoadingMessages,
   isLoadingMembers: state.room.isLoadingMembers,
   members: state.members,
-  messages: state.messages,
+  messages: getSelectorAll('messages', state),
   roomID: state.room.id,
-  tags: state.tags,
+  tags: getSelectorAll('tags', state),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -8,6 +8,12 @@ export const createActionSet = actionName => ({
   actionName,
 });
 
+export const getSelectorAll = (field, state) => {
+  console.log('getSelectorAll', field);
+  const { allIds, byId } = state[field];
+  return allIds.map(id => byId[id]);
+};
+
 export const getDate = dateStart =>
   moment.tz(dateStart, 'America/Los_Angeles').format('dddd, MMM Do, YYYY');
 

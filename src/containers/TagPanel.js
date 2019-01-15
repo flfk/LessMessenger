@@ -7,6 +7,8 @@ import Scrollable from '../components/Scrollable';
 import { TagHeader, TagItem, TagPreview, Wrapper } from '../components/tagPanel';
 import { toggleTag } from '../data/tags/tags.actions';
 
+import { getSelectorAll } from '../utils/Helpers';
+
 const propTypes = {
   actionToggleTag: PropTypes.func.isRequired,
   tags: PropTypes.arrayOf(
@@ -20,7 +22,7 @@ const propTypes = {
 const defaultProps = {};
 
 const mapStateToProps = state => ({
-  tags: state.tags,
+  tags: getSelectorAll('tags', state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -33,7 +35,7 @@ class TagPanel extends React.Component {
   handleToggleTag = event => {
     console.log('handling toggle tag', event.currentTarget.value);
     const { actionToggleTag } = this.props;
-    actionToggleTag(event.target.value);
+    actionToggleTag(event.currentTarget.value);
   };
 
   render() {
@@ -45,7 +47,7 @@ class TagPanel extends React.Component {
       const isSelected = hasTagsSelected ? tag.isSelected : true;
       // console.log(tag);
       return (
-        <TagItem key={tag.name} onClick={this.handleToggleTag} value={tag.name}>
+        <TagItem key={tag.id} onClick={this.handleToggleTag} value={tag.id}>
           <TagHeader isSelected={isSelected}>{tag.name}</TagHeader>
           <TagPreview>preview</TagPreview>
         </TagItem>

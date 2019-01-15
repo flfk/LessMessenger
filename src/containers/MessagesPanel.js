@@ -8,6 +8,8 @@ import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.
 import { Container, Thumbnails, Input, InputContainer } from '../components/messagesPanel';
 import { ContainerMsg, Text } from '../components/message';
 
+import { getSelectorAll } from '../utils/Helpers';
+
 const propTypes = {
   actionCancelReply: PropTypes.func.isRequired,
   actionSendMessage: PropTypes.func.isRequired,
@@ -19,7 +21,7 @@ const propTypes = {
 const defaultProps = {};
 
 const mapStateToProps = state => ({
-  messages: state.messages,
+  messages: getSelectorAll('messages', state),
   members: state.members,
   msgIDBeingRepliedTo: state.room.msgIDBeingRepliedTo,
   roomID: state.room.id,
