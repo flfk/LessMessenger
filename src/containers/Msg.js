@@ -63,7 +63,6 @@ class Msg extends React.Component {
     const inputDays = input[0];
     const inputHrs = input[1];
     const inputMins = input[2];
-    console.log('input is', inputDays, inputHrs, inputMins);
 
     const momentTo = moment(timestamp)
       .add({ days: inputDays, hours: inputHrs, minutes: inputMins })

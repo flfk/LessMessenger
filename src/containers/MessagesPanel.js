@@ -7,7 +7,7 @@ import { REGEX_TIMER } from '../utils/Constants';
 import Messages from './Messages';
 import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
 import { Container, Thumbnails, Input, InputContainer } from '../components/messagesPanel';
-import { ContainerMsg, Text } from '../components/message';
+import { Text } from '../components/message';
 
 import { getSelectorAll } from '../utils/Helpers';
 
@@ -17,6 +17,12 @@ const propTypes = {
   msgIdBeingRepliedTo: PropTypes.string.isRequired,
   roomId: PropTypes.string.isRequired,
   senderUserId: PropTypes.string.isRequired,
+  tagsSelected: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      isSelected: PropTypes.bool.isRequired,
+    })
+  ).isRequired,
 };
 
 const defaultProps = {};
@@ -27,6 +33,7 @@ const mapStateToProps = state => ({
   msgIdBeingRepliedTo: state.room.msgIdBeingRepliedTo,
   roomId: state.room.id,
   senderUserId: state.user.id,
+  tagsSelected: getSelectorAll('tags', state).filter(tag => tag.isSelected),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -38,6 +45,47 @@ class MessagePanel extends React.Component {
   state = {
     msgInput: '',
     files: [],
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    const { tagsSelected } = this.props;
+    const { msgInput } = this.state;
+    const tagsSelectedPrev = prevProps.tagsSelected;
+    const msgInputPrev = prevState.msgInput;
+    const wasMsgSent = msgInputPrev && !msgInput;
+    // If a tag was added or if message was sent
+    if (tagsSelectedPrev.length !== tagsSelected.length || wasMsgSent) {
+      this.setTagHelpers(tagsSelectedPrev, wasMsgSent);
+    }
+  }
+
+  setTagHelpers = (tagsSelectedPrev, wasMsgSent) => {
+    const { tagsSelected } = this.props;
+    const { msgInput } = this.state;
+
+    const tagIdsPrev = tagsSelectedPrev.map(tag => tag.id);
+    const tagIdsCurrent = tagsSelected.map(tag => tag.id);
+    let msgInputUpdated = msgInput.trim();
+
+    if (wasMsgSent) {
+      tagIdsCurrent.forEach(tag => {
+        msgInputUpdated = `${tag} ${msgInputUpdated}`;
+      });
+    } else {
+      const tagIdsAdded = tagIdsCurrent.filter(tag => !(tagIdsPrev.indexOf(tag) > -1));
+      const tagIdsRemoved = tagIdsPrev.filter(tag => !(tagIdsCurrent.indexOf(tag) > -1));
+      tagIdsAdded.forEach(tag => {
+        msgInputUpdated = `${tag} ${msgInputUpdated}`;
+      });
+      tagIdsRemoved.forEach(tag => {
+        const isTagInInput = msgInputUpdated.indexOf(tag) > -1;
+        if (isTagInInput) {
+          msgInputUpdated = msgInputUpdated.replace(tag, '');
+        }
+      });
+    }
+
+    this.setState({ msgInput: msgInputUpdated });
   };
 
   getMsg = msgId => {
