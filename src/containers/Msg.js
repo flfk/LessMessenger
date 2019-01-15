@@ -3,7 +3,8 @@ import axios from 'axios';
 import Emojify from 'react-emojione';
 import React from 'react';
 import { connect } from 'react-redux';
-import { FaFileDownload, FaReply } from 'react-icons/fa';
+import { FaFileDownload, FaEdit, FaReply } from 'react-icons/fa';
+import { TiPinOutline, TiPin } from 'react-icons/ti';
 import Linkify from 'react-linkify';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
@@ -123,12 +124,6 @@ class Msg extends React.Component {
       >{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
     ) : null;
 
-    const replyBtn = (
-      <button onClick={() => actionReplyToMsg(id)}>
-        <FaReply />
-      </button>
-    );
-
     return (
       <ContainerMsg.Wrapper>
         {spacing}
@@ -139,7 +134,17 @@ class Msg extends React.Component {
             {replyPreview}
             {text}
           </Text.Wrapper>
-          <ContainerMsg.Buttons>{replyBtn}</ContainerMsg.Buttons>
+          <ContainerMsg.Buttons>
+            <button onClick={() => console.log('pinning')} type="button">
+              <TiPinOutline />
+            </button>
+            <button onClick={() => console.log('edit')} type="button">
+              <FaEdit />
+            </button>
+            <button onClick={() => actionReplyToMsg(id)} type="button">
+              <FaReply />
+            </button>
+          </ContainerMsg.Buttons>
         </ContainerMsg>
       </ContainerMsg.Wrapper>
     );

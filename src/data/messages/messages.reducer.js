@@ -19,7 +19,7 @@ const byId = (state = {}, action) => {
     case SIGNOUT_USER.SUCCESS:
       return {};
     case UPDATE_MESSAGE.SUCCESS:
-      return { ...state, [action.payload.id]: action.payload };
+      return { ...state, [action.payload.id]: { ...state[action.payload.id], ...action.payload } };
     default:
       return state;
   }

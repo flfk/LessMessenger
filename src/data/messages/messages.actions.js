@@ -130,3 +130,21 @@ export const uploadFile = async (file, roomID) => {
     console.log('messages.actions, messages, uploadFile', error);
   }
 };
+
+const updateDocMsg = async (msgId, fields) => {
+  const msgRef = db.collection(COLL_MESSAGES).doc(msgId);
+  await msgRef.update({ ...fields });
+};
+
+export const togglePinMsg = (isPinned, msgId) => async dispatch => {
+  try {
+    const isPinnedUpdated = !isPinned;
+
+    dispatch({
+      type: UPDATE_MESSAGE.SUCCESS,
+      payload: { id: msgId, isPinned: isPinnedUpdated },
+    });
+  } catch (error) {
+    console.log('messages.actions, messages, togglePinMsg', error);
+  }
+};
