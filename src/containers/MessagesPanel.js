@@ -137,11 +137,7 @@ class MessagePanel extends React.Component {
       : null;
     if (msgBeingRepliedTo && senderBeingRepliedTo) {
       reply = (
-        <ContainerMsg.Reply>
-          <Text.Message isReplyPreview>
-            {`${senderBeingRepliedTo.name}: ${msgBeingRepliedTo.content}`}
-          </Text.Message>
-        </ContainerMsg.Reply>
+        <Text.Reply>{`${senderBeingRepliedTo.name}: ${msgBeingRepliedTo.content}`}</Text.Reply>
       );
     }
 
