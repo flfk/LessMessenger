@@ -4,7 +4,7 @@ import Colors from '../../utils/Colors';
 
 const ContainerMsg = styled.div`
   display: flex;
-
+  justify-content: space-between;
   :hover {
     background-color: ${Colors.greys.light};
   }

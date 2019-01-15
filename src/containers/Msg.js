@@ -19,7 +19,7 @@ const propTypes = {
   downloadURL: PropTypes.string,
   id: PropTypes.string.isRequired,
   isAttachment: PropTypes.bool,
-  isNewSender: PropTypes.bool.isRequired,
+  hasHeader: PropTypes.bool.isRequired,
   msgBeingRepliedTo: PropTypes.string,
   senderBeingRepliedTo: PropTypes.string,
   profileImgURL: PropTypes.string.isRequired,
@@ -85,7 +85,7 @@ class Msg extends React.Component {
       content,
       id,
       isAttachment,
-      isNewSender,
+      hasHeader,
       msgBeingRepliedTo,
       senderBeingRepliedTo,
       profileImgURL,
@@ -94,16 +94,16 @@ class Msg extends React.Component {
       type,
     } = this.props;
 
-    const profileImg = isNewSender ? <ProfileImg src={profileImgURL} /> : null;
+    const profileImg = hasHeader ? <ProfileImg src={profileImgURL} /> : null;
 
-    const header = isNewSender ? (
-      <Text.Header hasProfileImg={isNewSender}>
+    const header = hasHeader ? (
+      <Text.Header hasProfileImg={hasHeader}>
         {senderName} <Text.Timestamp>{moment(timestamp).format('h:mm a')}</Text.Timestamp>
       </Text.Header>
     ) : null;
 
     const text = isAttachment ? (
-      <Text.Message hasProfileImg={isNewSender} hasAttachment>
+      <Text.Message hasProfileImg={hasHeader} hasAttachment>
         <Text.Attachment onClick={this.handleDownload}>
           <DownloadIcon>
             <FaFileDownload />
@@ -112,14 +112,14 @@ class Msg extends React.Component {
         </Text.Attachment>
       </Text.Message>
     ) : (
-      <Text.Message hasProfileImg={isNewSender}>{this.getTextWithTags(content)}</Text.Message>
+      <Text.Message hasProfileImg={hasHeader}>{this.getTextWithTags(content)}</Text.Message>
     );
 
-    const spacing = isNewSender ? <Content.Spacing /> : <Content.Spacing8px />;
+    const spacing = hasHeader ? <Content.Spacing /> : <Content.Spacing8px />;
 
     const replyPreview = msgBeingRepliedTo ? (
       <Text.Reply
-        hasProfileImg={isNewSender}
+        hasProfileImg={hasHeader}
       >{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
     ) : null;
 

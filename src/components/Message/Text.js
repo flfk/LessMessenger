@@ -16,7 +16,6 @@ const Message = styled(Fonts.P)`
   font-size: 14px;
   line-height: ${props => (props.hasAttachment ? '2.5em' : '2em')};
   margin-left: ${props => (props.hasProfileImg ? '16px' : '56px')};
-  margin-right: 56px;
 `;
 
 const Header = styled(Message)`
@@ -44,6 +43,7 @@ const Reply = styled(Message)`
 
 const Wrapper = styled.div`
   margin-right: auto;
+  max-width: calc(100% - 80px);
 `;
 
 const Text = {};

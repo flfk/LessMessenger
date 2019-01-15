@@ -6,6 +6,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Content from '../components/Content';
+import { MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import { getTags } from '../utils/Helpers';
 import Msg from './Msg';
@@ -124,8 +125,12 @@ class Messages extends React.Component {
       .map((group, date) => {
         const msgs = group.map((msg, index) => {
           const sender = members.find(member => member.id === msg.senderUserID);
-          const isNewSender =
-            index === 0 ? true : !(group[index - 1].senderUserID === msg.senderUserID);
+          const isFirstInGroup = index === 0;
+          const isNewSender = isFirstInGroup
+            ? true
+            : !(group[index - 1].senderUserID === msg.senderUserID);
+          const timeDiffLastMsg = isFirstInGroup ? 0 : msg.timestamp - group[index - 1].timestamp;
+          const hasHeader = isNewSender || timeDiffLastMsg > MIN_TIME_DIFF_UNTIL_HEADER_MILLIS;
 
           let msgBeingRepliedTo = {};
           let senderBeingRepliedTo = {};
@@ -141,9 +146,9 @@ class Messages extends React.Component {
               key={msg.id}
               content={msg.content}
               downloadURL={msg.downloadURL}
+              hasHeader={hasHeader}
               id={msg.id}
               isAttachment={msg.isAttachment}
-              isNewSender={isNewSender}
               msgBeingRepliedTo={msgBeingRepliedTo ? msgBeingRepliedTo.content : ''}
               senderBeingRepliedTo={senderBeingRepliedTo ? senderBeingRepliedTo.name : ''}
               profileImgURL={sender.profileImgURL}
