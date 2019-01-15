@@ -3,6 +3,7 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
 
+import { REGEX_TIMER } from '../utils/Constants';
 import Messages from './Messages';
 import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
 import { Container, Thumbnails, Input, InputContainer } from '../components/messagesPanel';
@@ -35,7 +36,7 @@ const mapDispatchToProps = dispatch => ({
 
 class MessagePanel extends React.Component {
   state = {
-    message: '',
+    msgInput: '',
     files: [],
   };
 
@@ -47,10 +48,13 @@ class MessagePanel extends React.Component {
 
   getNewMsg = content => {
     const { senderUserId, roomId, msgIdBeingRepliedTo } = this.props;
+
+    const hasTimer = content.match(REGEX_TIMER) !== null;
+
     return {
       content,
       isPinned: false,
-      hasTimer: false,
+      hasTimer,
       msgIdBeingRepliedTo,
       roomId,
       senderUserId,
@@ -67,13 +71,13 @@ class MessagePanel extends React.Component {
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
   handleSubmit = async () => {
-    const { files, message } = this.state;
+    const { files, msgInput } = this.state;
     const { actionCancelReply, actionSendMessage, roomId } = this.props;
 
-    if (message) {
-      const newMsg = this.getNewMsg(message);
+    if (msgInput) {
+      const newMsg = this.getNewMsg(msgInput);
       actionSendMessage(newMsg);
-      this.setState({ message: '' });
+      this.setState({ msgInput: '' });
     }
 
     if (files.length > 0) {
@@ -82,16 +86,14 @@ class MessagePanel extends React.Component {
           const newMsg = this.getNewMsg(file.name);
           this.setState({ files: [] });
           const uploadTask = await uploadFile(file, roomId);
-          console.log('uploadTask', uploadTask);
           const downloadURL = await uploadTask.ref.getDownloadURL();
           const attachmentFields = this.getAttachmentFields(downloadURL, file);
-          console.log('attachment message', { ...newMsg, ...attachmentFields });
           actionSendMessage({ ...newMsg, ...attachmentFields });
         })
       );
     }
 
-    // remove Id of message being replied to
+    // remove Id of msgInput being replied to
     actionCancelReply();
   };
 
@@ -124,7 +126,7 @@ class MessagePanel extends React.Component {
   };
 
   render() {
-    const { files, message } = this.state;
+    const { files, msgInput } = this.state;
     const { messages, members, msgIdBeingRepliedTo } = this.props;
 
     const thumbnails = files.map(file => {
@@ -157,8 +159,8 @@ class MessagePanel extends React.Component {
                 <Input
                   type="text"
                   placeholder="Type a message..."
-                  onChange={this.handleChangeInput('message')}
-                  value={message}
+                  onChange={this.handleChangeInput('msgInput')}
+                  value={msgInput}
                   onKeyDown={this.handleKeyPress}
                 />
               </InputContainer>

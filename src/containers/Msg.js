@@ -4,13 +4,15 @@ import Emojify from 'react-emojione';
 import React from 'react';
 import { connect } from 'react-redux';
 import { FaFileDownload, FaEdit, FaReply } from 'react-icons/fa';
-import { TiPinOutline, TiPin } from 'react-icons/ti';
+import { TiPinOutline } from 'react-icons/ti';
 import Linkify from 'react-linkify';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 
 import Colors from '../utils/Colors';
 import Content from '../components/Content';
+import { REGEX_TIMER } from '../utils/Constants';
+import Countdown from '../components/Countdown';
 import { ContainerMsg, DownloadIcon, ProfileImg, Text } from '../components/message';
 import { togglePinMsg, replyToMsg } from '../data/messages/messages.actions';
 
@@ -23,6 +25,7 @@ const propTypes = {
   isPinned: PropTypes.bool,
   isAttachment: PropTypes.bool,
   hasHeader: PropTypes.bool.isRequired,
+  hasTimer: PropTypes.bool,
   msgBeingRepliedTo: PropTypes.string,
   senderBeingRepliedTo: PropTypes.string,
   profileImgURL: PropTypes.string.isRequired,
@@ -34,6 +37,7 @@ const propTypes = {
 
 const defaultProps = {
   downloadURL: '',
+  hasTimer: false,
   isAttachment: false,
   isPinned: false,
   msgBeingRepliedTo: '',
@@ -51,9 +55,30 @@ const mapDispatchToProps = dispatch => ({
 class Msg extends React.Component {
   state = {};
 
+  getTimer = command => {
+    // note input for timer must be +timer(days:hrs:mins);
+    const { timestamp } = this.props;
+    const regExTime = /\d+:\d+:\d+/gi;
+    const input = command.match(regExTime)[0].split(':');
+    const inputDays = input[0];
+    const inputHrs = input[1];
+    const inputMins = input[2];
+    console.log('input is', inputDays, inputHrs, inputMins);
+
+    const momentTo = moment(timestamp)
+      .add({ days: inputDays, hours: inputHrs, minutes: inputMins })
+      .valueOf();
+
+    return <Countdown key={`${timestamp}_${command}`} date={momentTo} />;
+  };
+
   getTextWithTags = text => {
-    const { timestamp, selectTag } = this.props;
+    const { hasTimer, timestamp, selectTag } = this.props;
     const words = text.split(' ').map((word, index) => {
+      if (hasTimer) {
+        const isTimer = word.match(REGEX_TIMER) !== null;
+        if (isTimer) return this.getTimer(word);
+      }
       if (word[0] !== '#') return (word += ' ');
       return (
         <Text.Tag key={`${timestamp}${index}`} isSelected={false} onClick={selectTag(word)}>
@@ -61,6 +86,7 @@ class Msg extends React.Component {
         </Text.Tag>
       );
     });
+
     return (
       <Linkify properties={{ target: '_blank', style: { color: Colors.primary.blue } }}>
         <Emojify style={{ height: 16, width: 16 }}>{words}</Emojify>

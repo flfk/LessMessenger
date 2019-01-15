@@ -128,6 +128,7 @@ class Messages extends React.Component {
             content={msg.content}
             downloadURL={msg.downloadURL}
             hasHeader
+            hasTimer={msg.hasTimer}
             id={msg.id}
             isAttachment={msg.isAttachment}
             isPinned
@@ -169,9 +170,10 @@ class Messages extends React.Component {
               content={msg.content}
               downloadURL={msg.downloadURL}
               hasHeader={hasHeader}
+              hasTimer={msg.hasTimer}
               id={msg.id}
               isAttachment={msg.isAttachment}
-              isPinned={false}
+              isPinned={msg.isPinned}
               msgBeingRepliedTo={msgBeingRepliedTo ? msgBeingRepliedTo.content : ''}
               senderBeingRepliedTo={senderBeingRepliedTo ? senderBeingRepliedTo.name : ''}
               profileImgURL={sender.profileImgURL}
