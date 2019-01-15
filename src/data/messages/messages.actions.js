@@ -131,18 +131,18 @@ export const uploadFile = async (file, roomId) => {
   }
 };
 
-const updateDocMsg = async (msgId, fields) => {
-  const msgRef = db.collection(COLL_MESSAGES).doc(msgId);
+const updateDocMsg = async (id, fields) => {
+  const msgRef = db.collection(COLL_MESSAGES).doc(id);
   await msgRef.update({ ...fields });
 };
 
-export const togglePinMsg = (isPinned, msgId) => async dispatch => {
+export const togglePinMsg = (id, isPinned) => async dispatch => {
   try {
     const isPinnedUpdated = !isPinned;
-
+    await updateDocMsg(id, { isPinned: isPinnedUpdated });
     dispatch({
       type: UPDATE_MESSAGE.SUCCESS,
-      payload: { id: msgId, isPinned: isPinnedUpdated },
+      payload: { id, isPinned: isPinnedUpdated },
     });
   } catch (error) {
     console.log('messages.actions, messages, togglePinMsg', error);

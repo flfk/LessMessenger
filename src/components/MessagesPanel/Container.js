@@ -7,6 +7,7 @@ const Container = styled.div`
   flex: 1;
   flex-direction: column;
   margin: auto;
+  height: 100%;
 
   > div:focus {
     outline: none;

@@ -10,7 +10,7 @@ import { MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import { getTags } from '../utils/Helpers';
 import Msg from './Msg';
-import { MessagesContainer } from '../components/messagesPanel';
+import { MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
 import { getMessageSubscription } from '../data/messages/messages.actions';
 // import { getAllMessages } from '../data/messages/messages.selectors';
 import { getSelectorAll } from '../utils/Helpers';
@@ -118,6 +118,28 @@ class Messages extends React.Component {
             return isMsgTagSelected;
           });
 
+    const msgsPinnedContainer = messagesFiltered
+      .filter(msg => msg.isPinned)
+      .map(msg => {
+        const sender = members.find(member => member.id === msg.senderUserId);
+        return (
+          <Msg
+            key={msg.id}
+            content={msg.content}
+            downloadURL={msg.downloadURL}
+            hasHeader
+            id={msg.id}
+            isAttachment={msg.isAttachment}
+            isPinned
+            profileImgURL={sender.profileImgURL}
+            selectTag={this.selectTag}
+            senderName={sender.name}
+            timestamp={msg.timestamp}
+            type={msg.type}
+          />
+        );
+      });
+
     const messagesContainer = _.chain(messagesFiltered)
       .sort((a, b) => a.timestamp - b.timestamp)
       .map(msg => ({ ...msg, date: moment(msg.timestamp).format('MMM Do') }))
@@ -149,6 +171,7 @@ class Messages extends React.Component {
               hasHeader={hasHeader}
               id={msg.id}
               isAttachment={msg.isAttachment}
+              isPinned={false}
               msgBeingRepliedTo={msgBeingRepliedTo ? msgBeingRepliedTo.content : ''}
               senderBeingRepliedTo={senderBeingRepliedTo ? senderBeingRepliedTo.name : ''}
               profileImgURL={sender.profileImgURL}
@@ -174,6 +197,7 @@ class Messages extends React.Component {
 
     return (
       <MessagesContainer>
+        <PinnedWrapper>{msgsPinnedContainer}</PinnedWrapper>
         <Scrollable alignBottom>
           {messagesContainer}
           <div

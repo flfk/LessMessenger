@@ -5,7 +5,7 @@ const MessagesContainer = styled.div`
   flex-direction: column;
   flex: 1;
   justify-content: center;
-  align-items: flex-end;
+  align-items: flex-start;
 
   height: 500px;
 

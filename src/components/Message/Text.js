@@ -43,7 +43,7 @@ const Reply = styled(Message)`
 
 const Wrapper = styled.div`
   margin-right: auto;
-  max-width: calc(100% - 80px);
+  max-width: calc(100% - 120px);
 `;
 
 const Text = {};

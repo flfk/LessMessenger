@@ -30,7 +30,9 @@ const Reply = styled.span`
   text-overflow: ellipsis;
 `;
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  width: 100%;
+`;
 
 ContainerMsg.Buttons = Buttons;
 ContainerMsg.Reply = Reply;

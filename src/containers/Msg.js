@@ -12,13 +12,15 @@ import moment from 'moment-timezone';
 import Colors from '../utils/Colors';
 import Content from '../components/Content';
 import { ContainerMsg, DownloadIcon, ProfileImg, Text } from '../components/message';
-import { replyToMsg } from '../data/messages/messages.actions';
+import { togglePinMsg, replyToMsg } from '../data/messages/messages.actions';
 
 const propTypes = {
+  actionTogglePin: PropTypes.func.isRequired,
   actionReplyToMsg: PropTypes.func.isRequired,
   content: PropTypes.string.isRequired,
   downloadURL: PropTypes.string,
   id: PropTypes.string.isRequired,
+  isPinned: PropTypes.bool,
   isAttachment: PropTypes.bool,
   hasHeader: PropTypes.bool.isRequired,
   msgBeingRepliedTo: PropTypes.string,
@@ -33,6 +35,7 @@ const propTypes = {
 const defaultProps = {
   downloadURL: '',
   isAttachment: false,
+  isPinned: false,
   msgBeingRepliedTo: '',
   senderBeingRepliedTo: '',
   type: '',
@@ -41,6 +44,7 @@ const defaultProps = {
 const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch => ({
+  actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
   actionReplyToMsg: msgId => dispatch(replyToMsg(msgId)),
 });
 
@@ -80,12 +84,20 @@ class Msg extends React.Component {
     });
   };
 
+  handlePin = () => {
+    console.log('handling pin called');
+    const { actionTogglePin, id, isPinned } = this.props;
+    console.log('toggling pin for', id, isPinned);
+    actionTogglePin(id, isPinned);
+  };
+
   render() {
     const {
       actionReplyToMsg,
       content,
       id,
       isAttachment,
+      isPinned,
       hasHeader,
       msgBeingRepliedTo,
       senderBeingRepliedTo,
@@ -116,7 +128,7 @@ class Msg extends React.Component {
       <Text.Message hasProfileImg={hasHeader}>{this.getTextWithTags(content)}</Text.Message>
     );
 
-    const spacing = hasHeader ? <Content.Spacing /> : <Content.Spacing8px />;
+    const spacing = hasHeader && !isPinned ? <Content.Spacing /> : <Content.Spacing8px />;
 
     const replyPreview = msgBeingRepliedTo ? (
       <Text.Reply
@@ -127,7 +139,7 @@ class Msg extends React.Component {
     return (
       <ContainerMsg.Wrapper>
         {spacing}
-        <ContainerMsg>
+        <ContainerMsg isPinned={isPinned}>
           {profileImg}
           <Text.Wrapper>
             {header}
@@ -135,7 +147,7 @@ class Msg extends React.Component {
             {text}
           </Text.Wrapper>
           <ContainerMsg.Buttons>
-            <button onClick={() => console.log('pinning')} type="button">
+            <button onClick={this.handlePin} type="button">
               <TiPinOutline />
             </button>
             <button onClick={() => console.log('edit')} type="button">
