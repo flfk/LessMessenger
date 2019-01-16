@@ -8,6 +8,10 @@ const ContainerMsg = styled.div`
   :hover {
     background-color: ${Colors.greys.light};
   }
+  ${props => (props.isPinned ? 'max-height: 42px;' : '')}
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Buttons = styled.div`
