@@ -9,6 +9,8 @@ const MessagesContainer = styled.div`
 
   height: 500px;
 
+  padding-left: 16px;
+
   > div:first-child {
     margin-top: auto !important;
   }

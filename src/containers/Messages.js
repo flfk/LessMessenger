@@ -121,7 +121,6 @@ class Messages extends React.Component {
   };
 
   handleTogglePin = id => {
-    console.log('toggling Pin');
     const { actionTogglePin, messages } = this.props;
     const msg = messages.find(msg => msg.id === id);
     actionTogglePin(id, msg.isPinned);
