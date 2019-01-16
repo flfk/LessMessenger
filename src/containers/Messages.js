@@ -8,12 +8,11 @@ import { connect } from 'react-redux';
 import Content from '../components/Content';
 import { MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
-import { getTags } from '../utils/Helpers';
+import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
 import { MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
-import { getMessageSubscription } from '../data/messages/messages.actions';
+import { getMessageSubscription, togglePinMsg } from '../data/messages/messages.actions';
 // import { getAllMessages } from '../data/messages/messages.selectors';
-import { getSelectorAll } from '../utils/Helpers';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 import { toggleTag } from '../data/tags/tags.actions';
@@ -57,6 +56,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
   actionToggleTag: tagName => dispatch(toggleTag(tagName)),
   actionGetMessageSubscription: roomId => dispatch(getMessageSubscription(roomId)),
 });
@@ -80,6 +80,12 @@ class Messages extends React.Component {
       unsubscribeMessages();
     }
   }
+
+  handleTogglePin = id => {
+    const { actionTogglePin, messages } = this.props;
+    const msg = messages.find(msg => msg.id === id);
+    actionTogglePin(id, msg.isPinned);
+  };
 
   selectTag = tagName => () => {
     const { actionToggleTag } = this.props;
@@ -129,6 +135,7 @@ class Messages extends React.Component {
             downloadURL={msg.downloadURL}
             hasHeader
             hasTimer={msg.hasTimer}
+            handleTogglePin={this.handleTogglePin}
             id={msg.id}
             isAttachment={msg.isAttachment}
             isPinned
@@ -171,9 +178,10 @@ class Messages extends React.Component {
               downloadURL={msg.downloadURL}
               hasHeader={hasHeader}
               hasTimer={msg.hasTimer}
+              handleTogglePin={this.handleTogglePin}
               id={msg.id}
               isAttachment={msg.isAttachment}
-              isPinned={msg.isPinned}
+              isPinned={false}
               msgBeingRepliedTo={msgBeingRepliedTo ? msgBeingRepliedTo.content : ''}
               senderBeingRepliedTo={senderBeingRepliedTo ? senderBeingRepliedTo.name : ''}
               profileImgURL={sender.profileImgURL}

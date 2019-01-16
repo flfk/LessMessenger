@@ -15,10 +15,9 @@ import Content from '../components/Content';
 import { REGEX_TAG, REGEX_TIMER } from '../utils/Constants';
 import Countdown from '../components/Countdown';
 import { ContainerMsg, DownloadIcon, ProfileImg, Text } from '../components/message';
-import { togglePinMsg, replyToMsg } from '../data/messages/messages.actions';
+import { replyToMsg } from '../data/messages/messages.actions';
 
 const propTypes = {
-  actionTogglePin: PropTypes.func.isRequired,
   actionReplyToMsg: PropTypes.func.isRequired,
   content: PropTypes.string.isRequired,
   downloadURL: PropTypes.string,
@@ -27,6 +26,7 @@ const propTypes = {
   isAttachment: PropTypes.bool,
   hasHeader: PropTypes.bool.isRequired,
   hasTimer: PropTypes.bool,
+  handleTogglePin: PropTypes.func.isRequired,
   msgBeingRepliedTo: PropTypes.string,
   senderBeingRepliedTo: PropTypes.string,
   profileImgURL: PropTypes.string.isRequired,
@@ -49,7 +49,6 @@ const defaultProps = {
 const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch => ({
-  actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
   actionReplyToMsg: msgId => dispatch(replyToMsg(msgId)),
 });
 
@@ -111,11 +110,6 @@ class Msg extends React.Component {
     });
   };
 
-  handlePin = () => {
-    const { actionTogglePin, id, isPinned } = this.props;
-    actionTogglePin(id, isPinned);
-  };
-
   render() {
     const {
       actionReplyToMsg,
@@ -124,6 +118,7 @@ class Msg extends React.Component {
       isAttachment,
       isPinned,
       hasHeader,
+      handleTogglePin,
       msgBeingRepliedTo,
       senderBeingRepliedTo,
       profileImgURL,
@@ -172,7 +167,7 @@ class Msg extends React.Component {
             {text}
           </Text.Wrapper>
           <ContainerMsg.Buttons>
-            <button onClick={this.handlePin} type="button">
+            <button onClick={() => handleTogglePin(id)} type="button">
               <TiPinOutline />
             </button>
             <button onClick={() => console.log('edit')} type="button">

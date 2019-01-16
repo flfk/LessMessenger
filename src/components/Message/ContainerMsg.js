@@ -9,9 +9,9 @@ const ContainerMsg = styled.div`
     background-color: ${Colors.greys.light};
   }
   ${props => (props.isPinned ? 'max-height: 42px;' : '')}
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  ${props => (props.isPinned ? 'white-space: nowrap;' : '')}
+  ${props => (props.isPinned ? 'overflow: hidden;' : '')}
+  ${props => (props.isPinned ? 'text-overflow: ellipsis;' : '')}
 `;
 
 const Buttons = styled.div`
