@@ -3,6 +3,7 @@ import moment from 'moment-timezone';
 // import mixpanel from 'mixpanel-browser';
 import PropTypes from 'prop-types';
 import React from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 
 import Content from '../components/Content';
@@ -11,15 +12,22 @@ import Fonts from '../utils/Fonts';
 import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
 import { MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
-import { getMessageSubscription, togglePinMsg } from '../data/messages/messages.actions';
+import {
+  getMessageSubscription,
+  loadMessages,
+  togglePinMsg,
+} from '../data/messages/messages.actions';
 // import { getAllMessages } from '../data/messages/messages.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 import { toggleTag } from '../data/tags/tags.actions';
 
 const propTypes = {
+  actionLoadMessages: PropTypes.func.isRequired,
   actionGetMessageSubscription: PropTypes.func.isRequired,
+  actionTogglePin: PropTypes.func.isRequired,
   actionToggleTag: PropTypes.func.isRequired,
+  hasMoreMessages: PropTypes.bool.isRequired,
   isLoadingMessages: PropTypes.bool.isRequired,
   isLoadingMembers: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(
@@ -49,6 +57,8 @@ const defaultProps = {};
 const mapStateToProps = state => ({
   isLoadingMessages: state.room.isLoadingMessages,
   isLoadingMembers: state.room.isLoadingMembers,
+  hasMoreMessages: state.messages.hasMoreMessages,
+  lastMsgDoc: state.messages.lastMsgDoc,
   members: state.members,
   messages: getSelectorAll('messages', state),
   roomId: state.room.id,
@@ -56,6 +66,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  actionLoadMessages: (lastMsgDoc, roomId) => dispatch(loadMessages(lastMsgDoc, roomId)),
   actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
   actionToggleTag: tagName => dispatch(toggleTag(tagName)),
   actionGetMessageSubscription: roomId => dispatch(getMessageSubscription(roomId)),
@@ -70,8 +81,12 @@ class Messages extends React.Component {
     this.subscribeMessages();
   }
 
-  componentDidUpdate() {
-    this.scrollToBottom();
+  componentDidUpdate(prevProps) {
+    // only scroll to bottom on new messages, not loading more old ones
+    const { messages } = this.props;
+    if (messages[messages.length - 1] !== prevProps.messages[prevProps.messages.length - 1]) {
+      this.scrollToBottom();
+    }
   }
 
   componentWillUnmount() {
@@ -85,6 +100,11 @@ class Messages extends React.Component {
     const { actionTogglePin, messages } = this.props;
     const msg = messages.find(msg => msg.id === id);
     actionTogglePin(id, msg.isPinned);
+  };
+
+  handleLoad = () => {
+    const { actionLoadMessages, lastMsgDoc, roomId } = this.props;
+    actionLoadMessages(lastMsgDoc, roomId);
   };
 
   selectTag = tagName => () => {
@@ -105,7 +125,14 @@ class Messages extends React.Component {
   };
 
   render() {
-    const { isLoadingMessages, isLoadingMembers, members, messages, tags } = this.props;
+    const {
+      hasMoreMessages,
+      isLoadingMessages,
+      isLoadingMembers,
+      members,
+      messages,
+      tags,
+    } = this.props;
 
     if (isLoadingMessages || isLoadingMembers) return <Spinner />;
 
@@ -208,14 +235,24 @@ class Messages extends React.Component {
     return (
       <MessagesContainer>
         <PinnedWrapper>{msgsPinnedContainer}</PinnedWrapper>
-        <Scrollable alignBottom>
-          {messagesContainer}
-          <div
-            style={{ float: 'left', clear: 'both' }}
-            ref={el => {
-              this.messagesEnd = el;
-            }}
-          />
+        <Scrollable ref={ref => (this.scrollParentRef = ref)}>
+          <InfiniteScroll
+            getScrollParent={() => this.scrollParentRef}
+            hasMore={hasMoreMessages}
+            initialLoad={false}
+            isReverse
+            loader={<Spinner key="InfiniteScrollMessages" />}
+            loadMore={this.handleLoad}
+            useWindow={false}
+          >
+            {messagesContainer}
+            <div
+              style={{ float: 'left', clear: 'both' }}
+              ref={el => {
+                this.messagesEnd = el;
+              }}
+            />
+          </InfiniteScroll>
         </Scrollable>
       </MessagesContainer>
     );

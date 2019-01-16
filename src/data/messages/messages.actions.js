@@ -4,9 +4,11 @@ import { getTags } from '../../utils/Helpers';
 import { addTag } from '../tags/tags.actions';
 import {
   ADD_MESSAGE,
+  ALL_MESSAGES_LOADED,
   CANCEL_REPLY,
   LOAD_MESSAGES,
   SEND_MESSAGE,
+  SET_LAST_MSG_DOC,
   REPLY_TO_MESSAGE,
   UPDATE_MESSAGE,
 } from './messages.types';
@@ -30,6 +32,58 @@ export const cancelReply = () => dispatch => {
   });
 };
 
+const updateLastMsgDoc = doc => dispatch => {
+  dispatch({
+    type: SET_LAST_MSG_DOC.SUCCESS,
+    payload: doc,
+  });
+};
+
+export const loadMessages = (lastMsgDoc, roomId) => async dispatch => {
+  try {
+    const messagesRef = db
+      .collection(COLL_MESSAGES)
+      .where('roomId', '==', roomId)
+      .orderBy('timestamp', 'desc')
+      .startAfter(lastMsgDoc)
+      .limit(MESSAGES_PER_LOAD);
+
+    const snapshot = await messagesRef.get();
+
+    if (snapshot.empty) {
+      dispatch({
+        type: ALL_MESSAGES_LOADED.SUCCESS,
+      });
+      return;
+    }
+
+    let msg = null;
+    snapshot.forEach(doc => {
+      msg = doc.data();
+      const { id } = doc;
+      msg.id = id;
+      msg.timestamp = msg.timestamp.toMillis();
+      dispatch(addMessage(msg));
+    });
+
+    const lastMsgDocUpdated = snapshot.docs[snapshot.docs.length - 1];
+    dispatch(updateLastMsgDoc(lastMsgDocUpdated));
+  } catch (error) {
+    console.log('Error messages.actions, loadMessages', error);
+    dispatch({
+      type: LOAD_MESSAGES.ERROR,
+    });
+  }
+};
+
+export const replyToMsg = msgId => dispatch => {
+  console.log('replying to msg', msgId);
+  dispatch({
+    type: REPLY_TO_MESSAGE.SUCCESS,
+    payload: msgId,
+  });
+};
+
 export const sendMessage = msg => async dispatch => {
   try {
     await db
@@ -46,6 +100,24 @@ export const sendMessage = msg => async dispatch => {
   }
 };
 
+const updateDocMsg = async (id, fields) => {
+  const msgRef = db.collection(COLL_MESSAGES).doc(id);
+  await msgRef.update({ ...fields });
+};
+
+export const togglePinMsg = (id, isPinned) => async dispatch => {
+  try {
+    const isPinnedUpdated = !isPinned;
+    await updateDocMsg(id, { isPinned: isPinnedUpdated });
+    dispatch({
+      type: UPDATE_MESSAGE.SUCCESS,
+      payload: { id, isPinned: isPinnedUpdated },
+    });
+  } catch (error) {
+    console.log('messages.actions, messages, togglePinMsg', error);
+  }
+};
+
 export const updateMessage = msg => dispatch => {
   dispatch({
     type: UPDATE_MESSAGE.SUCCESS,
@@ -55,14 +127,6 @@ export const updateMessage = msg => dispatch => {
     const tags = getTags(msg.content);
     tags.map(tagName => dispatch(addTag(tagName)));
   }
-};
-
-export const replyToMsg = msgId => dispatch => {
-  console.log('replying to msg', msgId);
-  dispatch({
-    type: REPLY_TO_MESSAGE.SUCCESS,
-    payload: msgId,
-  });
 };
 
 export const getMessageSubscription = roomId => async dispatch => {
@@ -88,6 +152,8 @@ export const getMessageSubscription = roomId => async dispatch => {
             // console.log('about to add message', msg);
             msg.timestamp = msg.timestamp ? msg.timestamp.toMillis() : dbTimestamp.now().toMillis();
             dispatch(addMessage(msg));
+            // update last Msg Doc to be used as reference for following load
+            dispatch(updateLastMsgDoc(doc));
           }
           if (change.type === 'modified') {
             // will be modified when the timestamp updates
@@ -128,23 +194,5 @@ export const uploadFile = async (file, roomId) => {
     return uploadTask;
   } catch (error) {
     console.log('messages.actions, messages, uploadFile', error);
-  }
-};
-
-const updateDocMsg = async (id, fields) => {
-  const msgRef = db.collection(COLL_MESSAGES).doc(id);
-  await msgRef.update({ ...fields });
-};
-
-export const togglePinMsg = (id, isPinned) => async dispatch => {
-  try {
-    const isPinnedUpdated = !isPinned;
-    await updateDocMsg(id, { isPinned: isPinnedUpdated });
-    dispatch({
-      type: UPDATE_MESSAGE.SUCCESS,
-      payload: { id, isPinned: isPinnedUpdated },
-    });
-  } catch (error) {
-    console.log('messages.actions, messages, togglePinMsg', error);
   }
 };
