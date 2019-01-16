@@ -6,12 +6,13 @@ import { connect } from 'react-redux';
 import { FaFileDownload, FaEdit, FaReply } from 'react-icons/fa';
 import { TiPinOutline } from 'react-icons/ti';
 import Linkify from 'react-linkify';
+import reactStringReplace from 'react-string-replace';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 
 import Colors from '../utils/Colors';
 import Content from '../components/Content';
-import { REGEX_TIMER } from '../utils/Constants';
+import { REGEX_TAG, REGEX_TIMER } from '../utils/Constants';
 import Countdown from '../components/Countdown';
 import { ContainerMsg, DownloadIcon, ProfileImg, Text } from '../components/message';
 import { togglePinMsg, replyToMsg } from '../data/messages/messages.actions';
@@ -55,35 +56,36 @@ const mapDispatchToProps = dispatch => ({
 class Msg extends React.Component {
   state = {};
 
-  getTimer = command => {
+  getTag = word => {
+    const { timestamp, selectTag } = this.props;
+    const wordTagged = reactStringReplace(word, REGEX_TAG, match => (
+      <Text.Tag key={`${timestamp}_${match}`} isSelected={false} onClick={selectTag(match)}>
+        {match}{' '}
+      </Text.Tag>
+    ));
+    return wordTagged;
+  };
+
+  getTimer = word => {
     // note input for timer must be +timer(days:hrs:mins);
     const { timestamp } = this.props;
     const regExTime = /\d+:\d+:\d+/gi;
-    const input = command.match(regExTime)[0].split(':');
-    const inputDays = input[0];
-    const inputHrs = input[1];
-    const inputMins = input[2];
-
+    const input = word.match(regExTime)[0].split(':');
     const momentTo = moment(timestamp)
-      .add({ days: inputDays, hours: inputHrs, minutes: inputMins })
+      .add({ days: input[0], hours: input[1], minutes: input[2] })
       .valueOf();
-
-    return <Countdown key={`${timestamp}_${command}`} date={momentTo} />;
+    return <Countdown key={`${timestamp}_${word}`} date={momentTo} />;
   };
 
   getTextWithTags = text => {
-    const { hasTimer, timestamp, selectTag } = this.props;
-    const words = text.split(' ').map((word, index) => {
+    const { hasTimer } = this.props;
+    const words = text.split(' ').map(word => {
       if (hasTimer) {
         const isTimer = word.match(REGEX_TIMER) !== null;
         if (isTimer) return this.getTimer(word);
       }
-      if (word[0] !== '#') return (word += ' ');
-      return (
-        <Text.Tag key={`${timestamp}${index}`} isSelected={false} onClick={selectTag(word)}>
-          {word}{' '}
-        </Text.Tag>
-      );
+      if (word.match(REGEX_TAG) !== null) return this.getTag(word);
+      return `${word} `;
     });
 
     return (
@@ -110,9 +112,7 @@ class Msg extends React.Component {
   };
 
   handlePin = () => {
-    console.log('handling pin called');
     const { actionTogglePin, id, isPinned } = this.props;
-    console.log('toggling pin for', id, isPinned);
     actionTogglePin(id, isPinned);
   };
 

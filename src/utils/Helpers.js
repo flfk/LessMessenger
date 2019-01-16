@@ -1,6 +1,8 @@
 import moment from 'moment-timezone';
 import qs from 'qs';
 
+import { REGEX_TAG } from './Constants';
+
 export const createActionSet = actionName => ({
   PENDING: `${actionName}_PENDING`,
   SUCCESS: `${actionName}_SUCCESS`,
@@ -28,8 +30,7 @@ export const getPathname = props => {
 };
 
 export const getTags = text => {
-  const regEx = /(?:^|\s)(#[a-z0-9]\w*)/gi;
-  const tags = text.match(regEx);
+  const tags = text.match(REGEX_TAG);
   if (tags) return tags.map(x => x.trim().toLowerCase());
   return [];
 };
