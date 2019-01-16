@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import moment from 'moment-timezone';
 
 import Btn from '../components/Btn';
-import NavBarDropdown from '../components/NavBarDropdown';
-import NavBarWrapper from '../components/NavBarWrapper';
-import NavBarList from '../components/NavBarList';
+import Fonts from '../utils/Fonts';
+
+import { Dropdown, List, Profile, Wrapper } from '../components/navBar';
 
 import { auth } from '../data/firebase';
 import { getLoggedInUser, signOut } from '../data/user/user.actions';
@@ -24,8 +25,9 @@ const defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  userId: state.user.id,
+  members: state.members,
   roomName: state.room.name,
+  userId: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -56,12 +58,12 @@ class NavBar extends React.Component {
   render() {
     const { showDropDown } = this.state;
 
-    const { actionSignOut, roomName, userId } = this.props;
+    const { actionSignOut, members, roomName, userId } = this.props;
 
     const dropdown = showDropDown ? (
-      <NavBarDropdown>
+      <Dropdown>
         <Btn.Tertiary fill>test</Btn.Tertiary>
-      </NavBarDropdown>
+      </Dropdown>
     ) : null;
 
     const profileBtn = userId ? (
@@ -70,36 +72,40 @@ class NavBar extends React.Component {
       </li>
     ) : null;
 
-    // const logInBtn = userId ? null : (
-    //   <li>
-    //     <Link to="/login">
-    //       <Btn.Tertiary narrow short primary>
-    //         Log In
-    //       </Btn.Tertiary>
-    //     </Link>
-    //   </li>
-    // );
+    const user = members.find(member => member.id === userId);
+    const membersSorted = members
+      // .sort((a, b) => moment.tz(b.timezone).utcOffset - moment.tz(a.timezone).utcOffset)
+      .filter(member => member.id !== userId);
+    if (user) membersSorted.push(user);
 
-    // const signUpBtn = userId ? null : (
-    //   <li>
-    //     <Link to="/signup">
-    //       <Btn narrow short primary>
-    //         Sign Up
-    //       </Btn>
-    //     </Link>
-    //   </li>
-    // );
+    const memberProfiles = membersSorted.map(member => {
+      const isUser = member.id === userId;
+      return (
+        <Profile key={member.id}>
+          <Profile.Img src={member.profileImgURL} />
+          <Profile.TextWrapper>
+            <Fonts.FinePrint>{isUser ? `${member.name} (you)` : member.name}</Fonts.FinePrint>
+            <Fonts.P>
+              {moment()
+                .tz(member.timezone)
+                .format('h:m a')}
+            </Fonts.P>
+          </Profile.TextWrapper>
+        </Profile>
+      );
+    });
 
     return (
       <div>
-        <NavBarWrapper>
-          <NavBarList>
+        <Wrapper>
+          <List>
             <li>
               <strong>{roomName}</strong>
             </li>
+            {memberProfiles}
             {profileBtn}
-          </NavBarList>
-        </NavBarWrapper>
+          </List>
+        </Wrapper>
         {dropdown}
       </div>
     );

@@ -13,8 +13,7 @@ import moment from 'moment-timezone';
 import Colors from '../utils/Colors';
 import Content from '../components/Content';
 import { REGEX_TAG, REGEX_TIMER } from '../utils/Constants';
-import Countdown from '../components/Countdown';
-import { ContainerMsg, DownloadIcon, ProfileImg, Text } from '../components/message';
+import { ContainerMsg, Countdown, DownloadIcon, ProfileImg, Text } from '../components/message';
 import { replyToMsg } from '../data/messages/messages.actions';
 
 const propTypes = {

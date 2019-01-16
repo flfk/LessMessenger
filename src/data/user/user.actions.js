@@ -1,3 +1,4 @@
+import moment from 'moment-timezone';
 import { auth, db } from '../firebase';
 import {
   CREATE_USER,
@@ -12,10 +13,13 @@ const COLL_USERS = 'users';
 
 export const addUserDoc = async (email, name, userId) => {
   try {
+    // guess timezone
+    const timezone = moment.tz.guess();
+
     await db
       .collection(COLL_USERS)
       .doc(userId)
-      .set({ email, name });
+      .set({ email, timezone, name });
   } catch (error) {
     console.log('Actions, user, addUserDoc', error);
   }

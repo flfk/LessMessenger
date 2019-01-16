@@ -77,7 +77,6 @@ const FinePrint = styled.span`
   font-family: ${FONT_FAMILY.body};
   font-weight: 300;
   color: ${Colors.greys.secondary};
-  margin: 8px 0;
   text-align: center;
 `;
 

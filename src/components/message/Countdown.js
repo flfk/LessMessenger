@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 
-import Colors from '../utils/Colors';
+import Colors from '../../utils/Colors';
 
 const propTypes = {
   date: PropTypes.number.isRequired,

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import Colors from '../utils/Colors';
+import Colors from '../../utils/Colors';
 
 const NavBarDropdown = styled.div`
   position: absolute;

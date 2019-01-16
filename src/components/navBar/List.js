@@ -1,12 +1,10 @@
 import styled from 'styled-components';
-import COLORS from '../utils/Colors';
+import Colors from '../../utils/Colors';
 
 const NavBar = styled.ul`
   flex: 0 1 100%;
-
   display: flex;
   align-items: center;
-
   margin: 0;
   padding: 0 36px;
 
@@ -21,10 +19,9 @@ const NavBar = styled.ul`
   }
 
   li:not(:first-child) {
-
     a {
       height: 100%;
-      color: ${COLORS.greys.primary};
+      color: ${Colors.greys.primary};
       font-weight: bold;
       font-size: 12px;
       text-decoration: none;
