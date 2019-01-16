@@ -25,6 +25,7 @@ const propTypes = {
   isAttachment: PropTypes.bool,
   hasHeader: PropTypes.bool.isRequired,
   hasTimer: PropTypes.bool,
+  handleEdit: PropTypes.func.isRequired,
   handleTogglePin: PropTypes.func.isRequired,
   msgBeingRepliedTo: PropTypes.string,
   senderBeingRepliedTo: PropTypes.string,
@@ -117,6 +118,7 @@ class Msg extends React.Component {
       isAttachment,
       isPinned,
       hasHeader,
+      handleEdit,
       handleTogglePin,
       msgBeingRepliedTo,
       senderBeingRepliedTo,
@@ -169,7 +171,7 @@ class Msg extends React.Component {
             <button onClick={() => handleTogglePin(id)} type="button">
               <TiPinOutline />
             </button>
-            <button onClick={() => console.log('edit')} type="button">
+            <button onClick={() => handleEdit(id)} type="button">
               <FaEdit />
             </button>
             <button onClick={() => actionReplyToMsg(id)} type="button">

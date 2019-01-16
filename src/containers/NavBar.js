@@ -88,7 +88,7 @@ class NavBar extends React.Component {
             <Fonts.P>
               {moment()
                 .tz(member.timezone)
-                .format('h:m a')}
+                .format('h:mm a')}
             </Fonts.P>
           </Profile.TextWrapper>
         </Profile>

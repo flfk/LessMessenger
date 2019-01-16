@@ -11,11 +11,13 @@ import { MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
-import { MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
+import { WrapperEditMsg } from '../components/message';
+import { Input, MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
 import {
   getMessageSubscription,
   loadMessages,
   togglePinMsg,
+  editMsg,
 } from '../data/messages/messages.actions';
 // import { getAllMessages } from '../data/messages/messages.selectors';
 import Scrollable from '../components/Scrollable';
@@ -27,6 +29,7 @@ const propTypes = {
   actionGetMessageSubscription: PropTypes.func.isRequired,
   actionTogglePin: PropTypes.func.isRequired,
   actionToggleTag: PropTypes.func.isRequired,
+  actionEditMsg: PropTypes.func.isRequired,
   hasMoreMessages: PropTypes.bool.isRequired,
   isLoadingMessages: PropTypes.bool.isRequired,
   isLoadingMembers: PropTypes.bool.isRequired,
@@ -70,11 +73,14 @@ const mapDispatchToProps = dispatch => ({
   actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
   actionToggleTag: tagName => dispatch(toggleTag(tagName)),
   actionGetMessageSubscription: roomId => dispatch(getMessageSubscription(roomId)),
+  actionEditMsg: msg => dispatch(editMsg(msg)),
 });
 
 class Messages extends React.Component {
   state = {
     unsubscribeMessages: null,
+    msgToEditId: '',
+    msgToEditInput: '',
   };
 
   componentDidMount() {
@@ -96,7 +102,26 @@ class Messages extends React.Component {
     }
   }
 
+  handleChangeInput = field => event => this.setState({ [field]: event.target.value });
+
+  handleEdit = id => {
+    const { messages } = this.props;
+    const msgToEdit = messages.find(msg => msg.id === id);
+    this.setState({ msgToEditId: id, msgToEditInput: msgToEdit.content });
+  };
+
+  handleEditCancel = () => this.setState({ msgToEditId: '', msgToEditInput: '' });
+
+  handleEditSave = () => {
+    const { msgToEditId, msgToEditInput } = this.state;
+    const { actionEditMsg, messages } = this.props;
+    const msgToEdit = messages.find(msg => msg.id === msgToEditId);
+    actionEditMsg({ ...msgToEdit, content: msgToEditInput });
+    this.handleEditCancel();
+  };
+
   handleTogglePin = id => {
+    console.log('toggling Pin');
     const { actionTogglePin, messages } = this.props;
     const msg = messages.find(msg => msg.id === id);
     actionTogglePin(id, msg.isPinned);
@@ -125,6 +150,8 @@ class Messages extends React.Component {
   };
 
   render() {
+    const { msgToEditId, msgToEditInput } = this.state;
+
     const {
       hasMoreMessages,
       isLoadingMessages,
@@ -162,6 +189,7 @@ class Messages extends React.Component {
             downloadURL={msg.downloadURL}
             hasHeader
             hasTimer={msg.hasTimer}
+            handleEdit={this.handleEdit}
             handleTogglePin={this.handleTogglePin}
             id={msg.id}
             isAttachment={msg.isAttachment}
@@ -181,6 +209,28 @@ class Messages extends React.Component {
       .groupBy('date')
       .map((group, date) => {
         const msgs = group.map((msg, index) => {
+          // add editing as a feature
+          if (msg.id === msgToEditId) {
+            return (
+              <WrapperEditMsg key={msg.id}>
+                <Input
+                  type="text"
+                  placeholder="Type a message..."
+                  onChange={this.handleChangeInput('msgToEditInput')}
+                  value={msgToEditInput}
+                />
+                <div>
+                  <button type="button" onClick={this.handleEditSave}>
+                    Save
+                  </button>
+                  <button type="button" onClick={this.handleEditCancel}>
+                    Cancel
+                  </button>
+                </div>
+              </WrapperEditMsg>
+            );
+          }
+
           const sender = members.find(member => member.id === msg.senderUserId);
           const isFirstInGroup = index === 0;
           const isNewSender = isFirstInGroup
@@ -205,6 +255,7 @@ class Messages extends React.Component {
               downloadURL={msg.downloadURL}
               hasHeader={hasHeader}
               hasTimer={msg.hasTimer}
+              handleEdit={this.handleEdit}
               handleTogglePin={this.handleTogglePin}
               id={msg.id}
               isAttachment={msg.isAttachment}

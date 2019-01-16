@@ -77,7 +77,6 @@ export const loadMessages = (lastMsgDoc, roomId) => async dispatch => {
 };
 
 export const replyToMsg = msgId => dispatch => {
-  console.log('replying to msg', msgId);
   dispatch({
     type: REPLY_TO_MESSAGE.SUCCESS,
     payload: msgId,
@@ -118,7 +117,7 @@ export const togglePinMsg = (id, isPinned) => async dispatch => {
   }
 };
 
-export const updateMessage = msg => dispatch => {
+export const updateMsgInState = msg => dispatch => {
   dispatch({
     type: UPDATE_MESSAGE.SUCCESS,
     payload: msg,
@@ -163,7 +162,7 @@ export const getMessageSubscription = roomId => async dispatch => {
             msg.id = id;
             msg.timestamp = msg.timestamp.toMillis();
             // console.log('modified', msg);
-            dispatch(updateMessage(msg));
+            dispatch(updateMsgInState(msg));
           }
         });
       });
@@ -177,6 +176,11 @@ export const getMessageSubscription = roomId => async dispatch => {
     });
   }
   return subscription;
+};
+
+export const editMsg = msg => async dispatch => {
+  dispatch(updateMsgInState(msg));
+  await updateDocMsg(msg.id, { content: msg.content });
 };
 
 export const uploadFile = async (file, roomId) => {
