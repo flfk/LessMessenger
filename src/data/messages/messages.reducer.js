@@ -37,7 +37,7 @@ const reducerMessages = (state = initialState, action) => {
         ...state,
         byId: {
           ...state.byId,
-          [action.payload.id]: { ...state[action.payload.id], ...action.payload },
+          [action.payload.id]: { ...state.byId[action.payload.id], ...action.payload },
         },
       };
     default:
