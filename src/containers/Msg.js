@@ -13,7 +13,14 @@ import moment from 'moment-timezone';
 import Colors from '../utils/Colors';
 import Content from '../components/Content';
 import { REGEX_TAG, REGEX_TIMER } from '../utils/Constants';
-import { ContainerMsg, Countdown, DownloadIcon, ProfileImg, Text } from '../components/message';
+import {
+  ContainerMsg,
+  Countdown,
+  DownloadIcon,
+  ImgPreview,
+  ProfileImg,
+  Text,
+} from '../components/message';
 import { replyToMsg } from '../data/messages/messages.actions';
 
 const propTypes = {
@@ -56,6 +63,26 @@ const mapDispatchToProps = dispatch => ({
 
 class Msg extends React.Component {
   state = {};
+
+  getAttachmentJSX = () => {
+    const { downloadURL, fileName, type } = this.props;
+    const isImg = type.indexOf('image/') > -1;
+    if (isImg) {
+      return (
+        <a href={downloadURL} target="_blank">
+          <ImgPreview src={downloadURL} />
+        </a>
+      );
+    }
+    return (
+      <Text.Attachment onClick={this.handleDownload}>
+        <DownloadIcon>
+          <FaFileDownload />
+        </DownloadIcon>{' '}
+        {fileName}
+      </Text.Attachment>
+    );
+  };
 
   getTag = word => {
     const { timestamp, selectTag } = this.props;
@@ -140,16 +167,13 @@ class Msg extends React.Component {
     ) : null;
 
     const text = hasAttachment ? (
-      <Text.Message hasProfileImg={hasHeader} hasAttachment>
-        <Text.Attachment onClick={this.handleDownload}>
-          <DownloadIcon>
-            <FaFileDownload />
-          </DownloadIcon>{' '}
-          {fileName}
-        </Text.Attachment>
+      <div>
+        {this.getAttachmentJSX()}
         <br />
-        {this.getTextWithTags(content)}
-      </Text.Message>
+        <Text.Message hasProfileImg={hasHeader} hasAttachment>
+          {this.getTextWithTags(content)}
+        </Text.Message>
+      </div>
     ) : (
       <Text.Message hasProfileImg={hasHeader}>{this.getTextWithTags(content)}</Text.Message>
     );
