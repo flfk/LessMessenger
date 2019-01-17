@@ -53,6 +53,7 @@ const propTypes = {
   tags: PropTypes.arrayOf(
     PropTypes.shape({ name: PropTypes.string.isRequired, isSelected: PropTypes.bool.isRequired })
   ).isRequired,
+  userId: PropTypes.string,
 };
 
 const defaultProps = {};
@@ -66,6 +67,7 @@ const mapStateToProps = state => ({
   messages: getSelectorAll('messages', state),
   roomId: state.room.id,
   tags: getSelectorAll('tags', state),
+  userId: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -90,10 +92,11 @@ class Messages extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { messages } = this.props;
-    const wasNewMsgAdded =
-      messages[messages.length - 1] !== prevProps.messages[prevProps.messages.length - 1];
-    if (wasNewMsgAdded) {
+    const { messages, userId } = this.props;
+    const newMsg = messages[messages.length - 1];
+    const wasNewMsgAdded = newMsg !== prevProps.messages[prevProps.messages.length - 1];
+    if (wasNewMsgAdded && newMsg.senderUserId !== userId) {
+      // XX TODO decide how exactly to scroll on new message. Possibly only scroll on someone elses message but not your own.
       this.scrollToBottom();
     }
   }

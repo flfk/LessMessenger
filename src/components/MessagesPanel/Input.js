@@ -10,7 +10,8 @@ const Input = styled.textarea`
   border: none;
   font-size: 14px;
   font-family: ${Fonts.family.body};
-  color: ${Colors.greys.primary};
+  color: white;
+  background-color: transparent;
 
   // width: 100%;
   height: 80px;
@@ -18,7 +19,7 @@ const Input = styled.textarea`
   resize: none;
 
   ::placeholder {
-    color: ${Colors.greys.supporting};
+    opacity: 0.8;
   }
 
   :focus {

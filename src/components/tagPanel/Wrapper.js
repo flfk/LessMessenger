@@ -9,6 +9,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin: auto;
+  background-color: ${Colors.background.secondary};
 `;
 
 export default Wrapper;

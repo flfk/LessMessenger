@@ -7,9 +7,8 @@ const NavBarWrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 48px;
-  background-color: #fafafa;
-  border-bottom: 1px solid ${Colors.greys.light};
+  height: 72px;
+  background-color: ${Colors.background.secondary};
 `;
 
 export default NavBarWrapper;

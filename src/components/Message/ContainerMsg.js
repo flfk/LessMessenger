@@ -6,7 +6,7 @@ const ContainerMsg = styled.div`
   display: flex;
   justify-content: space-between;
   :hover {
-    background-color: ${Colors.greys.light};
+    background-color: ${Colors.background.supporting};
   }
   ${props => (props.isPinned ? 'max-height: 42px;' : '')}
   ${props => (props.isPinned ? 'white-space: nowrap;' : '')}

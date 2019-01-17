@@ -33,8 +33,10 @@ const Timestamp = styled.span`
 `;
 
 const Reply = styled(Message)`
-  background-color: ${Colors.greys.light};
-  color: ${Colors.greys.supporting};
+  background-color: ${Colors.background.secondary};
+  border-radius: 5px;
+  color: white;
+  opacity: 0.8;
   max-height: 2em;
   overflow: hidden;
   white-space- nowrap;
