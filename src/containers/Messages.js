@@ -43,7 +43,7 @@ const propTypes = {
     PropTypes.shape({
       content: PropTypes.string.isRequired,
       downloadURL: PropTypes.string,
-      isAttachment: PropTypes.bool,
+      hasAttachment: PropTypes.bool,
       senderUserId: PropTypes.string.isRequired,
       type: PropTypes.string,
       timestamp: PropTypes.number.isRequired,
@@ -189,12 +189,14 @@ class Messages extends React.Component {
             key={msg.id}
             content={msg.content}
             downloadURL={msg.downloadURL}
+            fileName={msg.fileName}
+            hasAttachment={msg.hasAttachment}
             hasHeader
             hasTimer={msg.hasTimer}
             handleEdit={this.handleEdit}
             handleTogglePin={this.handleTogglePin}
             id={msg.id}
-            isAttachment={msg.isAttachment}
+            // isAttachment={msg.isAttachment}
             isPinned
             profileImgURL={sender.profileImgURL}
             selectTag={this.selectTag}
@@ -255,12 +257,14 @@ class Messages extends React.Component {
               key={msg.id}
               content={msg.content}
               downloadURL={msg.downloadURL}
+              fileName={msg.fileName}
+              hasAttachment={msg.hasAttachment}
               hasHeader={hasHeader}
               hasTimer={msg.hasTimer}
               handleEdit={this.handleEdit}
               handleTogglePin={this.handleTogglePin}
               id={msg.id}
-              isAttachment={msg.isAttachment}
+              // isAttachment={msg.isAttachment}
               isPinned={false}
               msgBeingRepliedTo={msgBeingRepliedTo ? msgBeingRepliedTo.content : ''}
               senderBeingRepliedTo={senderBeingRepliedTo ? senderBeingRepliedTo.name : ''}

@@ -69,8 +69,9 @@ class MessagePanel extends React.Component {
     });
 
   getAttachmentFields = (downloadURL, file) => ({
-    isAttachment: true,
     downloadURL,
+    fileName: file.name,
+    hasAttachment: true,
     type: file.type,
   });
 
@@ -82,12 +83,11 @@ class MessagePanel extends React.Component {
 
   getNewMsg = content => {
     const { senderUserId, roomId, msgIdBeingRepliedTo } = this.props;
-
     const hasTimer = content.match(REGEX_TIMER) !== null;
-
     return {
       content,
       isPinned: false,
+      hasAttachment: false,
       hasTimer,
       msgIdBeingRepliedTo,
       roomId,
@@ -100,29 +100,23 @@ class MessagePanel extends React.Component {
 
   handleSubmit = async () => {
     const { files, msgInput } = this.state;
-    const { actionCancelReply, actionSendMessage, roomId } = this.props;
+    const { actionCancelReply, actionSendMessage, msgIdBeingRepliedTo, roomId } = this.props;
 
-    if (msgInput) {
-      const newMsg = this.getNewMsg(msgInput);
-      actionSendMessage(newMsg);
-      this.setState({ msgInput: '' });
-    }
-
+    const newMsg = this.getNewMsg(msgInput);
+    this.setState({ files: [], msgInput: '' });
     if (files.length > 0) {
       await Promise.all(
         files.map(async file => {
-          const newMsg = this.getNewMsg(file.name);
-          this.setState({ files: [] });
           const uploadTask = await uploadFile(file, roomId);
           const downloadURL = await uploadTask.ref.getDownloadURL();
           const attachmentFields = this.getAttachmentFields(downloadURL, file);
           actionSendMessage({ ...newMsg, ...attachmentFields });
         })
       );
+    } else {
+      actionSendMessage(newMsg);
     }
-
-    // remove Id of msgInput being replied to
-    actionCancelReply();
+    if (msgIdBeingRepliedTo) actionCancelReply();
   };
 
   // To allows form to be submitted using enter key

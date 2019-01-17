@@ -20,9 +20,10 @@ const propTypes = {
   actionReplyToMsg: PropTypes.func.isRequired,
   content: PropTypes.string.isRequired,
   downloadURL: PropTypes.string,
+  fileName: PropTypes.string,
   id: PropTypes.string.isRequired,
   isPinned: PropTypes.bool,
-  isAttachment: PropTypes.bool,
+  hasAttachment: PropTypes.bool,
   hasHeader: PropTypes.bool.isRequired,
   hasTimer: PropTypes.bool,
   handleEdit: PropTypes.func.isRequired,
@@ -38,8 +39,9 @@ const propTypes = {
 
 const defaultProps = {
   downloadURL: '',
+  fileName: '',
   hasTimer: false,
-  isAttachment: false,
+  hasAttachment: false,
   isPinned: false,
   msgBeingRepliedTo: '',
   senderBeingRepliedTo: '',
@@ -95,7 +97,7 @@ class Msg extends React.Component {
   };
 
   handleDownload = () => {
-    const { content, downloadURL } = this.props;
+    const { downloadURL, fileName } = this.props;
     axios({
       url: downloadURL,
       method: 'GET',
@@ -104,7 +106,7 @@ class Msg extends React.Component {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', content);
+      link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
     });
@@ -114,8 +116,9 @@ class Msg extends React.Component {
     const {
       actionReplyToMsg,
       content,
+      fileName,
+      hasAttachment,
       id,
-      isAttachment,
       isPinned,
       hasHeader,
       handleEdit,
@@ -136,14 +139,16 @@ class Msg extends React.Component {
       </Text.Header>
     ) : null;
 
-    const text = isAttachment ? (
+    const text = hasAttachment ? (
       <Text.Message hasProfileImg={hasHeader} hasAttachment>
         <Text.Attachment onClick={this.handleDownload}>
           <DownloadIcon>
             <FaFileDownload />
           </DownloadIcon>{' '}
-          {content}
+          {fileName}
         </Text.Attachment>
+        <br />
+        {this.getTextWithTags(content)}
       </Text.Message>
     ) : (
       <Text.Message hasProfileImg={hasHeader}>{this.getTextWithTags(content)}</Text.Message>
