@@ -4,7 +4,7 @@ import Colors from '../../utils/Colors';
 
 const TagItem = styled.button`
   border: 1px solid blue;
-  height: 72px;
+  padding: 8px;
   width: 100%;
   display: flex;
   flex-direction: column;

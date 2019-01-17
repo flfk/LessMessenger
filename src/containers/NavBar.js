@@ -12,6 +12,8 @@ import { Dropdown, List, Profile, Wrapper } from '../components/navBar';
 import { auth } from '../data/firebase';
 import { getLoggedInUser, signOut } from '../data/user/user.actions';
 
+const MILLIS_PER_SECOND = 1000;
+
 const propTypes = {
   actionGetLoggedInUser: PropTypes.func.isRequired,
   actionSignOut: PropTypes.func.isRequired,
@@ -38,15 +40,17 @@ const mapDispatchToProps = dispatch => ({
 class NavBar extends React.Component {
   state = {
     showDropDown: false,
+    timestamp: 0,
   };
 
   componentDidMount() {
     this.getSignedInUser();
+    this.startClock();
   }
 
-  handleClickProfile = () => {
-    // this.setState({ showDropDown: true });
-  };
+  componentWillUnmount() {
+    this.stopClock();
+  }
 
   getSignedInUser = async () => {
     const { actionGetLoggedInUser } = this.props;
@@ -55,8 +59,22 @@ class NavBar extends React.Component {
     });
   };
 
+  handleClickProfile = () => {
+    // this.setState({ showDropDown: true });
+  };
+
+  startClock = () => {
+    this.interval = setInterval(() => {
+      this.setState({ timestamp: moment().valueOf() });
+    }, MILLIS_PER_SECOND);
+  };
+
+  stopClock = () => {
+    clearInterval(this.interval);
+  };
+
   render() {
-    const { showDropDown } = this.state;
+    const { showDropDown, timestamp } = this.state;
 
     const { actionSignOut, members, roomName, userId } = this.props;
 
@@ -78,22 +96,24 @@ class NavBar extends React.Component {
       .filter(member => member.id !== userId);
     if (user) membersSorted.push(user);
 
-    const memberProfiles = membersSorted.map(member => {
-      const isUser = member.id === userId;
-      return (
-        <Profile key={member.id}>
-          <Profile.Img src={member.profileImgURL} />
-          <Profile.TextWrapper>
-            <Fonts.FinePrint>{isUser ? `${member.name} (you)` : member.name}</Fonts.FinePrint>
-            <Fonts.P>
-              {moment()
-                .tz(member.timezone)
-                .format('h:mm a')}
-            </Fonts.P>
-          </Profile.TextWrapper>
-        </Profile>
-      );
-    });
+    const memberProfiles = !userId
+      ? null
+      : membersSorted.map(member => {
+          const isUser = member.id === userId;
+          return (
+            <Profile key={member.id}>
+              <Profile.Img src={member.profileImgURL} />
+              <Profile.TextWrapper>
+                <Fonts.FinePrint>{isUser ? `${member.name} (you)` : member.name}</Fonts.FinePrint>
+                <Fonts.P>
+                  {moment(timestamp)
+                    .tz(member.timezone)
+                    .format('h:mm a')}
+                </Fonts.P>
+              </Profile.TextWrapper>
+            </Profile>
+          );
+        });
 
     return (
       <div>

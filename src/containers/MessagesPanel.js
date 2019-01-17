@@ -47,6 +47,10 @@ class MessagePanel extends React.Component {
     files: [],
   };
 
+  componentDidMount() {
+    document.onpaste = this.onPaste;
+  }
+
   componentDidUpdate(prevProps, prevState) {
     const { tagsSelected } = this.props;
     const { msgInput } = this.state;
@@ -59,34 +63,16 @@ class MessagePanel extends React.Component {
     }
   }
 
-  setTagHelpers = (tagsSelectedPrev, wasMsgSent) => {
-    const { tagsSelected } = this.props;
-    const { msgInput } = this.state;
+  createFileObj = file =>
+    Object.assign(file, {
+      preview: URL.createObjectURL(file),
+    });
 
-    const tagIdsPrev = tagsSelectedPrev.map(tag => tag.id);
-    const tagIdsCurrent = tagsSelected.map(tag => tag.id);
-    let msgInputUpdated = msgInput.trim();
-
-    if (wasMsgSent) {
-      tagIdsCurrent.forEach(tag => {
-        msgInputUpdated = `${tag} ${msgInputUpdated}`;
-      });
-    } else {
-      const tagIdsAdded = tagIdsCurrent.filter(tag => !(tagIdsPrev.indexOf(tag) > -1));
-      const tagIdsRemoved = tagIdsPrev.filter(tag => !(tagIdsCurrent.indexOf(tag) > -1));
-      tagIdsAdded.forEach(tag => {
-        msgInputUpdated = `${tag} ${msgInputUpdated}`;
-      });
-      tagIdsRemoved.forEach(tag => {
-        const isTagInInput = msgInputUpdated.indexOf(tag) > -1;
-        if (isTagInInput) {
-          msgInputUpdated = msgInputUpdated.replace(tag, '');
-        }
-      });
-    }
-
-    this.setState({ msgInput: msgInputUpdated });
-  };
+  getAttachmentFields = (downloadURL, file) => ({
+    isAttachment: true,
+    downloadURL,
+    type: file.type,
+  });
 
   getMsg = msgId => {
     const { messages } = this.props;
@@ -109,12 +95,6 @@ class MessagePanel extends React.Component {
       // Timestamp added in actions based on server
     };
   };
-
-  getAttachmentFields = (downloadURL, file) => ({
-    isAttachment: true,
-    downloadURL,
-    type: file.type,
-  });
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
@@ -154,15 +134,11 @@ class MessagePanel extends React.Component {
   };
 
   onDrop = filesDropped => {
-    console.log(filesDropped);
     const { files } = this.state;
     const filesUpdated = files.slice();
-    filesDropped.map(file => {
-      filesUpdated.push(
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        })
-      );
+    filesDropped.forEach(file => {
+      const fileObj = this.createFileObj(file);
+      filesUpdated.push(fileObj);
     });
     this.setState({ files: filesUpdated });
   };
@@ -171,6 +147,49 @@ class MessagePanel extends React.Component {
     this.setState({
       files: [],
     });
+  };
+
+  onPaste = event => {
+    const { files } = event.clipboardData || event.originalEvent.clipboardData;
+    if (files.length > 0) {
+      event.preventDefault();
+      const stateFiles = this.state.files;
+      const filesUpdated = stateFiles.slice();
+      Array.from(files).forEach(file => {
+        const fileObj = this.createFileObj(file);
+        filesUpdated.push(fileObj);
+      });
+      this.setState({ files: filesUpdated });
+    }
+  };
+
+  setTagHelpers = (tagsSelectedPrev, wasMsgSent) => {
+    const { tagsSelected } = this.props;
+    const { msgInput } = this.state;
+
+    const tagIdsPrev = tagsSelectedPrev.map(tag => tag.id);
+    const tagIdsCurrent = tagsSelected.map(tag => tag.id);
+    let msgInputUpdated = msgInput.trim();
+
+    if (wasMsgSent) {
+      tagIdsCurrent.forEach(tag => {
+        msgInputUpdated = `${tag} ${msgInputUpdated}`;
+      });
+    } else {
+      const tagIdsAdded = tagIdsCurrent.filter(tag => !(tagIdsPrev.indexOf(tag) > -1));
+      const tagIdsRemoved = tagIdsPrev.filter(tag => !(tagIdsCurrent.indexOf(tag) > -1));
+      tagIdsAdded.forEach(tag => {
+        msgInputUpdated = `${tag} ${msgInputUpdated}`;
+      });
+      tagIdsRemoved.forEach(tag => {
+        const isTagInInput = msgInputUpdated.indexOf(tag) > -1;
+        if (isTagInInput) {
+          msgInputUpdated = msgInputUpdated.replace(tag, '');
+        }
+      });
+    }
+
+    this.setState({ msgInput: msgInputUpdated });
   };
 
   render() {

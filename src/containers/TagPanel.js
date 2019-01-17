@@ -33,9 +33,18 @@ class TagPanel extends React.Component {
   state = {};
 
   handleToggleTag = event => {
-    console.log('handling toggle tag', event.currentTarget.value);
     const { actionToggleTag } = this.props;
     actionToggleTag(event.currentTarget.value);
+  };
+
+  sortTags = (a, b) => {
+    if (a.id < b.id) {
+      return -1;
+    }
+    if (a.id > b.id) {
+      return 1;
+    }
+    return 0;
   };
 
   render() {
@@ -43,13 +52,12 @@ class TagPanel extends React.Component {
 
     const hasTagsSelected = tags.filter(tag => tag.isSelected).length > 0;
 
-    const tagsList = tags.map(tag => {
+    const tagsList = tags.sort(this.sortTags).map(tag => {
       const isSelected = hasTagsSelected ? tag.isSelected : true;
       // console.log(tag);
       return (
         <TagItem key={tag.id} onClick={this.handleToggleTag} value={tag.id}>
           <TagHeader isSelected={isSelected}>{tag.name}</TagHeader>
-          <TagPreview>preview</TagPreview>
         </TagItem>
       );
     });

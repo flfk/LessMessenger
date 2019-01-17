@@ -7,7 +7,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 
 import Content from '../components/Content';
-import { MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
+import { MESSAGES_PER_LOAD, MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
@@ -85,12 +85,15 @@ class Messages extends React.Component {
 
   componentDidMount() {
     this.subscribeMessages();
+    this.scrollToBottom();
+    console.log('component mounted, scroll');
   }
 
   componentDidUpdate(prevProps) {
-    // only scroll to bottom on new messages, not loading more old ones
     const { messages } = this.props;
-    if (messages[messages.length - 1] !== prevProps.messages[prevProps.messages.length - 1]) {
+    const wasNewMsgAdded =
+      messages[messages.length - 1] !== prevProps.messages[prevProps.messages.length - 1];
+    if (wasNewMsgAdded) {
       this.scrollToBottom();
     }
   }
@@ -169,12 +172,12 @@ class Messages extends React.Component {
       selectedTagNames.length === 0
         ? messages
         : messages.filter(msg => {
-            let isMsgTagSelected = false;
+            let areMsgTagsSelected = true;
             const msgTags = getTags(msg.content);
-            msgTags.forEach(msgTag => {
-              isMsgTagSelected = isMsgTagSelected || selectedTagNames.indexOf(msgTag) > -1;
+            selectedTagNames.forEach(tag => {
+              areMsgTagsSelected = areMsgTagsSelected && msgTags.indexOf(tag) > -1;
             });
-            return isMsgTagSelected;
+            return areMsgTagsSelected;
           });
 
     const msgsPinnedContainer = messagesFiltered

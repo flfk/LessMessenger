@@ -113,6 +113,9 @@ class Countdown extends React.Component {
         <Unit>
           <span>{mins}m</span>
         </Unit>
+        <Unit>
+          <span>{secs}s</span>
+        </Unit>
       </Container>
     );
   }
