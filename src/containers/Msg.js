@@ -4,7 +4,7 @@ import Emojify from 'react-emojione';
 import React from 'react';
 import { connect } from 'react-redux';
 import { FaFileDownload, FaEdit, FaReply } from 'react-icons/fa';
-import { TiPinOutline } from 'react-icons/ti';
+import { TiPinOutline, TiPin } from 'react-icons/ti';
 import Linkify from 'react-linkify';
 import reactStringReplace from 'react-string-replace';
 import PropTypes from 'prop-types';
@@ -13,7 +13,9 @@ import moment from 'moment-timezone';
 import Colors from '../utils/Colors';
 import Content from '../components/Content';
 import { REGEX_TAG, REGEX_TIMER } from '../utils/Constants';
+import Fonts from '../utils/Fonts';
 import {
+  Btn,
   ContainerMsg,
   Countdown,
   DownloadIcon,
@@ -161,9 +163,9 @@ class Msg extends React.Component {
     const profileImg = hasHeader ? <ProfileImg src={profileImgURL} /> : null;
 
     const header = hasHeader ? (
-      <Text.Header hasProfileImg={hasHeader}>
+      <Fonts.FinePrint isSupporting hasProfileImg={hasHeader}>
         {senderName} <Text.Timestamp>{moment(timestamp).format('h:mm a')}</Text.Timestamp>
-      </Text.Header>
+      </Fonts.FinePrint>
     ) : null;
 
     const text = hasAttachment ? (
@@ -197,15 +199,15 @@ class Msg extends React.Component {
             {text}
           </Text.Wrapper>
           <ContainerMsg.Buttons>
-            <button onClick={() => handleTogglePin(id)} type="button">
-              <TiPinOutline />
-            </button>
-            <button onClick={() => handleEdit(id)} type="button">
+            <Btn onClick={() => handleTogglePin(id)}>
+              <TiPin />
+            </Btn>
+            <Btn onClick={() => handleEdit(id)}>
               <FaEdit />
-            </button>
-            <button onClick={() => actionReplyToMsg(id)} type="button">
+            </Btn>
+            <Btn onClick={() => actionReplyToMsg(id)}>
               <FaReply />
-            </button>
+            </Btn>
           </ContainerMsg.Buttons>
         </ContainerMsg>
       </ContainerMsg.Wrapper>

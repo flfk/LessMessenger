@@ -4,13 +4,13 @@ import 'typeface-roboto';
 import Colors from './Colors';
 import Media from './Media';
 
-const FONT_FAMILY = {
+const FontFamily = {
   logo: 'LeckerliOne, sans-serif',
   header: 'Roboto, sans-serif',
   body: 'Roboto, sans-serif',
 };
 
-const FONT_SIZES = {
+const FontSizes = {
   logo: '32px',
   xl: '40px',
   h1: '32px',
@@ -20,25 +20,19 @@ const FONT_SIZES = {
   finePrint: '12px',
 };
 
-const FONT_OPACITY = {
+const FontOpacity = {
   primary: 100,
   secondary: 0.8,
   tertiary: 0.54,
 };
 
-const LOGO = styled.span`
-  font-size: ${FONT_SIZES.logo};
-  font-family: ${FONT_FAMILY.logo};
-  font-weight: 400;
-`;
-
 const H1 = styled.h1`
-  font-size: ${FONT_SIZES.h1};
-  font-size: ${props => (props.extraLarge ? FONT_SIZES.xl : '')};
-  font-family: ${FONT_FAMILY.header};
+  font-size: ${FontSizes.h1};
+  font-size: ${props => (props.extraLarge ? FontSizes.xl : '')};
+  font-family: ${FontFamily.header};
   color: white;
-  opacity: ${props => (props.isSecondary ? FONT_OPACITY.secondary : '')};
-  opacity: ${props => (props.isSupporting ? FONT_OPACITY.supporting : '')};
+  opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
+  opacity: ${props => (props.isSupporting ? FontOpacity.tertiary : '')};
   font-weight: 600;
   text-align: ${props => (props.centered ? 'center' : '')};
   margin: ${props => (props.noMargin ? '0px' : '')};
@@ -47,11 +41,11 @@ const H1 = styled.h1`
 `;
 
 const H2 = styled.h2`
-  font-size: ${FONT_SIZES.h2};
-  font-family: ${FONT_FAMILY.header};
+  font-size: ${FontSizes.h2};
+  font-family: ${FontFamily.header};
   color: white;
-  opacity: ${props => (props.isSecondary ? FONT_OPACITY.secondary : '')};
-  opacity: ${props => (props.isSupporting ? FONT_OPACITY.supporting : '')};
+  opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
+  opacity: ${props => (props.isSupporting ? FontOpacity.tertiary : '')};
   font-weight: 600;
   text-align: ${props => (props.centered ? 'center' : '')};
   margin: ${props => (props.noMargin ? '0px' : '')};
@@ -59,11 +53,11 @@ const H2 = styled.h2`
 `;
 
 const H3 = styled.h3`
-  font-size: ${FONT_SIZES.h3};
-  font-family: ${FONT_FAMILY.header};
+  font-size: ${FontSizes.h3};
+  font-family: ${FontFamily.header};
   color: white;
-  opacity: ${props => (props.isSecondary ? FONT_OPACITY.secondary : '')};
-  opacity: ${props => (props.isSupporting ? FONT_OPACITY.supporting : '')};
+  opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
+  opacity: ${props => (props.isSupporting ? FontOpacity.tertiary : '')};
   font-weight: 400;
   text-align: ${props => (props.centered ? 'center' : '')};
   margin: ${props => (props.noMargin ? '0px' : '')};
@@ -74,31 +68,31 @@ const H3 = styled.h3`
 `;
 
 const P = styled.p`
-  font-size: ${FONT_SIZES.p};
-  font-family: ${FONT_FAMILY.body};
+  font-size: ${FontSizes.p};
+  font-family: ${FontFamily.body};
   font-weight: 400;
   color: white;
-  opacity: ${props => (props.isSecondary ? FONT_OPACITY.secondary : '')};
-  opacity: ${props => (props.isSupporting ? FONT_OPACITY.supporting : '')};
-  ${props => (props.isSupporting ? `color: ${Colors.greys.supporting};` : '')}
+  opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
+  opacity: ${props => (props.isSupporting ? FontOpacity.tertiary : '')};
+  ${props => (props.isSupporting ? `color: ${Colors.greys.tertiary};` : '')}
   ${props => (props.isSecondary ? `color: ${Colors.greys.secondary};` : '')}
   margin: 0;
   text-align: ${props => (props.centered ? 'center' : '')};
 `;
 
 const FinePrint = styled.span`
-  font-size: ${FONT_SIZES.finePrint};
-  font-family: ${FONT_FAMILY.body};
+  font-size: ${FontSizes.finePrint};
+  font-family: ${FontFamily.body};
   font-weight: 300;
   color: white;
-  opacity: ${props => (props.isSecondary ? FONT_OPACITY.secondary : '')};
-  opacity: ${props => (props.isSupporting ? FONT_OPACITY.supporting : '')};
+  opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
+  opacity: ${props => (props.isSupporting ? FontOpacity.tertiary : '')};
   text-align: center;
 `;
 
-const ERROR = styled.p`
-  font-size: ${FONT_SIZES.p};
-  font-family: ${FONT_FAMILY.body};
+const Err = styled.p`
+  font-size: ${FontSizes.p};
+  font-family: ${FontFamily.body};
   font-weight: bold;
   color: ${Colors.error.primary};
   margin: 8px 0;
@@ -129,16 +123,16 @@ const Link = styled.span`
 `;
 
 const Fonts = {};
-Fonts.family = FONT_FAMILY;
-Fonts.sizes = FONT_SIZES;
-Fonts.LOGO = LOGO;
+Fonts.family = FontFamily;
+Fonts.sizes = FontSizes;
+Fonts.opacity = FontOpacity;
 Fonts.H1 = H1;
 Fonts.H2 = H2;
 Fonts.H3 = H3;
 Fonts.P = P;
 Fonts.Link = Link;
 Fonts.FinePrint = FinePrint;
-Fonts.ERROR = ERROR;
+Fonts.Err = Err;
 Fonts.A = A;
 
 export default Fonts;

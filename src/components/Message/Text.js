@@ -18,9 +18,9 @@ const Message = styled(Fonts.P)`
   margin-left: ${props => (props.hasProfileImg ? '16px' : '56px')};
 `;
 
+// Can delete later
 const Header = styled(Message)`
   line-height: 1em;
-  font-weight: bold;
 `;
 
 const Tag = styled(Fonts.A)`

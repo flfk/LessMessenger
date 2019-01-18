@@ -212,10 +212,7 @@ class MessagePanel extends React.Component {
       <Container>
         <Dropzone onDrop={this.onDrop} onFileDialogCancel={this.onCancel}>
           {({ getRootProps }) => (
-            <div
-              {...getRootProps()}
-              style={{ backgroundColor: 'purple', display: 'flex', flexDirection: 'column' }}
-            >
+            <div {...getRootProps()} style={{ display: 'flex', flexDirection: 'column' }}>
               <Messages />
               <InputContainer>
                 {reply}

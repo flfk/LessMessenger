@@ -8,8 +8,7 @@ const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${Colors.background.secondary};
-  border: 1px solid blue;
-  border-top: 1px solid ${Colors.greys.supporting};
+  border-top: 1px solid ${Colors.background.supporting};
 `;
 
 export default InputContainer;

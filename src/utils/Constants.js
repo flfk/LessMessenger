@@ -4,6 +4,6 @@ export const REGEX_TAG = /(?:^|\s)(#[a-z0-9]\w*)/gi;
 
 export const REGEX_TIMER = /\+timer\(\d+:\d+:\d+\)/gi;
 
-export const MESSAGES_PER_LOAD = 200;
+export const MESSAGES_PER_LOAD = 20;
 
 export const MIN_TIME_DIFF_UNTIL_HEADER_MILLIS = 60000 * 10;

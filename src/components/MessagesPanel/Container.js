@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
+import Colors from '../../utils/Colors';
 import Media from '../../utils/Media';
 
 const Container = styled.div`
-  border: 1px solid green;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -11,6 +11,8 @@ const Container = styled.div`
   align-content: flex-end;
   margin: auto;
   height: 100%;
+
+  background-color: ${Colors.background.primary};
 
   > div:focus {
     outline: none;
