@@ -9,8 +9,9 @@ const propTypes = {
 const defaultProps = {};
 
 const ImgDiv = styled.div`
-  height: 40px;
-  flex-basis: 40px;
+  align-self: flex-start;
+  height: 32px;
+  flex-basis: 32px;
   flex-shrink: 0;
   background-image: url(${props => props.src});
   background-size: cover;

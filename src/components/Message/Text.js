@@ -14,8 +14,7 @@ const Message = styled(Fonts.P)`
   word-wrap: break-word
   white-space: pre-line;
   font-size: 14px;
-  line-height: ${props => (props.hasAttachment ? '2.5em' : '2em')};
-  margin-left: ${props => (props.hasProfileImg ? '16px' : '56px')};
+  // line-height: ${props => (props.hasAttachment ? '2.5em' : '2em')};
 `;
 
 // Can delete later
@@ -24,7 +23,9 @@ const Header = styled(Message)`
 `;
 
 const Tag = styled(Fonts.A)`
-  color: ${props => (props.isSelected ? Colors.primary.red : Colors.greys.secondary)};
+  // color: ${props => (props.isSelected ? Colors.primary.red : Colors.greys.supporting)};
+  color: white;
+  opacity: ${Fonts.opacity.primary};
 `;
 
 const Timestamp = styled.span`
@@ -33,19 +34,18 @@ const Timestamp = styled.span`
 `;
 
 const Reply = styled(Message)`
-  background-color: ${Colors.background.secondary};
-  border-radius: 5px;
   color: white;
-  opacity: 0.8;
-  max-height: 2em;
+  width: 100%;
   overflow: hidden;
   white-space- nowrap;
   text-overflow: ellipsis;
 `;
 
 const Wrapper = styled.div`
+  margin-left: ${props => (props.hasProfileImg ? '16px' : '48px')};
   margin-right: auto;
   max-width: calc(100% - 120px);
+  flex-grow: 1;
 `;
 
 const Text = {};

@@ -163,7 +163,7 @@ class Msg extends React.Component {
     const profileImg = hasHeader ? <ProfileImg src={profileImgURL} /> : null;
 
     const header = hasHeader ? (
-      <Fonts.Label isSupporting hasProfileImg={hasHeader}>
+      <Fonts.Label isSupporting>
         {senderName} <Text.Timestamp>{moment(timestamp).format('h:mm a')}</Text.Timestamp>
       </Fonts.Label>
     ) : null;
@@ -172,20 +172,18 @@ class Msg extends React.Component {
       <div>
         {this.getAttachmentJSX()}
         <br />
-        <Text.Message hasProfileImg={hasHeader} hasAttachment>
-          {this.getTextWithTags(content)}
-        </Text.Message>
+        <Text.Message hasAttachment>{this.getTextWithTags(content)}</Text.Message>
       </div>
     ) : (
-      <Text.Message hasProfileImg={hasHeader}>{this.getTextWithTags(content)}</Text.Message>
+      <Text.Message>{this.getTextWithTags(content)}</Text.Message>
     );
 
     const spacing = hasHeader && !isPinned ? <Content.Spacing /> : <Content.Spacing8px />;
 
     const replyPreview = msgBeingRepliedTo ? (
-      <Text.Reply
-        hasProfileImg={hasHeader}
-      >{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
+      <ContainerMsg.Reply>
+        <Text.Reply>{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
+      </ContainerMsg.Reply>
     ) : null;
 
     return (
@@ -193,7 +191,7 @@ class Msg extends React.Component {
         {spacing}
         <ContainerMsg isPinned={isPinned}>
           {profileImg}
-          <Text.Wrapper>
+          <Text.Wrapper hasProfileImg={hasHeader}>
             {header}
             {replyPreview}
             {text}

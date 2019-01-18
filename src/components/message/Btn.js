@@ -1,20 +1,20 @@
 import styled from 'styled-components';
 
-import Colors from '../../utils/Colors';
+import Fonts from '../../utils/Fonts';
 
 const Btn = styled.button`
   color: white;
-  opacity: 0.54;
+  opacity: ${Fonts.opacity.secondary};
   background-color: transparent;
   border: none;
-  font-size: 16px;
+  font-size: 14px;
 
   :focus {
     outline: none;
   }
 
   :hover {
-    opacity: 0.8;
+    opacity: ${Fonts.opacity.primary};
   }
 `;
 

@@ -1,11 +1,14 @@
 import styled from 'styled-components';
 
 import Colors from '../../utils/Colors';
+import Fonts from '../../utils/Fonts';
 
 const ContainerMsg = styled.div`
-  padding-left: 16px;
+  padding: 4px 0px 4px 16px;
+
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
   :hover {
     background-color: ${Colors.background.tertiary};
   }
@@ -18,6 +21,7 @@ const ContainerMsg = styled.div`
 const Buttons = styled.div`
   display: none;
   color: ${Colors.greys.tertiary};
+  height: 16px;
 
   ${ContainerMsg}:hover & {
     display: flex;
@@ -26,13 +30,12 @@ const Buttons = styled.div`
   }
 `;
 
-const Reply = styled.span`
-  background-color: ${Colors.greys.light};
-  display: block
-  width: 400px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+const Reply = styled.div`
+  margin: 4px 0;
+  padding: 4px 16px;
+  background-color: ${Colors.background.secondary};
+  opacity: ${Fonts.opacity.primary};
+  border-radius: 5px;
 `;
 
 const Wrapper = styled.div`

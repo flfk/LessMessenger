@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Colors from '../../utils/Colors';
 
 const InputContainer = styled.div`
-  padding: 0 0 16px 0;
+  padding: 0 56px 16px 56px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;

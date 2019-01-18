@@ -9,7 +9,6 @@ const propTypes = {
 const defaultProps = {};
 
 const ImgDiv = styled.div`
-  margin-left: 56px;
   width: 280px;
   height: 280px;
   background-image: url(${props => props.src});

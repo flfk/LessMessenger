@@ -11,7 +11,7 @@ import { MESSAGES_PER_LOAD, MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/C
 import Fonts from '../utils/Fonts';
 import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
-import { WrapperEditMsg } from '../components/message';
+import { ContainerMsg, Text, WrapperEditMsg } from '../components/message';
 import { Input, MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
 import {
   getMessageSubscription,
@@ -219,22 +219,26 @@ class Messages extends React.Component {
           // add editing as a feature
           if (msg.id === msgToEditId) {
             return (
-              <WrapperEditMsg key={msg.id}>
-                <Input
-                  type="text"
-                  placeholder="Type a message..."
-                  onChange={this.handleChangeInput('msgToEditInput')}
-                  value={msgToEditInput}
-                />
-                <div>
-                  <button type="button" onClick={this.handleEditSave}>
-                    Save
-                  </button>
-                  <button type="button" onClick={this.handleEditCancel}>
-                    Cancel
-                  </button>
-                </div>
-              </WrapperEditMsg>
+              <ContainerMsg key={msg.id}>
+                <Text.Wrapper>
+                  <WrapperEditMsg>
+                    <Input
+                      type="text"
+                      placeholder="Type a message..."
+                      onChange={this.handleChangeInput('msgToEditInput')}
+                      value={msgToEditInput}
+                    />
+                    <div>
+                      <button type="button" onClick={this.handleEditSave}>
+                        Save
+                      </button>
+                      <button type="button" onClick={this.handleEditCancel}>
+                        Cancel
+                      </button>
+                    </div>
+                  </WrapperEditMsg>
+                </Text.Wrapper>
+              </ContainerMsg>
             );
           }
 

@@ -5,8 +5,6 @@ import Fonts from '../../utils/Fonts';
 
 const Input = styled.textarea`
   padding: 0;
-  padding-left: 56px;
-  padding-right: 56px;
   border: none;
   font-size: 14px;
   font-family: ${Fonts.family.body};
