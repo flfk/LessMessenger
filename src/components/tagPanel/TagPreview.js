@@ -4,7 +4,7 @@ import Colors from '../../utils/Colors';
 
 const TagPreview = styled.div`
   font-size: 14px;
-  color: ${Colors.greys.supporting};
+  color: ${Colors.greys.tertiary};
 `;
 
 export default TagPreview;

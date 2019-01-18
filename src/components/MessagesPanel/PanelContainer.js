@@ -8,7 +8,7 @@ const PanelContainer = styled.div`
   min-height: 100%;
   flex-direction: column;
   background-color: ${Colors.background.primary};
-  border-right: 1px solid ${Colors.background.supporting};
+  border-right: 1px solid ${Colors.background.tertiary};
 `;
 
 export default PanelContainer;

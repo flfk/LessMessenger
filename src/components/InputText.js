@@ -120,7 +120,7 @@ const Input = styled.input`
   border-color: ${props => (props.isValid ? Colors.primary.green : '')};
 
   ::placeholder {
-    color: ${Colors.greys.supporting};
+    color: ${Colors.greys.tertiary};
   }
 
   :focus {
@@ -143,7 +143,7 @@ const InputArea = styled.textarea`
   border-color: ${props => (props.isValid ? Colors.primary.green : '')};
 
   ::placeholder {
-    color: ${Colors.greys.supporting};
+    color: ${Colors.greys.tertiary};
   }
 
   :focus {

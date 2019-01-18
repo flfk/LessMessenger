@@ -32,7 +32,7 @@ const H1 = styled.h1`
   font-family: ${FontFamily.header};
   color: white;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
-  opacity: ${props => (props.isSupporting ? FontOpacity.tertiary : '')};
+  opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   font-weight: 600;
   text-align: ${props => (props.centered ? 'center' : '')};
   margin: ${props => (props.noMargin ? '0px' : '')};
@@ -45,7 +45,7 @@ const H2 = styled.h2`
   font-family: ${FontFamily.header};
   color: white;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
-  opacity: ${props => (props.isSupporting ? FontOpacity.tertiary : '')};
+  opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   font-weight: 600;
   text-align: ${props => (props.centered ? 'center' : '')};
   margin: ${props => (props.noMargin ? '0px' : '')};
@@ -57,7 +57,7 @@ const H3 = styled.h3`
   font-family: ${FontFamily.header};
   color: white;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
-  opacity: ${props => (props.isSupporting ? FontOpacity.tertiary : '')};
+  opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   font-weight: 400;
   text-align: ${props => (props.centered ? 'center' : '')};
   margin: ${props => (props.noMargin ? '0px' : '')};
@@ -73,8 +73,8 @@ const P = styled.p`
   font-weight: 400;
   color: white;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
-  opacity: ${props => (props.isSupporting ? FontOpacity.tertiary : '')};
-  ${props => (props.isSupporting ? `color: ${Colors.greys.tertiary};` : '')}
+  opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
+  ${props => (props.isTertiary ? `color: ${Colors.greys.tertiary};` : '')}
   ${props => (props.isSecondary ? `color: ${Colors.greys.secondary};` : '')}
   margin: 0;
   text-align: ${props => (props.centered ? 'center' : '')};
@@ -86,7 +86,7 @@ const FinePrint = styled.span`
   font-weight: 300;
   color: white;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
-  opacity: ${props => (props.isSupporting ? FontOpacity.tertiary : '')};
+  opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   text-align: center;
 `;
 

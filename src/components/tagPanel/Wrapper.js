@@ -9,7 +9,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   margin: auto;
   background-color: ${Colors.background.secondary};
-  border-right: 1px solid ${Colors.background.supporting};
+  border-right: 1px solid ${Colors.background.tertiary};
 `;
 
 export default Wrapper;

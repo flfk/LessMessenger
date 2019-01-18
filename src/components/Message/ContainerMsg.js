@@ -7,7 +7,7 @@ const ContainerMsg = styled.div`
   display: flex;
   justify-content: space-between;
   :hover {
-    background-color: ${Colors.background.supporting};
+    background-color: ${Colors.background.tertiary};
   }
   ${props => (props.isPinned ? 'max-height: 42px;' : '')}
   ${props => (props.isPinned ? 'white-space: nowrap;' : '')}
@@ -17,7 +17,7 @@ const ContainerMsg = styled.div`
 
 const Buttons = styled.div`
   display: none;
-  color: ${Colors.greys.supporting};
+  color: ${Colors.greys.tertiary};
 
   ${ContainerMsg}:hover & {
     display: flex;

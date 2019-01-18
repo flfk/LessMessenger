@@ -5,7 +5,7 @@ import Fonts from '../../utils/Fonts';
 
 const Attachment = styled(Fonts.A)`
   color: ${Colors.greys.secondary};
-  border: 1px solid ${Colors.greys.supporting};
+  border: 1px solid ${Colors.greys.tertiary};
   border-radius: 5px;
   padding: 0.5em;
 `;
@@ -28,7 +28,7 @@ const Tag = styled(Fonts.A)`
 `;
 
 const Timestamp = styled.span`
-  color: ${Colors.greys.supporting};
+  color: ${Colors.greys.tertiary};
   font-weight: 400;
 `;
 
