@@ -39,11 +39,13 @@ const propTypes = {
   handleTogglePin: PropTypes.func.isRequired,
   msgBeingRepliedTo: PropTypes.string,
   senderBeingRepliedTo: PropTypes.string,
+  senderUserId: PropTypes.string.isRequired,
   profileImgURL: PropTypes.string.isRequired,
   selectTag: PropTypes.func.isRequired,
   senderName: PropTypes.string.isRequired,
   timestamp: PropTypes.number.isRequired,
   type: PropTypes.string,
+  userID: PropTypes.string.isRequired,
 };
 
 const defaultProps = {
@@ -57,7 +59,9 @@ const defaultProps = {
   type: '',
 };
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  userID: state.user.id,
+});
 
 const mapDispatchToProps = dispatch => ({
   actionReplyToMsg: msgId => dispatch(replyToMsg(msgId)),
@@ -154,10 +158,12 @@ class Msg extends React.Component {
       handleTogglePin,
       msgBeingRepliedTo,
       senderBeingRepliedTo,
+      senderUserId,
       profileImgURL,
       senderName,
       timestamp,
       type,
+      userID,
     } = this.props;
 
     const profileImg = hasHeader ? <ProfileImg src={profileImgURL} /> : null;
@@ -185,18 +191,17 @@ class Msg extends React.Component {
         <Text.Reply>{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
       </ContainerMsg.Reply>
     ) : null;
-
     return (
       <ContainerMsg.Wrapper>
         {spacing}
-        <ContainerMsg isPinned={isPinned}>
+        <ContainerMsg isPinned={isPinned} wasSentByUser={senderUserId === userID}>
           {profileImg}
-          <Text.Wrapper hasProfileImg={hasHeader}>
+          <Text.Wrapper hasProfileImg={hasHeader} wasSentByUser={senderUserId === userID}>
             {header}
             {replyPreview}
             {text}
           </Text.Wrapper>
-          <ContainerMsg.Buttons>
+          <ContainerMsg.Buttons wasSentByUser={senderUserId === userID}>
             <Btn onClick={() => handleTogglePin(id)}>
               <TiPin />
             </Btn>

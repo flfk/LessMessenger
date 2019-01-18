@@ -203,6 +203,7 @@ class Messages extends React.Component {
             isPinned
             profileImgURL={sender.profileImgURL}
             selectTag={this.selectTag}
+            senderUserId={msg.senderUserId}
             senderName={sender.name}
             timestamp={msg.timestamp}
             type={msg.type}
@@ -275,6 +276,7 @@ class Messages extends React.Component {
               isPinned={false}
               msgBeingRepliedTo={msgBeingRepliedTo ? msgBeingRepliedTo.content : ''}
               senderBeingRepliedTo={senderBeingRepliedTo ? senderBeingRepliedTo.name : ''}
+              senderUserId={msg.senderUserId}
               profileImgURL={sender.profileImgURL}
               selectTag={this.selectTag}
               senderName={sender.name}

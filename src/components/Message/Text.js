@@ -14,6 +14,7 @@ const Message = styled(Fonts.P)`
   word-wrap: break-word
   white-space: pre-line;
   font-size: 14px;
+  line-height: 1.5em;
   // line-height: ${props => (props.hasAttachment ? '2.5em' : '2em')};
 `;
 
@@ -42,10 +43,19 @@ const Reply = styled(Message)`
 `;
 
 const Wrapper = styled.div`
-  margin-left: ${props => (props.hasProfileImg ? '16px' : '48px')};
-  margin-right: auto;
-  max-width: calc(100% - 120px);
-  flex-grow: 1;
+  margin-left: 16px;
+  margin-right: 16px;
+  ${props => (!props.hasProfileImg && !props.wasSentByUser ? 'margin-left: 48px;' : '')}
+  ${props =>
+    !props.hasProfileImg && props.wasSentByUser
+      ? 'margin-right: 48px;'
+      : ''}
+  // max-width: calc(100% - 120px);
+  max-width: 600px;
+  // flex-grow: 1;
+  background-color: ${Colors.background.tertiary};
+  border-radius: 5px;
+  padding: 8px 16px;
 `;
 
 const Text = {};

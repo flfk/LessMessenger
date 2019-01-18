@@ -7,10 +7,11 @@ const ContainerMsg = styled.div`
   padding: 4px 0px 4px 16px;
 
   display: flex;
+  flex-direction: ${props => (props.wasSentByUser ? 'row-reverse' : 'row')}
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   :hover {
-    background-color: ${Colors.background.tertiary};
+    // background-color: ${Colors.background.tertiary};
   }
   ${props => (props.isPinned ? 'max-height: 42px;' : '')}
   ${props => (props.isPinned ? 'white-space: nowrap;' : '')}
@@ -25,8 +26,8 @@ const Buttons = styled.div`
 
   ${ContainerMsg}:hover & {
     display: flex;
+    flex-direction: ${props => (props.wasSentByUser ? 'row-reverse' : 'row')}
     align-items: center;
-    margin-right: 16px;
   }
 `;
 
