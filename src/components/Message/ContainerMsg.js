@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Colors from '../../utils/Colors';
 
 const ContainerMsg = styled.div`
+  padding-left: 16px;
   display: flex;
   justify-content: space-between;
   :hover {
