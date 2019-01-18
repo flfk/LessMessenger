@@ -104,9 +104,9 @@ class NavBar extends React.Component {
             <Profile key={member.id}>
               <Profile.Img src={member.profileImgURL} />
               <Profile.TextWrapper>
-                <Fonts.FinePrint isSecondary>
+                <Fonts.Label isSecondary>
                   {isUser ? `${member.name} (you)` : member.name}
-                </Fonts.FinePrint>
+                </Fonts.Label>
                 <Fonts.P>
                   {moment(timestamp)
                     .tz(member.timezone)

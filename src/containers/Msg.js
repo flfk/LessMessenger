@@ -163,9 +163,9 @@ class Msg extends React.Component {
     const profileImg = hasHeader ? <ProfileImg src={profileImgURL} /> : null;
 
     const header = hasHeader ? (
-      <Fonts.FinePrint isSupporting hasProfileImg={hasHeader}>
+      <Fonts.Label isSupporting hasProfileImg={hasHeader}>
         {senderName} <Text.Timestamp>{moment(timestamp).format('h:mm a')}</Text.Timestamp>
-      </Fonts.FinePrint>
+      </Fonts.Label>
     ) : null;
 
     const text = hasAttachment ? (

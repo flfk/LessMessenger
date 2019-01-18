@@ -201,7 +201,7 @@ class SignUp extends React.Component {
 }
 
 // <Content>
-//   <Fonts.FinePrint>
+//   <Fonts.Label>
 //     By clicking on Sign Up, you agree with the{' '}
 //     <Link to="/termsConditions" target="_blank" style={{ textDecoration: 'none' }}>
 //       <Fonts.Link>Terms and Conditions of Use</Fonts.Link>
@@ -211,7 +211,7 @@ class SignUp extends React.Component {
 //       <Fonts.Link>Privacy Policy</Fonts.Link>
 //     </Link>
 //     .
-//   </Fonts.FinePrint>
+//   </Fonts.Label>
 // </Content>;
 
 SignUp.propTypes = propTypes;

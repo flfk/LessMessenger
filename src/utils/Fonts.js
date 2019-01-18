@@ -80,7 +80,7 @@ const P = styled.p`
   text-align: ${props => (props.centered ? 'center' : '')};
 `;
 
-const FinePrint = styled.span`
+const Label = styled.span`
   font-size: ${FontSizes.finePrint};
   font-family: ${FontFamily.body};
   font-weight: 300;
@@ -131,7 +131,7 @@ Fonts.H2 = H2;
 Fonts.H3 = H3;
 Fonts.P = P;
 Fonts.Link = Link;
-Fonts.FinePrint = FinePrint;
+Fonts.Label = Label;
 Fonts.Err = Err;
 Fonts.A = A;
 
