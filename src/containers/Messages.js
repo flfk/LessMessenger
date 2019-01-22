@@ -156,9 +156,9 @@ class Messages extends React.Component {
     );
   };
 
-  selectTag = tagName => () => {
+  selectTag = id => () => {
     const { actionToggleTag } = this.props;
-    actionToggleTag(tagName.toLowerCase());
+    actionToggleTag(id);
   };
 
   subscribeMessages = async () => {

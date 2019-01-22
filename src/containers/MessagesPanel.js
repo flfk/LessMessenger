@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 import { REGEX_TIMER } from '../utils/Constants';
 import Messages from './Messages';
+import { createTag } from '../data/tags/tags.actions';
 import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
 import { Container, Thumbnails, Input, InputContainer } from '../components/messagesPanel';
 import { Text } from '../components/message';
@@ -13,10 +14,17 @@ import { getSelectorAll } from '../utils/Helpers';
 
 const propTypes = {
   actionCancelReply: PropTypes.func.isRequired,
+  actionCreateTag: PropTypes.func.isRequired,
   actionSendMessage: PropTypes.func.isRequired,
   msgIdBeingRepliedTo: PropTypes.string.isRequired,
   roomId: PropTypes.string.isRequired,
   senderUserId: PropTypes.string.isRequired,
+  tags: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      isSelected: PropTypes.bool.isRequired,
+    })
+  ).isRequired,
   tagsSelected: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
@@ -33,12 +41,14 @@ const mapStateToProps = state => ({
   msgIdBeingRepliedTo: state.room.msgIdBeingRepliedTo,
   roomId: state.room.id,
   senderUserId: state.user.id,
+  tags: getSelectorAll('tags', state),
   tagsSelected: getSelectorAll('tags', state).filter(tag => tag.isSelected),
 });
 
 const mapDispatchToProps = dispatch => ({
   actionCancelReply: () => dispatch(cancelReply()),
-  actionSendMessage: message => dispatch(sendMessage(message)),
+  actionCreateTag: (roomId, tagName) => dispatch(createTag(roomId, tagName)),
+  actionSendMessage: (message, tags) => dispatch(sendMessage(message, tags)),
 });
 
 class MessagePanel extends React.Component {
@@ -81,9 +91,10 @@ class MessagePanel extends React.Component {
     return msg;
   };
 
-  getNewMsg = content => {
+  getNewMsg = async content => {
     const { senderUserId, roomId, msgIdBeingRepliedTo } = this.props;
     const hasTimer = content.match(REGEX_TIMER) !== null;
+    // const tagIds = await this.getTagIds(content);
     return {
       content,
       isPinned: false,
@@ -92,6 +103,7 @@ class MessagePanel extends React.Component {
       msgIdBeingRepliedTo,
       roomId,
       senderUserId,
+      // tagIds added in actions
       // Timestamp added in actions based on server
     };
   };
@@ -100,9 +112,9 @@ class MessagePanel extends React.Component {
 
   handleSubmit = async () => {
     const { files, msgInput } = this.state;
-    const { actionCancelReply, actionSendMessage, msgIdBeingRepliedTo, roomId } = this.props;
+    const { actionCancelReply, actionSendMessage, msgIdBeingRepliedTo, roomId, tags } = this.props;
 
-    const newMsg = this.getNewMsg(msgInput);
+    const newMsg = await this.getNewMsg(msgInput);
     this.setState({ files: [], msgInput: '' });
     if (files.length > 0) {
       await Promise.all(
@@ -110,11 +122,11 @@ class MessagePanel extends React.Component {
           const uploadTask = await uploadFile(file, roomId);
           const downloadURL = await uploadTask.ref.getDownloadURL();
           const attachmentFields = this.getAttachmentFields(downloadURL, file);
-          actionSendMessage({ ...newMsg, ...attachmentFields });
+          actionSendMessage({ ...newMsg, ...attachmentFields }, tags);
         })
       );
     } else {
-      actionSendMessage(newMsg);
+      actionSendMessage(newMsg, tags);
     }
     if (msgIdBeingRepliedTo) actionCancelReply();
   };
@@ -161,21 +173,21 @@ class MessagePanel extends React.Component {
     const { tagsSelected } = this.props;
     const { msgInput } = this.state;
 
-    const tagIdsPrev = tagsSelectedPrev.map(tag => tag.id);
-    const tagIdsCurrent = tagsSelected.map(tag => tag.id);
+    const tagNamesPrev = tagsSelectedPrev.map(tag => tag.name);
+    const tagNamesCurrent = tagsSelected.map(tag => tag.name);
     let msgInputUpdated = msgInput.trim();
 
     if (wasMsgSent) {
-      tagIdsCurrent.forEach(tag => {
+      tagNamesCurrent.forEach(tag => {
         msgInputUpdated = `${tag} ${msgInputUpdated}`;
       });
     } else {
-      const tagIdsAdded = tagIdsCurrent.filter(tag => !(tagIdsPrev.indexOf(tag) > -1));
-      const tagIdsRemoved = tagIdsPrev.filter(tag => !(tagIdsCurrent.indexOf(tag) > -1));
-      tagIdsAdded.forEach(tag => {
+      const tagNamesAdded = tagNamesCurrent.filter(tag => !(tagNamesPrev.indexOf(tag) > -1));
+      const tagNamesRemoved = tagNamesPrev.filter(tag => !(tagNamesCurrent.indexOf(tag) > -1));
+      tagNamesAdded.forEach(tag => {
         msgInputUpdated = `${tag} ${msgInputUpdated}`;
       });
-      tagIdsRemoved.forEach(tag => {
+      tagNamesRemoved.forEach(tag => {
         const isTagInInput = msgInputUpdated.indexOf(tag) > -1;
         if (isTagInInput) {
           msgInputUpdated = msgInputUpdated.replace(tag, '');

@@ -20,9 +20,9 @@ const reducerTags = (state = initialState, action) => {
         ...state,
         byId: {
           ...state.byId,
-          [action.payload.id]: {
-            ...state.byId[action.payload.id],
-            isSelected: !state.byId[action.payload.id].isSelected,
+          [action.payload]: {
+            ...state.byId[action.payload],
+            isSelected: !state.byId[action.payload].isSelected,
           },
         },
       };

@@ -1,7 +1,6 @@
 import { MESSAGES_PER_LOAD } from '../../utils/Constants';
 import { db, dbTimestamp, firestore, storage } from '../firebase';
 import { getTags } from '../../utils/Helpers';
-import { addTag } from '../tags/tags.actions';
 import {
   ADD_MESSAGE,
   ALL_MESSAGES_LOADED,
@@ -12,6 +11,7 @@ import {
   REPLY_TO_MESSAGE,
   UPDATE_MESSAGE,
 } from './messages.types';
+import { createTag } from '../tags/tags.actions';
 
 const COLL_MESSAGES = 'messages';
 
@@ -20,10 +20,6 @@ export const addMessage = msg => dispatch => {
     type: ADD_MESSAGE.SUCCESS,
     payload: msg,
   });
-  if (!msg.isAttachment) {
-    const tags = getTags(msg.content);
-    tags.map(tagName => dispatch(addTag(tagName)));
-  }
 };
 
 export const cancelReply = () => dispatch => {
@@ -83,11 +79,33 @@ export const replyToMsg = msgId => dispatch => {
   });
 };
 
-export const sendMessage = msg => async dispatch => {
+const getTagIds = async (content, roomId, tags) => {
+  const msgTags = getTags(content);
+  const tagNames = tags.map(item => item.name);
+  const tagIds = await Promise.all(
+    msgTags.map(async tagName => {
+      const tagIndex = tagNames.indexOf(tagName);
+      if (tagIndex > -1) {
+        return tags[tagIndex].id;
+        console.log('its an existing tag');
+      }
+      console.log('its a new tag');
+      const newTag = await createTag(roomId, tagName);
+      console.log('msgpanel, newTag', newTag);
+      return newTag.id;
+    })
+  );
+  console.log('tagIds', tagIds);
+  return tagIds;
+};
+
+export const sendMessage = (msg, tags) => async dispatch => {
   try {
+    console.log('sendMessage tags', tags);
+    const tagIds = await getTagIds(msg.content, msg.roomId, tags);
     await db
       .collection(COLL_MESSAGES)
-      .add({ ...msg, timestamp: firestore.FieldValue.serverTimestamp() });
+      .add({ ...msg, tagIds, timestamp: firestore.FieldValue.serverTimestamp() });
     dispatch({
       type: SEND_MESSAGE.SUCCESS,
     });
@@ -122,8 +140,6 @@ export const updateMsgInState = msg => dispatch => {
     type: UPDATE_MESSAGE.SUCCESS,
     payload: msg,
   });
-  const tags = getTags(msg.content);
-  tags.map(tagName => dispatch(addTag(tagName)));
 };
 
 export const getMessageSubscription = roomId => async dispatch => {
@@ -176,9 +192,11 @@ export const getMessageSubscription = roomId => async dispatch => {
   return subscription;
 };
 
-export const editMsg = msg => async dispatch => {
-  dispatch(updateMsgInState(msg));
-  await updateDocMsg(msg.id, { content: msg.content });
+export const editMsg = (msg, tags) => async dispatch => {
+  const tagIds = await getTagIds(msg.content, msg.roomId, tags);
+  const msgUpdated = { ...msg, tagIds };
+  dispatch(updateMsgInState(msgUpdated));
+  await updateDocMsg(msg.id, { content: msg.content, tagIds });
 };
 
 export const uploadFile = async (file, roomId) => {

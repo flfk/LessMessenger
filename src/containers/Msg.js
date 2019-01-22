@@ -26,6 +26,8 @@ import {
 import { Input } from '../components/messagesPanel';
 import { editMsg, replyToMsg } from '../data/messages/messages.actions';
 
+import { getSelectorAll } from '../utils/Helpers';
+
 const propTypes = {
   actionReplyToMsg: PropTypes.func.isRequired,
   actionEditMsg: PropTypes.func.isRequired,
@@ -45,12 +47,13 @@ const defaultProps = {
 };
 
 const mapStateToProps = state => ({
+  tags: getSelectorAll('tags', state),
   userId: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
   actionReplyToMsg: msgId => dispatch(replyToMsg(msgId)),
-  actionEditMsg: msg => dispatch(editMsg(msg)),
+  actionEditMsg: (msg, tags) => dispatch(editMsg(msg, tags)),
 });
 
 class Msg extends React.Component {
@@ -80,9 +83,11 @@ class Msg extends React.Component {
   };
 
   getTag = word => {
-    const { msg, selectTag } = this.props;
+    const { msg, selectTag, tags } = this.props;
+    const tag = tags.find(item => item.name === word.toLowerCase());
+    if (!tag) return `${word} `;
     const wordTagged = reactStringReplace(word, REGEX_TAG, match => (
-      <Text.Tag key={`${msg.timestamp}_${match}`} isSelected={false} onClick={selectTag(match)}>
+      <Text.Tag key={tag.id} color={tag.color} isSelected={false} onClick={selectTag(tag.id)}>
         {match}{' '}
       </Text.Tag>
     ));
@@ -106,7 +111,7 @@ class Msg extends React.Component {
         const isTimer = word.match(REGEX_TIMER) !== null;
         if (isTimer) return this.getTimer(word);
       }
-      if (word.match(REGEX_TAG) !== null) return this.getTag(word);
+      if (msg.tagIds && msg.tagIds.length > 0) return this.getTag(word);
       return `${word} `;
     });
 
@@ -129,8 +134,8 @@ class Msg extends React.Component {
 
   handleEditSave = () => {
     const { editInput } = this.state;
-    const { actionEditMsg, msg } = this.props;
-    actionEditMsg({ ...msg, content: editInput });
+    const { actionEditMsg, msg, tags } = this.props;
+    actionEditMsg({ ...msg, content: editInput }, tags);
     this.handleEditCancel();
   };
 

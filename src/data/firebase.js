@@ -25,7 +25,7 @@ const dbTimestamp = firebase.firestore.Timestamp;
 const storage = firebase.storage();
 
 // To ensure ensure firestore timestamp objects supported in future
-const settings = { timestampsInSnapshots: true };
-db.settings(settings);
+// const settings = { timestampsInSnapshots: true };
+// db.settings(settings);
 
 export { auth, db, dbTimestamp, firestore, storage };

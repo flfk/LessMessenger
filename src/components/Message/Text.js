@@ -19,8 +19,7 @@ const Message = styled(Fonts.P)`
 `;
 
 const Tag = styled(Fonts.A)`
-  // color: ${props => (props.isSelected ? Colors.primary.red : Colors.greys.supporting)};
-  color: white;
+  color: ${props => (props.color ? props.color : 'white')};
   opacity: ${Fonts.opacity.primary};
 `;
 

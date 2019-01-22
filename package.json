@@ -6,6 +6,7 @@
     "axios": "^0.18.0",
     "dotenv": "^6.2.0",
     "firebase": "^5.8.0",
+    "firebase-tools": "^6.3.0",
     "immer": "^1.10.5",
     "lodash": "^4.17.11",
     "mixpanel-browser": "^2.25.0",

@@ -1,5 +1,6 @@
 import { ADD_TAG, CREATE_TAG, LOAD_TAGS, TOGGLE_TAG, UPDATE_TAG } from './tags.types';
 import { db } from '../firebase';
+import { getTimestamp } from '../../utils/Helpers';
 
 const COLL_TAGS = 'tags';
 
@@ -10,9 +11,17 @@ export const addTag = name => dispatch => {
   });
 };
 
-export const createTag = tag => async dispatch => {
+export const createTag = (roomId, tagName) => async dispatch => {
   try {
-    await db.collection(COLL_TAGS).add({ tag });
+    const tag = {
+      dateLastUsed: getTimestamp(),
+      name: tagName,
+      roomId,
+    };
+    const snapshot = await db.collection(COLL_TAGS).add(tag);
+    tag.id = snapshot.id;
+    console.log('tags.actions, created newTag', tag);
+    return tag;
     dispatch({
       type: CREATE_TAG.SUCCESS,
     });
@@ -48,7 +57,7 @@ export const getTagSubscription = roomId => async dispatch => {
             const tag = doc.data();
             const { id } = doc;
             tag.id = id;
-            console.log('added tag', tag);
+            console.log('adding tag', tag);
             dispatch(addTag(tag));
           }
           if (change.type === 'modified') {
@@ -56,7 +65,7 @@ export const getTagSubscription = roomId => async dispatch => {
             const tag = doc.data();
             const { id } = doc;
             tag.id = id;
-            console.log('modified', tag);
+            console.log('changing tag', tag);
             dispatch(updateTagInState(tag));
           }
         });
@@ -73,9 +82,10 @@ export const getTagSubscription = roomId => async dispatch => {
   return subscription;
 };
 
-export const toggleTag = name => dispatch => {
+export const toggleTag = id => dispatch => {
+  console.log('toggleTag for id', id);
   dispatch({
     type: TOGGLE_TAG.SUCCESS,
-    payload: name,
+    payload: id,
   });
 };
