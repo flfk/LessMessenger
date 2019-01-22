@@ -4,8 +4,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Scrollable from '../components/Scrollable';
-import { TagHeader, TagItem, TagPreview, Wrapper } from '../components/tagPanel';
-import { toggleTag } from '../data/tags/tags.actions';
+import { TagHeader, TagItem, Wrapper } from '../components/tagPanel';
+import { getTagSubscription, toggleTag } from '../data/tags/tags.actions';
 
 import { getSelectorAll } from '../utils/Helpers';
 
@@ -17,20 +17,36 @@ const propTypes = {
       isSelected: PropTypes.bool.isRequired,
     })
   ).isRequired,
+  roomId: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
 const mapStateToProps = state => ({
   tags: getSelectorAll('tags', state),
+  roomId: state.room.id,
 });
 
 const mapDispatchToProps = dispatch => ({
   actionToggleTag: tagName => dispatch(toggleTag(tagName)),
+  actionGetTagSubscription: roomId => dispatch(getTagSubscription(roomId)),
 });
 
 class TagPanel extends React.Component {
-  state = {};
+  state = {
+    unsubscribeTags: null,
+  };
+
+  componentDidMount() {
+    this.subscribeTags();
+  }
+
+  componentWillUnmount() {
+    const { unsubscribeTags } = this.state;
+    if (unsubscribeTags) {
+      unsubscribeTags();
+    }
+  }
 
   handleToggleTag = event => {
     const { actionToggleTag } = this.props;
@@ -45,6 +61,12 @@ class TagPanel extends React.Component {
       return 1;
     }
     return 0;
+  };
+
+  subscribeTags = async () => {
+    const { actionGetTagSubscription, roomId } = this.props;
+    const unsubscribeTags = await actionGetTagSubscription(roomId);
+    this.setState({ unsubscribeTags });
   };
 
   render() {

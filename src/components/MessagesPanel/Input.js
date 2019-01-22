@@ -1,7 +1,6 @@
 import Textarea from 'react-textarea-autosize';
 import styled from 'styled-components';
 
-import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 
 const Input = styled(Textarea)`

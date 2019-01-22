@@ -1,33 +1,37 @@
-import { combineReducers } from 'redux';
-
-import { ADD_TAG, TOGGLE_TAG } from './tags.types';
+import { ADD_TAG, TOGGLE_TAG, UPDATE_TAG } from './tags.types';
 
 const initialState = {
   allIds: [],
   byId: {},
+  isLoading: true,
 };
 
 const reducerTags = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TAG.SUCCESS:
-      if (state.byId[action.payload]) return state;
+      if (state.byId[action.payload.id]) return state;
       return {
         ...state,
-        allIds: [...state.allIds, action.payload],
-        byId: {
-          ...state.byId,
-          [action.payload]: { id: action.payload, isSelected: false, name: action.payload },
-        },
+        allIds: [...state.allIds, action.payload.id],
+        byId: { ...state.byId, [action.payload.id]: { ...action.payload, isSelected: false } },
       };
     case TOGGLE_TAG.SUCCESS:
       return {
         ...state,
         byId: {
           ...state.byId,
-          [action.payload]: {
-            ...state.byId[action.payload],
-            isSelected: !state.byId[action.payload].isSelected,
+          [action.payload.id]: {
+            ...state.byId[action.payload.id],
+            isSelected: !state.byId[action.payload.id].isSelected,
           },
+        },
+      };
+    case UPDATE_TAG.SUCCESS:
+      return {
+        ...state,
+        byId: {
+          ...state.byId,
+          [action.payload.id]: { ...state.byId[action.payload.id], ...action.payload },
         },
       };
     default:

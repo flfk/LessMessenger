@@ -122,10 +122,8 @@ export const updateMsgInState = msg => dispatch => {
     type: UPDATE_MESSAGE.SUCCESS,
     payload: msg,
   });
-  if (!msg.isAttachment) {
-    const tags = getTags(msg.content);
-    tags.map(tagName => dispatch(addTag(tagName)));
-  }
+  const tags = getTags(msg.content);
+  tags.map(tagName => dispatch(addTag(tagName)));
 };
 
 export const getMessageSubscription = roomId => async dispatch => {
