@@ -1,19 +1,17 @@
+import Textarea from 'react-textarea-autosize';
 import styled from 'styled-components';
 
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 
-const Input = styled.textarea`
+const Input = styled(Textarea)`
   padding: 0;
   border: none;
   font-size: 14px;
   font-family: ${Fonts.family.body};
   color: white;
   background-color: transparent;
-
-  // width: 100%;
-  height: 44px;
-  overflow-y: auto;
+  min-width: 600px;
   resize: none;
 
   ::placeholder {

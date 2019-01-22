@@ -223,6 +223,7 @@ class MessagePanel extends React.Component {
                   onChange={this.handleChangeInput('msgInput')}
                   value={msgInput}
                   onKeyDown={this.handleKeyPress}
+                  maxRows={10}
                 />
               </InputContainer>
             </div>
