@@ -10,13 +10,6 @@ const ContainerMsg = styled.div`
   flex-direction: ${props => (props.wasSentByUser ? 'row-reverse' : 'row')}
   align-items: center;
   justify-content: flex-start;
-  :hover {
-    // background-color: ${Colors.background.tertiary};
-  }
-  ${props => (props.isPinned ? 'max-height: 42px;' : '')}
-  ${props => (props.isPinned ? 'white-space: nowrap;' : '')}
-  ${props => (props.isPinned ? 'overflow: hidden;' : '')}
-  ${props => (props.isPinned ? 'text-overflow: ellipsis;' : '')}
 `;
 
 const Buttons = styled.div`

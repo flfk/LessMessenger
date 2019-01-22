@@ -23,60 +23,49 @@ import {
   ProfileImg,
   Text,
 } from '../components/message';
-import { replyToMsg } from '../data/messages/messages.actions';
+import { Input } from '../components/messagesPanel';
+import { editMsg, replyToMsg } from '../data/messages/messages.actions';
 
 const propTypes = {
   actionReplyToMsg: PropTypes.func.isRequired,
-  content: PropTypes.string.isRequired,
-  downloadURL: PropTypes.string,
-  fileName: PropTypes.string,
-  id: PropTypes.string.isRequired,
-  isPinned: PropTypes.bool,
-  hasAttachment: PropTypes.bool,
+  actionEditMsg: PropTypes.func.isRequired,
   hasHeader: PropTypes.bool.isRequired,
-  hasTimer: PropTypes.bool,
-  handleEdit: PropTypes.func.isRequired,
   handleTogglePin: PropTypes.func.isRequired,
   msgBeingRepliedTo: PropTypes.string,
   senderBeingRepliedTo: PropTypes.string,
-  senderUserId: PropTypes.string.isRequired,
   profileImgURL: PropTypes.string.isRequired,
   selectTag: PropTypes.func.isRequired,
   senderName: PropTypes.string.isRequired,
-  timestamp: PropTypes.number.isRequired,
-  type: PropTypes.string,
-  userID: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
 };
 
 const defaultProps = {
-  downloadURL: '',
-  fileName: '',
-  hasTimer: false,
-  hasAttachment: false,
-  isPinned: false,
   msgBeingRepliedTo: '',
   senderBeingRepliedTo: '',
-  type: '',
 };
 
 const mapStateToProps = state => ({
-  userID: state.user.id,
+  userId: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
   actionReplyToMsg: msgId => dispatch(replyToMsg(msgId)),
+  actionEditMsg: msg => dispatch(editMsg(msg)),
 });
 
 class Msg extends React.Component {
-  state = {};
+  state = {
+    editInput: '',
+    isBeingEdited: false,
+  };
 
-  getAttachmentJSX = () => {
-    const { downloadURL, fileName, type } = this.props;
-    const isImg = type.indexOf('image/') > -1;
+  getAttachmentElement = () => {
+    const { msg } = this.props;
+    const isImg = msg.type.indexOf('image/') > -1;
     if (isImg) {
       return (
-        <a href={downloadURL} target="_blank">
-          <ImgPreview src={downloadURL} />
+        <a href={msg.downloadURL} target="_blank">
+          <ImgPreview src={msg.downloadURL} />
         </a>
       );
     }
@@ -85,15 +74,15 @@ class Msg extends React.Component {
         <DownloadIcon>
           <FaFileDownload />
         </DownloadIcon>{' '}
-        {fileName}
+        {msg.fileName}
       </Text.Attachment>
     );
   };
 
   getTag = word => {
-    const { timestamp, selectTag } = this.props;
+    const { msg, selectTag } = this.props;
     const wordTagged = reactStringReplace(word, REGEX_TAG, match => (
-      <Text.Tag key={`${timestamp}_${match}`} isSelected={false} onClick={selectTag(match)}>
+      <Text.Tag key={`${msg.timestamp}_${match}`} isSelected={false} onClick={selectTag(match)}>
         {match}{' '}
       </Text.Tag>
     ));
@@ -101,20 +90,19 @@ class Msg extends React.Component {
   };
 
   getTimer = word => {
-    // note input for timer must be +timer(days:hrs:mins);
-    const { timestamp } = this.props;
+    const { msg } = this.props;
     const regExTime = /\d+:\d+:\d+/gi;
     const input = word.match(regExTime)[0].split(':');
-    const momentTo = moment(timestamp)
+    const momentTo = moment(msg.timestamp)
       .add({ days: input[0], hours: input[1], minutes: input[2] })
       .valueOf();
-    return <Countdown key={`${timestamp}_${word}`} date={momentTo} />;
+    return <Countdown key={`${msg.timestamp}_${word}`} date={momentTo} />;
   };
 
   getTextWithTags = text => {
-    const { hasTimer } = this.props;
+    const { msg } = this.props;
     const words = text.split(' ').map(word => {
-      if (hasTimer) {
+      if (msg.hasTimer) {
         const isTimer = word.match(REGEX_TIMER) !== null;
         if (isTimer) return this.getTimer(word);
       }
@@ -129,62 +117,95 @@ class Msg extends React.Component {
     );
   };
 
+  handleChangeInput = field => event => this.setState({ [field]: event.target.value });
+
+  handleEdit = () => {
+    console.log('handling Edit in Msg');
+    const { msg } = this.props;
+    this.setState({ isBeingEdited: true, editInput: msg.content });
+  };
+
+  handleEditCancel = () => this.setState({ isBeingEdited: false });
+
+  handleEditSave = () => {
+    const { editInput } = this.state;
+    const { actionEditMsg, msg } = this.props;
+    actionEditMsg({ ...msg, content: editInput });
+    this.handleEditCancel();
+  };
+
   handleDownload = () => {
-    const { downloadURL, fileName } = this.props;
+    const { msg } = this.props;
     axios({
-      url: downloadURL,
+      url: msg.downloadURL,
       method: 'GET',
       responseType: 'blob', // important
     }).then(response => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', fileName);
+      link.setAttribute('download', msg.fileName);
       document.body.appendChild(link);
       link.click();
     });
   };
 
   render() {
+    const { editInput, isBeingEdited } = this.state;
+
     const {
       actionReplyToMsg,
-      content,
-      fileName,
-      hasAttachment,
-      id,
-      isPinned,
       hasHeader,
-      handleEdit,
       handleTogglePin,
+      msg,
       msgBeingRepliedTo,
       senderBeingRepliedTo,
-      senderUserId,
       profileImgURL,
       senderName,
-      timestamp,
-      type,
-      userID,
+      userId,
     } = this.props;
 
     const profileImg = hasHeader ? <ProfileImg src={profileImgURL} /> : null;
 
     const header = hasHeader ? (
       <Fonts.Label isSupporting>
-        {senderName} <Text.Timestamp>{moment(timestamp).format('h:mm a')}</Text.Timestamp>
+        <strong>{senderName}</strong>{' '}
+        <Text.Timestamp>{moment(msg.timestamp).format('h:mm a')}</Text.Timestamp>
       </Fonts.Label>
     ) : null;
 
-    const text = hasAttachment ? (
+    let text = msg.hasAttachment ? (
       <div>
-        {this.getAttachmentJSX()}
+        {this.getAttachmentElement()}
         <br />
-        <Text.Message hasAttachment>{this.getTextWithTags(content)}</Text.Message>
+        <Text.Message hasAttachment>{this.getTextWithTags(msg.content)}</Text.Message>
       </div>
     ) : (
-      <Text.Message>{this.getTextWithTags(content)}</Text.Message>
+      <Text.Message>{this.getTextWithTags(msg.content)}</Text.Message>
     );
 
-    const spacing = hasHeader && !isPinned ? <Content.Spacing /> : <Content.Spacing8px />;
+    if (isBeingEdited) {
+      text = (
+        <div>
+          <Input
+            type="text"
+            placeholder="Type a message..."
+            onChange={this.handleChangeInput('editInput')}
+            value={editInput}
+          />
+          <div>
+            <button type="button" onClick={this.handleEditSave}>
+              Save
+            </button>
+            <button type="button" onClick={this.handleEditCancel}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    const spacing = hasHeader && !msg.isPinned ? <Content.Spacing /> : <Content.Spacing8px />;
 
     const replyPreview = msgBeingRepliedTo ? (
       <ContainerMsg.Reply>
@@ -194,21 +215,21 @@ class Msg extends React.Component {
     return (
       <ContainerMsg.Wrapper>
         {spacing}
-        <ContainerMsg isPinned={isPinned} wasSentByUser={senderUserId === userID}>
+        <ContainerMsg wasSentByUser={msg.senderUserId === userId}>
           {profileImg}
-          <Text.Wrapper hasProfileImg={hasHeader} wasSentByUser={senderUserId === userID}>
+          <Text.Wrapper hasProfileImg={hasHeader} wasSentByUser={msg.senderUserId === userId}>
             {header}
             {replyPreview}
             {text}
           </Text.Wrapper>
-          <ContainerMsg.Buttons wasSentByUser={senderUserId === userID}>
-            <Btn onClick={() => handleTogglePin(id)}>
+          <ContainerMsg.Buttons wasSentByUser={msg.senderUserId === userId}>
+            <Btn onClick={() => handleTogglePin(msg.id)}>
               <TiPin />
             </Btn>
-            <Btn onClick={() => handleEdit(id)}>
+            <Btn onClick={this.handleEdit}>
               <FaEdit />
             </Btn>
-            <Btn onClick={() => actionReplyToMsg(id)}>
+            <Btn onClick={() => actionReplyToMsg(msg.id)}>
               <FaReply />
             </Btn>
           </ContainerMsg.Buttons>

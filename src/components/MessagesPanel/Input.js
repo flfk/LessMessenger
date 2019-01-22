@@ -12,7 +12,7 @@ const Input = styled.textarea`
   background-color: transparent;
 
   // width: 100%;
-  height: 22px;
+  height: 44px;
   overflow-y: auto;
   resize: none;
 

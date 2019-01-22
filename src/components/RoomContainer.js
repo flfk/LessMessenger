@@ -7,6 +7,7 @@ const RoomContainer = styled.div`
   flex: 1;
   margin: auto;
   width: 100%;
+  max-width: 1200px;
 
   ${Media.tablet} {
     width: auto;
