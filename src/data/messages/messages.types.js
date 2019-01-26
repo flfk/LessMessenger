@@ -3,6 +3,7 @@ import { createActionSet } from '../../utils/Helpers';
 export const ADD_MESSAGE = createActionSet('ADD_MESSAGE');
 export const ALL_MESSAGES_LOADED = createActionSet('ALL_MESSAGES_LOADED');
 export const CANCEL_REPLY = createActionSet('CANCEL_REPLY');
+export const DELETE_MSG = createActionSet('DELETE_MSG');
 export const LOAD_MESSAGES = createActionSet('LOAD_MESSAGES');
 export const SEND_MESSAGE = createActionSet('SEND_MESSAGE');
 export const SET_LAST_MSG_DOC = createActionSet('SET_LAST_MSG_DOC');

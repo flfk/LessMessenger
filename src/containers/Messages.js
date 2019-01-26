@@ -13,11 +13,7 @@ import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
 import { ContainerMsg, Text } from '../components/message';
 import { Input, MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
-import {
-  getMessageSubscription,
-  loadMessages,
-  togglePinMsg,
-} from '../data/messages/messages.actions';
+import { getMsgSubscription, loadMessages, togglePinMsg } from '../data/messages/messages.actions';
 // import { getAllMessages } from '../data/messages/messages.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
@@ -25,7 +21,7 @@ import { toggleTag } from '../data/tags/tags.actions';
 
 const propTypes = {
   actionLoadMessages: PropTypes.func.isRequired,
-  actionGetMessageSubscription: PropTypes.func.isRequired,
+  actionGetMsgSubscription: PropTypes.func.isRequired,
   actionTogglePin: PropTypes.func.isRequired,
   actionToggleTag: PropTypes.func.isRequired,
   hasMoreMessages: PropTypes.bool.isRequired,
@@ -72,12 +68,14 @@ const mapDispatchToProps = dispatch => ({
   actionLoadMessages: (lastMsgDoc, roomId) => dispatch(loadMessages(lastMsgDoc, roomId)),
   actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
   actionToggleTag: tagName => dispatch(toggleTag(tagName)),
-  actionGetMessageSubscription: roomId => dispatch(getMessageSubscription(roomId)),
+  actionGetMsgSubscription: (roomId, lastMsgDoc) =>
+    dispatch(getMsgSubscription(roomId, lastMsgDoc)),
 });
 
 class Messages extends React.Component {
   state = {
-    unsubscribeMessages: null,
+    // unsubscribeMessages: null,
+    subscriptions: [],
   };
 
   componentDidMount() {
@@ -96,10 +94,8 @@ class Messages extends React.Component {
   }
 
   componentWillUnmount() {
-    const { unsubscribeMessages } = this.state;
-    if (unsubscribeMessages) {
-      unsubscribeMessages();
-    }
+    const { subscriptions } = this.state;
+    subscriptions.map(sub => sub());
   }
 
   filterTags = msg => {
@@ -123,8 +119,8 @@ class Messages extends React.Component {
   };
 
   handleLoad = () => {
-    const { actionLoadMessages, lastMsgDoc, roomId } = this.props;
-    actionLoadMessages(lastMsgDoc, roomId);
+    const { hasMoreMessages, lastMsgDoc } = this.props;
+    if (hasMoreMessages) this.subscribeMessages(lastMsgDoc);
   };
 
   getMsgElement = (msg, hasHeader = true) => {
@@ -161,10 +157,12 @@ class Messages extends React.Component {
     actionToggleTag(id);
   };
 
-  subscribeMessages = async () => {
-    const { actionGetMessageSubscription, roomId } = this.props;
-    const unsubscribeMessages = await actionGetMessageSubscription(roomId);
-    this.setState({ unsubscribeMessages });
+  subscribeMessages = async (lastMsgDoc = null) => {
+    const { subscriptions } = this.state;
+    const { actionGetMsgSubscription, roomId } = this.props;
+    const newSub = await actionGetMsgSubscription(roomId, lastMsgDoc);
+    const subscriptionsUpdated = [...subscriptions, newSub];
+    this.setState({ subscriptions: subscriptionsUpdated });
   };
 
   scrollToBottom = () => {
@@ -175,6 +173,8 @@ class Messages extends React.Component {
 
   render() {
     const { hasMoreMessages, isLoadingMessages, isLoadingMembers, messages } = this.props;
+
+    console.log('subscriptions', this.state.subscriptions);
 
     if (isLoadingMessages || isLoadingMembers) return <Spinner />;
 

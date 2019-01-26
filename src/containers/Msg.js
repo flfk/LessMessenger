@@ -3,7 +3,7 @@ import axios from 'axios';
 import Emojify from 'react-emojione';
 import React from 'react';
 import { connect } from 'react-redux';
-import { FaFileDownload, FaEdit, FaReply } from 'react-icons/fa';
+import { FaFileDownload, FaEdit, FaReply, FaTrashAlt } from 'react-icons/fa';
 import { TiPinOutline, TiPin } from 'react-icons/ti';
 import Linkify from 'react-linkify';
 import reactStringReplace from 'react-string-replace';
@@ -24,13 +24,14 @@ import {
   Text,
 } from '../components/message';
 import { Input } from '../components/messagesPanel';
-import { editMsg, replyToMsg } from '../data/messages/messages.actions';
+import { deleteMsg, editMsg, replyToMsg } from '../data/messages/messages.actions';
 
 import { getSelectorAll } from '../utils/Helpers';
 
 const propTypes = {
-  actionReplyToMsg: PropTypes.func.isRequired,
+  actionDeleteMsg: PropTypes.func.isRequired,
   actionEditMsg: PropTypes.func.isRequired,
+  actionReplyToMsg: PropTypes.func.isRequired,
   hasHeader: PropTypes.bool.isRequired,
   handleTogglePin: PropTypes.func.isRequired,
   msgBeingRepliedTo: PropTypes.string,
@@ -52,8 +53,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actionReplyToMsg: msgId => dispatch(replyToMsg(msgId)),
+  actionDeleteMsg: id => dispatch(deleteMsg(id)),
   actionEditMsg: (msg, tags) => dispatch(editMsg(msg, tags)),
+  actionReplyToMsg: id => dispatch(replyToMsg(id)),
 });
 
 class Msg extends React.Component {
@@ -159,6 +161,7 @@ class Msg extends React.Component {
     const { editInput, isBeingEdited } = this.state;
 
     const {
+      actionDeleteMsg,
       actionReplyToMsg,
       hasHeader,
       handleTogglePin,
@@ -236,6 +239,9 @@ class Msg extends React.Component {
             </Btn>
             <Btn onClick={() => actionReplyToMsg(msg.id)}>
               <FaReply />
+            </Btn>
+            <Btn>
+              <FaTrashAlt onClick={() => actionDeleteMsg(msg.id)} />
             </Btn>
           </ContainerMsg.Buttons>
         </ContainerMsg>

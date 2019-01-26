@@ -4,6 +4,7 @@ import { getTags } from '../../utils/Helpers';
 import {
   ADD_MESSAGE,
   ALL_MESSAGES_LOADED,
+  DELETE_MSG,
   CANCEL_REPLY,
   LOAD_MESSAGES,
   SEND_MESSAGE,
@@ -16,6 +17,7 @@ import { createTag, updateDateLastUsed } from '../tags/tags.actions';
 const COLL_MESSAGES = 'messages';
 
 export const addMessage = msg => dispatch => {
+  // console.log('adding message', msg);
   dispatch({
     type: ADD_MESSAGE.SUCCESS,
     payload: msg,
@@ -35,43 +37,6 @@ const updateLastMsgDoc = doc => dispatch => {
   });
 };
 
-export const loadMessages = (lastMsgDoc, roomId) => async dispatch => {
-  try {
-    const messagesRef = db
-      .collection(COLL_MESSAGES)
-      .where('roomId', '==', roomId)
-      .orderBy('timestamp', 'desc')
-      .startAfter(lastMsgDoc)
-      .limit(MESSAGES_PER_LOAD);
-
-    const snapshot = await messagesRef.get();
-
-    if (snapshot.empty) {
-      dispatch({
-        type: ALL_MESSAGES_LOADED.SUCCESS,
-      });
-      return;
-    }
-
-    let msg = null;
-    snapshot.forEach(doc => {
-      msg = doc.data();
-      const { id } = doc;
-      msg.id = id;
-      msg.timestamp = msg.timestamp.toMillis();
-      dispatch(addMessage(msg));
-    });
-
-    const lastMsgDocUpdated = snapshot.docs[snapshot.docs.length - 1];
-    dispatch(updateLastMsgDoc(lastMsgDocUpdated));
-  } catch (error) {
-    console.log('Error messages.actions, loadMessages', error);
-    dispatch({
-      type: LOAD_MESSAGES.ERROR,
-    });
-  }
-};
-
 export const replyToMsg = msgId => dispatch => {
   dispatch({
     type: REPLY_TO_MESSAGE.SUCCESS,
@@ -89,17 +54,15 @@ const getTagIds = async (content, roomId, tags) => {
         return tags[tagIndex].id;
       }
       const newTag = await createTag(roomId, tagName);
-      console.log('msg actions, newTag', newTag);
       return newTag.id;
     })
   );
-  console.log('tagIds', tagIds);
+  // console.log('tagIds', tagIds);
   return tagIds;
 };
 
 export const sendMessage = (msg, tags) => async dispatch => {
   try {
-    console.log('sendMessage tags', tags);
     const tagIds = await getTagIds(msg.content, msg.roomId, tags);
     tagIds.forEach(id => {
       const tag = tags.find(item => item.id === id);
@@ -144,6 +107,70 @@ export const updateMsgInState = msg => dispatch => {
   });
 };
 
+const handleMsgSnapshot = dispatch => snapshot => {
+  if (snapshot.empty) {
+    console.log('snapshot is empty, no more messages to load');
+    dispatch({
+      type: ALL_MESSAGES_LOADED.SUCCESS,
+    });
+  }
+  snapshot.docChanges().forEach((change, index) => {
+    if (index === 0) console.log('first msg in subscription is', change.doc.data());
+    if (change.type === 'added') {
+      const { doc } = change;
+      const msg = doc.data();
+      const { id } = doc;
+      msg.id = id;
+      // convert firestore timestamp to unix
+      // console.log('about to add message', msg);
+      msg.timestamp = msg.timestamp ? msg.timestamp.toMillis() : dbTimestamp.now().toMillis();
+      dispatch(addMessage(msg));
+      // update last Msg Doc to be used as reference for following load
+      dispatch(updateLastMsgDoc(doc));
+    }
+    if (change.type === 'modified') {
+      // will be modified when the timestamp updates
+      const { doc } = change;
+      const msg = doc.data();
+      const { id } = doc;
+      msg.id = id;
+      msg.timestamp = msg.timestamp.toMillis();
+      // console.log('modified', msg);
+      dispatch(updateMsgInState(msg));
+    }
+    if (change.type === 'removed') {
+      const { doc } = change;
+      const msg = doc.data();
+      const { id } = doc;
+      msg.id = id;
+      // console.log('snapshot event change removed', msg);
+      dispatch({
+        type: DELETE_MSG.SUCCESS,
+        payload: msg,
+      });
+    }
+  });
+};
+
+export const getMsgSubscription = (roomId, lastMsgDoc = null) => async dispatch => {
+  let subscription = null;
+  try {
+    const msgRef = db
+      .collection(COLL_MESSAGES)
+      .where('roomId', '==', roomId)
+      .orderBy('timestamp', 'desc');
+    const msgRefLimited = lastMsgDoc
+      ? msgRef.startAfter(lastMsgDoc).limit(MESSAGES_PER_LOAD)
+      : msgRef.limit(MESSAGES_PER_LOAD);
+    subscription = msgRefLimited.onSnapshot(handleMsgSnapshot(dispatch));
+  } catch (error) {
+    console.log('messages.actions, getMsgSubscription', error);
+  }
+  console.log('messages.actions, got subscription', subscription);
+  return subscription;
+};
+
+// TO DELETE
 export const getMessageSubscription = roomId => async dispatch => {
   dispatch({
     type: LOAD_MESSAGES.PENDING,
@@ -156,7 +183,6 @@ export const getMessageSubscription = roomId => async dispatch => {
       .orderBy('timestamp', 'desc')
       .limit(MESSAGES_PER_LOAD)
       .onSnapshot(snapshot => {
-        // If snapshot for changes required need to add new change type
         snapshot.docChanges().forEach(change => {
           if (change.type === 'added') {
             const { doc } = change;
@@ -180,6 +206,17 @@ export const getMessageSubscription = roomId => async dispatch => {
             // console.log('modified', msg);
             dispatch(updateMsgInState(msg));
           }
+          if (change.type === 'removed') {
+            const { doc } = change;
+            const msg = doc.data();
+            const { id } = doc;
+            msg.id = id;
+            // console.log('snapshot event change removed', msg);
+            dispatch({
+              type: DELETE_MSG.SUCCESS,
+              payload: msg,
+            });
+          }
         });
       });
     dispatch({
@@ -192,6 +229,44 @@ export const getMessageSubscription = roomId => async dispatch => {
     });
   }
   return subscription;
+};
+
+// TO DELETE
+export const loadMessages = (lastMsgDoc, roomId) => async dispatch => {
+  try {
+    const messagesRef = db
+      .collection(COLL_MESSAGES)
+      .where('roomId', '==', roomId)
+      .orderBy('timestamp', 'desc')
+      .startAfter(lastMsgDoc)
+      .limit(MESSAGES_PER_LOAD);
+
+    const snapshot = await messagesRef.get();
+
+    if (snapshot.empty) {
+      dispatch({
+        type: ALL_MESSAGES_LOADED.SUCCESS,
+      });
+      return;
+    }
+
+    let msg = null;
+    snapshot.forEach(doc => {
+      msg = doc.data();
+      const { id } = doc;
+      msg.id = id;
+      msg.timestamp = msg.timestamp.toMillis();
+      dispatch(addMessage(msg));
+    });
+
+    const lastMsgDocUpdated = snapshot.docs[snapshot.docs.length - 1];
+    dispatch(updateLastMsgDoc(lastMsgDocUpdated));
+  } catch (error) {
+    console.log('Error messages.actions, loadMessages', error);
+    dispatch({
+      type: LOAD_MESSAGES.ERROR,
+    });
+  }
 };
 
 export const editMsg = (msg, tags) => async dispatch => {
@@ -219,5 +294,16 @@ export const uploadFile = async (file, roomId) => {
     return uploadTask;
   } catch (error) {
     console.log('messages.actions, messages, uploadFile', error);
+  }
+};
+
+export const deleteMsg = id => async dispatch => {
+  try {
+    await db
+      .collection(COLL_MESSAGES)
+      .doc(id)
+      .delete();
+  } catch (error) {
+    console.log('Error, messages.actions, deleteDocMsg', error);
   }
 };
