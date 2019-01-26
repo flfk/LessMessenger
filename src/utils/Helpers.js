@@ -11,7 +11,6 @@ export const createActionSet = actionName => ({
 });
 
 export const denormalize = state => {
-  console.log('calling denormalize', state);
   const { allIds, byId } = state;
   return allIds.map(id => byId[id]);
 };

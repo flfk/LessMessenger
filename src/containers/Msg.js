@@ -64,6 +64,14 @@ class Msg extends React.Component {
     isBeingEdited: false,
   };
 
+  shouldComponentUpdate(nextProps, nextState) {
+    // limit rerenders to editing only to improve performance
+    if (this.props.msg.content !== nextProps.msg.content) return true;
+    if (this.state.isBeingEdited !== nextState.isBeingEdited) return true;
+    if (this.state.editInput !== nextState.editInput) return true;
+    return false;
+  }
+
   getAttachmentElement = () => {
     const { msg } = this.props;
     const isImg = msg.type.indexOf('image/') > -1;
@@ -158,6 +166,8 @@ class Msg extends React.Component {
   };
 
   render() {
+    console.log('rendering Msg');
+
     const { editInput, isBeingEdited } = this.state;
 
     const {

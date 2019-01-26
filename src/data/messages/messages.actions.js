@@ -152,6 +152,8 @@ const handleMsgSnapshot = dispatch => snapshot => {
       type: ALL_MESSAGES_LOADED.SUCCESS,
     });
   }
+  const messagesAdded = [];
+  const messagesUpdated = [];
   snapshot.docChanges().forEach(change => {
     if (change.type === 'added') {
       const { doc } = change;
@@ -161,7 +163,8 @@ const handleMsgSnapshot = dispatch => snapshot => {
       // convert firestore timestamp to unix
       // console.log('about to add message', msg);
       msg.timestamp = msg.timestamp ? msg.timestamp.toMillis() : dbTimestamp.now().toMillis();
-      dispatch(addMessage(msg));
+      messagesAdded.push(msg);
+      // dispatch(addMessage(msg));
       // update last Msg Doc to be used as reference for following load
       dispatch(updateLastMsgDoc(doc));
     }
@@ -173,7 +176,8 @@ const handleMsgSnapshot = dispatch => snapshot => {
       msg.id = id;
       msg.timestamp = msg.timestamp.toMillis();
       // console.log('modified', msg);
-      dispatch(updateMsgInState(msg));
+      // dispatch(updateMsgInState(msg));
+      messagesUpdated.push(msg);
     }
     if (change.type === 'removed') {
       const { doc } = change;
@@ -187,6 +191,8 @@ const handleMsgSnapshot = dispatch => snapshot => {
       });
     }
   });
+  messagesAdded.map(msg => dispatch(addMessage(msg)));
+  messagesUpdated.map(msg => dispatch(updateMsgInState(msg)));
 };
 
 export const getMsgSubscription = (roomId, lastMsgDoc = null) => async dispatch => {
