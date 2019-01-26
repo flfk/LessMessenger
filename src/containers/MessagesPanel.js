@@ -14,7 +14,7 @@ import { getSelectorAll } from '../utils/Helpers';
 
 const propTypes = {
   actionCancelReply: PropTypes.func.isRequired,
-  actionCreateTag: PropTypes.func.isRequired,
+  // actionCreateTag: PropTypes.func.isRequired,
   actionSendMessage: PropTypes.func.isRequired,
   msgIdBeingRepliedTo: PropTypes.string.isRequired,
   roomId: PropTypes.string.isRequired,
@@ -47,7 +47,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   actionCancelReply: () => dispatch(cancelReply()),
-  actionCreateTag: (roomId, tagName) => dispatch(createTag(roomId, tagName)),
+  // actionCreateTag: (roomId, tagName) => dispatch(createTag(roomId, tagName)),
   actionSendMessage: (message, tags) => dispatch(sendMessage(message, tags)),
 });
 

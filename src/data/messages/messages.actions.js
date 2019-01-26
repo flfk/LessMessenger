@@ -11,7 +11,7 @@ import {
   REPLY_TO_MESSAGE,
   UPDATE_MESSAGE,
 } from './messages.types';
-import { createTag } from '../tags/tags.actions';
+import { createTag, updateDateLastUsed } from '../tags/tags.actions';
 
 const COLL_MESSAGES = 'messages';
 
@@ -87,11 +87,9 @@ const getTagIds = async (content, roomId, tags) => {
       const tagIndex = tagNames.indexOf(tagName);
       if (tagIndex > -1) {
         return tags[tagIndex].id;
-        console.log('its an existing tag');
       }
-      console.log('its a new tag');
       const newTag = await createTag(roomId, tagName);
-      console.log('msgpanel, newTag', newTag);
+      console.log('msg actions, newTag', newTag);
       return newTag.id;
     })
   );
@@ -103,6 +101,10 @@ export const sendMessage = (msg, tags) => async dispatch => {
   try {
     console.log('sendMessage tags', tags);
     const tagIds = await getTagIds(msg.content, msg.roomId, tags);
+    tagIds.forEach(id => {
+      const tag = tags.find(item => item.id === id);
+      dispatch(updateDateLastUsed(tag));
+    });
     await db
       .collection(COLL_MESSAGES)
       .add({ ...msg, tagIds, timestamp: firestore.FieldValue.serverTimestamp() });
@@ -194,6 +196,9 @@ export const getMessageSubscription = roomId => async dispatch => {
 
 export const editMsg = (msg, tags) => async dispatch => {
   const tagIds = await getTagIds(msg.content, msg.roomId, tags);
+  tags.forEach(tag => {
+    dispatch(updateDateLastUsed(tag));
+  });
   const msgUpdated = { ...msg, tagIds };
   dispatch(updateMsgInState(msgUpdated));
   await updateDocMsg(msg.id, { content: msg.content, tagIds });
