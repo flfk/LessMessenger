@@ -11,7 +11,7 @@ export const createActionSet = actionName => ({
 });
 
 export const getSelectorAll = (field, state) => {
-  // console.log('getSelectorAll', field);
+  console.log('getSelectorAll', field);
   const { allIds, byId } = state[field];
   return allIds.map(id => byId[id]);
 };

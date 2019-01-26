@@ -31,9 +31,6 @@ const reducerMessages = (state = initialState, action) => {
         hasMoreMessages: false,
       };
     case DELETE_MSG.SUCCESS:
-      // console.log('id to remove', action.payload.id);
-      // console.log('allIds Prev', state.allIds);
-      // console.log('allIds Filtered', state.allIds.filter(id => id !== action.payload.id));
       return {
         ...state,
         allIds: state.allIds.filter(id => id !== action.payload.id),

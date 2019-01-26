@@ -13,14 +13,13 @@ import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
 import { ContainerMsg, Text } from '../components/message';
 import { Input, MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
-import { getMsgSubscription, loadMessages, togglePinMsg } from '../data/messages/messages.actions';
+import { getMsgSubscription, togglePinMsg } from '../data/messages/messages.actions';
 // import { getAllMessages } from '../data/messages/messages.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 import { toggleTag } from '../data/tags/tags.actions';
 
 const propTypes = {
-  actionLoadMessages: PropTypes.func.isRequired,
   actionGetMsgSubscription: PropTypes.func.isRequired,
   actionTogglePin: PropTypes.func.isRequired,
   actionToggleTag: PropTypes.func.isRequired,
@@ -65,7 +64,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actionLoadMessages: (lastMsgDoc, roomId) => dispatch(loadMessages(lastMsgDoc, roomId)),
   actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
   actionToggleTag: tagName => dispatch(toggleTag(tagName)),
   actionGetMsgSubscription: (roomId, lastMsgDoc) =>
@@ -74,7 +72,6 @@ const mapDispatchToProps = dispatch => ({
 
 class Messages extends React.Component {
   state = {
-    // unsubscribeMessages: null,
     subscriptions: [],
   };
 
@@ -114,7 +111,7 @@ class Messages extends React.Component {
 
   handleTogglePin = id => {
     const { actionTogglePin, messages } = this.props;
-    const msg = messages.find(msg => msg.id === id);
+    const msg = messages.find(item => item.id === id);
     actionTogglePin(id, msg.isPinned);
   };
 
@@ -173,8 +170,6 @@ class Messages extends React.Component {
 
   render() {
     const { hasMoreMessages, isLoadingMessages, isLoadingMembers, messages } = this.props;
-
-    console.log('subscriptions', this.state.subscriptions);
 
     if (isLoadingMessages || isLoadingMembers) return <Spinner />;
 
