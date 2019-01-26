@@ -7,17 +7,17 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 
 import Content from '../components/Content';
-import { MESSAGES_PER_LOAD, MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
+import { MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
-import { ContainerMsg, Text } from '../components/message';
-import { Input, MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
+import { MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
 import { getMsgSubscription, togglePinMsg } from '../data/messages/messages.actions';
-// import { getAllMessages } from '../data/messages/messages.selectors';
+import { getMessagesState } from '../data/messages/messages.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 import { toggleTag } from '../data/tags/tags.actions';
+import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
 
 const propTypes = {
   actionGetMsgSubscription: PropTypes.func.isRequired,
@@ -43,10 +43,17 @@ const propTypes = {
     })
   ).isRequired,
   roomId: PropTypes.string.isRequired,
-  tags: PropTypes.arrayOf(
-    PropTypes.shape({ name: PropTypes.string.isRequired, isSelected: PropTypes.bool.isRequired })
-  ).isRequired,
+  // tags: PropTypes.arrayOf(
+  //   PropTypes.shape({ name: PropTypes.string.isRequired, isSelected: PropTypes.bool.isRequired })
+  // ).isRequired,
   userId: PropTypes.string,
+  tagsSelected: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      isSelected: PropTypes.bool.isRequired,
+    })
+  ).isRequired,
 };
 
 const defaultProps = {};
@@ -57,9 +64,10 @@ const mapStateToProps = state => ({
   hasMoreMessages: state.messages.hasMoreMessages,
   lastMsgDoc: state.messages.lastMsgDoc,
   members: state.members,
-  messages: getSelectorAll('messages', state),
+  messages: getMessagesState(state),
   roomId: state.room.id,
-  tags: getSelectorAll('tags', state),
+  // tags: getTagsState(state),
+  tagsSelected: getTagsSelectedState(state),
   userId: state.user.id,
 });
 
@@ -96,8 +104,7 @@ class Messages extends React.Component {
   }
 
   filterTags = msg => {
-    const { tags } = this.props;
-    const tagsSelected = tags.filter(tag => tag.isSelected);
+    const { tagsSelected } = this.props;
     const selectedTagNames = tagsSelected.map(tag => tag.name);
     if (selectedTagNames.length === 0) return true;
 

@@ -12,18 +12,19 @@ export const addTag = name => dispatch => {
 };
 
 export const createTag = async (roomId, tagName) => {
+  const tag = {
+    dateLastUsed: getTimestamp(),
+    name: tagName,
+    roomId,
+  };
   try {
-    const tag = {
-      dateLastUsed: getTimestamp(),
-      name: tagName,
-      roomId,
-    };
     const snapshot = await db.collection(COLL_TAGS).add(tag);
     tag.id = snapshot.id;
     return tag;
   } catch (error) {
     console.log('Error Actions, tags, createTag', error);
   }
+  return tag;
 };
 
 const updateDocTag = async (id, fields) => {
@@ -63,7 +64,6 @@ export const getTagSubscription = roomId => async dispatch => {
       .collection(COLL_TAGS)
       .where('roomId', '==', roomId)
       .onSnapshot(snapshot => {
-        // If snapshot for changes required need to add new change type
         snapshot.docChanges().forEach(change => {
           if (change.type === 'added') {
             const { doc } = change;
@@ -94,7 +94,6 @@ export const getTagSubscription = roomId => async dispatch => {
 };
 
 export const toggleTag = id => dispatch => {
-  console.log('toggleTag for id', id);
   dispatch({
     type: TOGGLE_TAG.SUCCESS,
     payload: id,

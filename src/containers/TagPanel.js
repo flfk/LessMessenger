@@ -6,13 +6,21 @@ import { connect } from 'react-redux';
 import Scrollable from '../components/Scrollable';
 import { TagHeader, TagItem, Wrapper } from '../components/tagPanel';
 import { getTagSubscription, toggleTag } from '../data/tags/tags.actions';
+import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
 
-import { getSelectorAll } from '../utils/Helpers';
+// import { getSelectorAll } from '../utils/Helpers';
 
 const propTypes = {
   actionGetTagSubscription: PropTypes.func.isRequired,
   actionToggleTag: PropTypes.func.isRequired,
   tags: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      isSelected: PropTypes.bool.isRequired,
+    })
+  ).isRequired,
+  tagsSelected: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
@@ -25,7 +33,8 @@ const propTypes = {
 const defaultProps = {};
 
 const mapStateToProps = state => ({
-  tags: getSelectorAll('tags', state),
+  tags: getTagsState(state),
+  tagsSelected: getTagsSelectedState(state),
   roomId: state.room.id,
 });
 
@@ -62,9 +71,9 @@ class TagPanel extends React.Component {
   };
 
   render() {
-    const { tags } = this.props;
+    const { tags, tagsSelected } = this.props;
 
-    const hasTagsSelected = tags.filter(tag => tag.isSelected).length > 0;
+    const hasTagsSelected = tagsSelected.length > 0;
 
     const tagsList = tags
       .sort((a, b) => b.dateLastUsed - a.dateLastUsed)

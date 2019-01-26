@@ -7,10 +7,12 @@ import { REGEX_TIMER } from '../utils/Constants';
 import Messages from './Messages';
 import { createTag } from '../data/tags/tags.actions';
 import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
+import { getMessagesState } from '../data/messages/messages.selectors';
 import { Container, Thumbnails, Input, InputContainer } from '../components/messagesPanel';
 import { Text } from '../components/message';
+import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
 
-import { getSelectorAll } from '../utils/Helpers';
+// import { getSelectorAll } from '../utils/Helpers';
 
 const propTypes = {
   actionCancelReply: PropTypes.func.isRequired,
@@ -36,13 +38,13 @@ const propTypes = {
 const defaultProps = {};
 
 const mapStateToProps = state => ({
-  messages: getSelectorAll('messages', state),
+  messages: getMessagesState(state),
   members: state.members,
   msgIdBeingRepliedTo: state.room.msgIdBeingRepliedTo,
   roomId: state.room.id,
   senderUserId: state.user.id,
-  tags: getSelectorAll('tags', state),
-  tagsSelected: getSelectorAll('tags', state).filter(tag => tag.isSelected),
+  tags: getTagsState(state),
+  tagsSelected: getTagsSelectedState(state),
 });
 
 const mapDispatchToProps = dispatch => ({

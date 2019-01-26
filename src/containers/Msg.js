@@ -26,7 +26,7 @@ import {
 import { Input } from '../components/messagesPanel';
 import { deleteMsg, editMsg, replyToMsg } from '../data/messages/messages.actions';
 
-import { getSelectorAll } from '../utils/Helpers';
+import { getTagsState } from '../data/tags/tags.selectors';
 
 const propTypes = {
   actionDeleteMsg: PropTypes.func.isRequired,
@@ -48,7 +48,7 @@ const defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  tags: getSelectorAll('tags', state),
+  tags: getTagsState(state),
   userId: state.user.id,
 });
 

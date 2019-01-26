@@ -10,9 +10,9 @@ export const createActionSet = actionName => ({
   actionName,
 });
 
-export const getSelectorAll = (field, state) => {
-  console.log('getSelectorAll', field);
-  const { allIds, byId } = state[field];
+export const denormalize = state => {
+  console.log('calling denormalize', state);
+  const { allIds, byId } = state;
   return allIds.map(id => byId[id]);
 };
 

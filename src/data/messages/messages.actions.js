@@ -148,13 +148,11 @@ export const uploadFile = async (file, roomId) => {
 
 const handleMsgSnapshot = dispatch => snapshot => {
   if (snapshot.empty) {
-    console.log('snapshot is empty, no more messages to load');
     dispatch({
       type: ALL_MESSAGES_LOADED.SUCCESS,
     });
   }
-  snapshot.docChanges().forEach((change, index) => {
-    if (index === 0) console.log('first msg in subscription is', change.doc.data());
+  snapshot.docChanges().forEach(change => {
     if (change.type === 'added') {
       const { doc } = change;
       const msg = doc.data();
@@ -205,6 +203,5 @@ export const getMsgSubscription = (roomId, lastMsgDoc = null) => async dispatch 
   } catch (error) {
     console.log('messages.actions, getMsgSubscription', error);
   }
-  console.log('messages.actions, got subscription', subscription);
   return subscription;
 };
