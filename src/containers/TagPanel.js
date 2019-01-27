@@ -1,14 +1,14 @@
 // import mixpanel from 'mixpanel-browser';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { getFilteredMessages } from '../data/messages/messages.selectors';
 import Scrollable from '../components/Scrollable';
 import { TagHeader, TagItem, Wrapper } from '../components/tagPanel';
 import { getTagSubscription, toggleTag } from '../data/tags/tags.actions';
 import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
-
-// import { getSelectorAll } from '../utils/Helpers';
 
 const propTypes = {
   actionGetTagSubscription: PropTypes.func.isRequired,
@@ -33,6 +33,7 @@ const propTypes = {
 const defaultProps = {};
 
 const mapStateToProps = state => ({
+  messages: getFilteredMessages(state),
   tags: getTagsState(state),
   tagsSelected: getTagsSelectedState(state),
   roomId: state.room.id,
@@ -64,6 +65,13 @@ class TagPanel extends React.Component {
     actionToggleTag(event.currentTarget.value);
   };
 
+  getAvailableTags = () => {
+    const { tags, messages } = this.props;
+    const messagesTagIds = _.flatten(messages.map(msg => msg.tagIds));
+    const availableTags = tags.filter(tag => messagesTagIds.indexOf(tag.id) > -1);
+    return availableTags;
+  };
+
   subscribeTags = async () => {
     const { actionGetTagSubscription, roomId } = this.props;
     const unsubscribeTags = await actionGetTagSubscription(roomId);
@@ -71,11 +79,11 @@ class TagPanel extends React.Component {
   };
 
   render() {
-    const { tags, tagsSelected } = this.props;
+    const { tagsSelected } = this.props;
 
     const hasTagsSelected = tagsSelected.length > 0;
 
-    const tagsList = tags
+    const tagsList = this.getAvailableTags()
       .sort((a, b) => b.dateLastUsed - a.dateLastUsed)
       .map(tag => {
         const isSelected = hasTagsSelected ? tag.isSelected : true;

@@ -13,7 +13,7 @@ import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
 import { MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
 import { getMsgSubscription, togglePinMsg } from '../data/messages/messages.actions';
-import { getMessagesState } from '../data/messages/messages.selectors';
+import { getFilteredMessages } from '../data/messages/messages.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 import { toggleTag } from '../data/tags/tags.actions';
@@ -64,9 +64,8 @@ const mapStateToProps = state => ({
   hasMoreMessages: state.messages.hasMoreMessages,
   lastMsgDoc: state.messages.lastMsgDoc,
   members: state.members,
-  messages: getMessagesState(state),
+  messages: getFilteredMessages(state),
   roomId: state.room.id,
-  // tags: getTagsState(state),
   tagsSelected: getTagsSelectedState(state),
   userId: state.user.id,
 });
@@ -108,6 +107,8 @@ class Messages extends React.Component {
     const { tagsSelected } = this.props;
     const selectedTagNames = tagsSelected.map(tag => tag.name);
     if (selectedTagNames.length === 0) return true;
+
+    console.log('msg tags', msg.tagsIds);
 
     let areMsgTagsSelected = true;
     const msgTags = getTags(msg.content);
