@@ -26,7 +26,7 @@ import {
 import { Input } from '../components/messagesPanel';
 import { deleteMsg, editMsg, replyToMsg } from '../data/messages/messages.actions';
 
-import { getTagsState } from '../data/tags/tags.selectors';
+import { getTagsSelectedState } from '../data/tags/tags.selectors';
 
 const propTypes = {
   actionDeleteMsg: PropTypes.func.isRequired,
@@ -48,7 +48,7 @@ const defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  tags: getTagsState(state),
+  tags: getTagsSelectedState(state),
   userId: state.user.id,
 });
 
@@ -69,7 +69,7 @@ class Msg extends React.Component {
     if (this.props.msg.content !== nextProps.msg.content) return true;
     if (this.state.isBeingEdited !== nextState.isBeingEdited) return true;
     if (this.state.editInput !== nextState.editInput) return true;
-    return false;
+    return true;
   }
 
   getAttachmentElement = () => {

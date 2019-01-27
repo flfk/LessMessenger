@@ -13,6 +13,7 @@ export const addTag = name => dispatch => {
 
 export const createTag = async (roomId, tagName) => {
   const tag = {
+    color: '',
     dateLastUsed: getTimestamp(),
     name: tagName,
     roomId,
