@@ -103,21 +103,6 @@ class Messages extends React.Component {
     subscriptions.map(sub => sub());
   }
 
-  filterTags = msg => {
-    const { tagsSelected } = this.props;
-    const selectedTagNames = tagsSelected.map(tag => tag.name);
-    if (selectedTagNames.length === 0) return true;
-
-    console.log('msg tags', msg.tagsIds);
-
-    let areMsgTagsSelected = true;
-    const msgTags = getTags(msg.content);
-    selectedTagNames.forEach(tag => {
-      areMsgTagsSelected = areMsgTagsSelected && msgTags.indexOf(tag) > -1;
-    });
-    return areMsgTagsSelected;
-  };
-
   handleTogglePin = id => {
     const { actionTogglePin, messages } = this.props;
     const msg = messages.find(item => item.id === id);
@@ -184,13 +169,9 @@ class Messages extends React.Component {
 
     if (isLoadingMessages || isLoadingMembers) return <Spinner />;
 
-    const messagesFiltered = messages.filter(this.filterTags);
+    const msgsPinnedContainer = messages.filter(msg => msg.isPinned).map(this.getMsgElement);
 
-    const msgsPinnedContainer = messagesFiltered
-      .filter(msg => msg.isPinned)
-      .map(this.getMsgElement);
-
-    const messagesContainer = _.chain(messagesFiltered)
+    const messagesContainer = _.chain(messages)
       .sort((a, b) => a.timestamp - b.timestamp)
       .map(msg => ({ ...msg, date: moment(msg.timestamp).format('MMM Do') }))
       .groupBy('date')

@@ -166,8 +166,6 @@ class Msg extends React.Component {
   };
 
   render() {
-    console.log('rendering Msg');
-
     const { editInput, isBeingEdited } = this.state;
 
     const {
