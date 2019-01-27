@@ -7,6 +7,7 @@ import { Redirect } from 'react-router-dom';
 import ErrorScreen from '../components/ErrorScreen';
 import { getPathname } from '../utils/Helpers';
 import MessagesPanel from './MessagesPanel';
+import { getMemberSubscription } from '../data/members/members.actions';
 import { loadRoom } from '../data/room/room.actions';
 import RoomContainer from '../components/RoomContainer';
 import Spinner from '../components/Spinner';
@@ -14,6 +15,7 @@ import SignUp from './SignUp';
 import TagPanel from './TagPanel';
 
 const propTypes = {
+  actionGetMemberSubscription: PropTypes.func.isRequired,
   actionLoadRoom: PropTypes.func.isRequired,
   error: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
@@ -33,22 +35,28 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  actionGetMemberSubscription: roomId => dispatch(getMemberSubscription(roomId)),
   actionLoadRoom: pathname => dispatch(loadRoom(pathname)),
 });
 
 class Room extends React.Component {
   state = {
     toLandingPage: false,
+    subscriptions: [],
   };
 
   componentDidMount() {
     const pathname = getPathname(this.props);
     if (pathname) {
-      const { actionLoadRoom } = this.props;
-      actionLoadRoom(pathname);
+      this.loadRoom(pathname);
     } else {
       this.setState({ toLandingPage: true });
     }
+  }
+
+  componentWillUnmount() {
+    const { subscriptions } = this.state;
+    subscriptions.map(sub => sub());
   }
 
   goToLandingPage = () => (
@@ -59,6 +67,25 @@ class Room extends React.Component {
       }}
     />
   );
+
+  loadRoom = async pathname => {
+    const { actionLoadRoom } = this.props;
+    const room = await actionLoadRoom(pathname);
+    this.subscribeMembers(room.memberUserIds);
+  };
+
+  subscribeMembers = async memberUserIds => {
+    const { subscriptions } = this.state;
+    const { actionGetMemberSubscription } = this.props;
+    const newSubs = await Promise.all(
+      memberUserIds.map(async userId => {
+        const newSub = await actionGetMemberSubscription(userId);
+        return newSub;
+      })
+    );
+    const subscriptionsUpdated = [...subscriptions, ...newSubs];
+    this.setState({ subscriptions: subscriptionsUpdated });
+  };
 
   render() {
     const { toLandingPage } = this.state;

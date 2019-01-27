@@ -5,11 +5,10 @@ import { connect } from 'react-redux';
 import moment from 'moment-timezone';
 
 import Btn from '../components/Btn';
-import Fonts from '../utils/Fonts';
-
-import { Dropdown, List, Profile, Wrapper } from '../components/navBar';
-
 import { auth } from '../data/firebase';
+import Fonts from '../utils/Fonts';
+import { Dropdown, List, Profile, Wrapper } from '../components/navBar';
+import { getMembersState } from '../data/members/members.selectors';
 import { getLoggedInUser, signOut } from '../data/user/user.actions';
 
 const MILLIS_PER_SECOND = 1000;
@@ -27,7 +26,7 @@ const defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  members: state.members,
+  members: getMembersState(state),
   roomName: state.room.name,
   userId: state.user.id,
 });

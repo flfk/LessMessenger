@@ -8,6 +8,7 @@ export const loadRoom = pathname => async dispatch => {
   dispatch({
     type: LOAD_ROOM.PENDING,
   });
+  let room = null;
   try {
     const roomRef = db.collection(COLL_ROOMS).where('pathname', '==', pathname);
     const snapshot = await roomRef.limit(1).get();
@@ -18,7 +19,6 @@ export const loadRoom = pathname => async dispatch => {
       });
     }
 
-    let room = null;
     snapshot.forEach(doc => {
       room = doc.data();
       const { id } = doc;
@@ -28,12 +28,11 @@ export const loadRoom = pathname => async dispatch => {
         payload: room,
       });
     });
-
-    dispatch(loadMembers(room.memberUserIds));
   } catch (error) {
     console.error('Error actions, loadRoom', error);
     dispatch({
       type: LOAD_ROOM.ERROR,
     });
   }
+  return room;
 };

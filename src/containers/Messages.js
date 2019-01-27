@@ -9,15 +9,15 @@ import { connect } from 'react-redux';
 import Content from '../components/Content';
 import { MESSAGES_PER_LOAD, MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
-import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
 import { MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
 import { getMsgSubscription, togglePinMsg } from '../data/messages/messages.actions';
 import { getFilteredMessages } from '../data/messages/messages.selectors';
+import { getMembersState } from '../data/members/members.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 import { toggleTag } from '../data/tags/tags.actions';
-import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
+import { getTagsSelectedState } from '../data/tags/tags.selectors';
 
 const propTypes = {
   actionGetMsgSubscription: PropTypes.func.isRequired,
@@ -56,7 +56,7 @@ const mapStateToProps = state => ({
   isLoadingMembers: state.room.isLoadingMembers,
   hasMoreMessages: state.messages.hasMoreMessages,
   lastMsgDoc: state.messages.lastMsgDoc,
-  members: state.members,
+  members: getMembersState(state),
   messages: getFilteredMessages(state),
   roomId: state.room.id,
   tagsSelected: getTagsSelectedState(state),

@@ -8,6 +8,7 @@ import Messages from './Messages';
 import { createTag } from '../data/tags/tags.actions';
 import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
 import { getMessagesState } from '../data/messages/messages.selectors';
+import { getMembersState } from '../data/members/members.selectors';
 import { Container, Thumbnails, Input, InputContainer } from '../components/messagesPanel';
 import { Text } from '../components/message';
 import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
@@ -39,7 +40,7 @@ const defaultProps = {};
 
 const mapStateToProps = state => ({
   messages: getMessagesState(state),
-  members: state.members,
+  members: getMembersState(state),
   msgIdBeingRepliedTo: state.room.msgIdBeingRepliedTo,
   roomId: state.room.id,
   senderUserId: state.user.id,
