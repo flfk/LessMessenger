@@ -1,5 +1,5 @@
 import { MESSAGES_PER_LOAD } from '../../utils/Constants';
-import { db, dbTimestamp, firestore, storage } from '../firebase';
+import { db, dbTimestamp, firebase, storage } from '../firebase';
 import { getTags } from '../../utils/Helpers';
 import {
   ADD_MESSAGE,
@@ -83,7 +83,7 @@ export const sendMessage = (msg, tags) => async dispatch => {
     });
     await db
       .collection(COLL_MESSAGES)
-      .add({ ...msg, tagIds, timestamp: firestore.FieldValue.serverTimestamp() });
+      .add({ ...msg, tagIds, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
     dispatch({
       type: SEND_MESSAGE.SUCCESS,
     });

@@ -7,7 +7,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 
 import Content from '../components/Content';
-import { MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
+import { MESSAGES_PER_LOAD, MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import { getTags, getSelectorAll } from '../utils/Helpers';
 import Msg from './Msg';
@@ -46,14 +46,7 @@ const propTypes = {
   // tags: PropTypes.arrayOf(
   //   PropTypes.shape({ name: PropTypes.string.isRequired, isSelected: PropTypes.bool.isRequired })
   // ).isRequired,
-  userId: PropTypes.string,
-  tagsSelected: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      isSelected: PropTypes.bool.isRequired,
-    })
-  ).isRequired,
+  userId: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
@@ -79,21 +72,17 @@ const mapDispatchToProps = dispatch => ({
 
 class Messages extends React.Component {
   state = {
+    hasCompletedFirstLoad: false,
     subscriptions: [],
   };
 
   componentDidMount() {
     this.subscribeMessages();
-    this.scrollToBottom();
   }
 
   componentDidUpdate(prevProps) {
-    const { subscriptions } = this.state;
-    const { messages, userId } = this.props;
-    const newMsg = messages[messages.length - 1];
-    const wasNewMsgAdded = newMsg !== prevProps.messages[prevProps.messages.length - 1];
-    if (wasNewMsgAdded && newMsg.senderUserId !== userId) this.scrollToBottom();
-    if (subscriptions.length === 1) this.scrollToBottom();
+    const prevNewestMsg = prevProps.messages[prevProps.messages.length - 1];
+    this.handleScrolling(prevNewestMsg);
   }
 
   componentWillUnmount() {
@@ -110,6 +99,19 @@ class Messages extends React.Component {
   handleLoad = () => {
     const { hasMoreMessages, lastMsgDoc } = this.props;
     if (hasMoreMessages) this.subscribeMessages(lastMsgDoc);
+  };
+
+  handleScrolling = prevNewestMsg => {
+    const { hasCompletedFirstLoad } = this.state;
+    const { messages, userId } = this.props;
+    const newMsg = messages[messages.length - 1];
+    const wasNewMsgAdded = newMsg !== prevNewestMsg;
+
+    if (wasNewMsgAdded && newMsg.senderUserId !== userId) this.scrollToBottom();
+    if (!hasCompletedFirstLoad) this.scrollToBottom();
+
+    if (!hasCompletedFirstLoad && messages.length === MESSAGES_PER_LOAD)
+      this.setState({ hasCompletedFirstLoad: true });
   };
 
   getMsgElement = (msg, hasHeader = true) => {

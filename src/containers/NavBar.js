@@ -102,7 +102,10 @@ class NavBar extends React.Component {
           const isUser = member.id === userId;
           return (
             <Profile key={member.id}>
-              <Profile.Img src={member.profileImgURL} />
+              <Profile.ImgWrapper>
+                <Profile.Img src={member.profileImgURL} />
+                <Profile.Presence isOnline={member.isOnline} />
+              </Profile.ImgWrapper>
               <Profile.TextWrapper>
                 <Fonts.Label isSecondary>
                   {isUser ? `${member.name} (you)` : member.name}
