@@ -88,14 +88,12 @@ class Messages extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    const { subscriptions } = this.state;
     const { messages, userId } = this.props;
     const newMsg = messages[messages.length - 1];
     const wasNewMsgAdded = newMsg !== prevProps.messages[prevProps.messages.length - 1];
-    // if (wasNewMsgAdded && newMsg.senderUserId !== userId) {
-    //   // XX TODO decide how exactly to scroll on new message. Possibly only scroll on someone elses message but not your own.
-    //   this.scrollToBottom();
-    // }
-    if (wasNewMsgAdded) this.scrollToBottom();
+    if (wasNewMsgAdded && newMsg.senderUserId !== userId) this.scrollToBottom();
+    if (subscriptions.length === 1) this.scrollToBottom();
   }
 
   componentWillUnmount() {
@@ -163,8 +161,6 @@ class Messages extends React.Component {
   };
 
   render() {
-    // console.log('messages rendering');
-
     const { hasMoreMessages, isLoadingMessages, isLoadingMembers, messages } = this.props;
 
     if (isLoadingMessages || isLoadingMembers) return <Spinner />;
