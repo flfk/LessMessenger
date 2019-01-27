@@ -1,5 +1,5 @@
 import moment from 'moment-timezone';
-import { auth, db } from '../firebase';
+import { auth, db, oldRealTimeDb } from '../firebase';
 import {
   CREATE_USER,
   GET_LOGGED_IN_USER,
@@ -15,7 +15,6 @@ export const addUserDoc = async (email, name, userId) => {
   try {
     // guess timezone
     const timezone = moment.tz.guess();
-
     await db
       .collection(COLL_USERS)
       .doc(userId)
@@ -25,10 +24,31 @@ export const addUserDoc = async (email, name, userId) => {
   }
 };
 
+const changeUserStatusToOnline = async userId => {
+  // connect to old Realtime DB and the list of connections
+  const onlineRef = oldRealTimeDb.ref('.info/connected');
+  onlineRef.on('value', snapshot => {
+    oldRealTimeDb
+      .ref(`/status/${userId}`)
+      // set up the disconnect hook
+      .onDisconnect()
+      .set('offline')
+      .then(() => {
+        // set online status in firestore
+        const userRef = db.collection(COLL_USERS).doc(userId);
+        userRef.update({ isOnline: true });
+        // set online status in real time database
+        oldRealTimeDb.ref(`/status/${userId}`).set('online');
+      });
+  });
+};
+
 export const fetchDocUser = async userId => {
   let user = {};
   try {
     const userRef = db.collection(COLL_USERS).doc(userId);
+    // mark user status as online
+    await changeUserStatusToOnline(userId);
     const snapshot = await userRef.get();
 
     if (snapshot.size === 0) {
@@ -79,10 +99,16 @@ export const getLoggedInUser = () => async dispatch => {
   }
 };
 
+export const updateDocUser = async (id, fields) => {
+  const userRef = db.collection(COLL_USERS).doc(id);
+  await userRef.update({ ...fields });
+};
+
 export const logIn = (email, password) => async dispatch => {
   try {
     const data = await auth.signInWithEmailAndPassword(email, password);
     const userId = data.user.uid;
+    await updateDocUser({});
     const userDoc = await fetchDocUser(userId);
     dispatch({
       type: LOGIN_USER.SUCCESS,

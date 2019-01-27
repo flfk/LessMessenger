@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/database';
 import 'firebase/firestore';
 import 'firebase/storage';
 
@@ -22,10 +23,12 @@ const { firestore } = firebase;
 
 const dbTimestamp = firebase.firestore.Timestamp;
 
+const oldRealTimeDb = firebase.database();
+
 const storage = firebase.storage();
 
 // To ensure ensure firestore timestamp objects supported in future
 // const settings = { timestampsInSnapshots: true };
 // db.settings(settings);
 
-export { auth, db, dbTimestamp, firestore, firebase, storage };
+export { auth, db, dbTimestamp, firestore, firebase, oldRealTimeDb, storage };
