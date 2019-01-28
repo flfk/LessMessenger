@@ -12,7 +12,7 @@ import Fonts from '../utils/Fonts';
 import Msg from './Msg';
 import { MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
 import { getMsgSubscription, togglePinMsg } from '../data/messages/messages.actions';
-import { getFilteredMessages } from '../data/messages/messages.selectors';
+import { getFilteredMessages, getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
@@ -57,7 +57,8 @@ const mapStateToProps = state => ({
   hasMoreMessages: state.messages.hasMoreMessages,
   lastMsgDoc: state.messages.lastMsgDoc,
   members: getMembersState(state),
-  messages: getFilteredMessages(state),
+  messages: getMessagesState(state),
+  messagesFiltered: getFilteredMessages(state),
   roomId: state.room.id,
   tagsSelected: getTagsSelectedState(state),
   userId: state.user.id,
@@ -81,7 +82,7 @@ class Messages extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const prevNewestMsg = prevProps.messages[prevProps.messages.length - 1];
+    const prevNewestMsg = prevProps.messagesFiltered[prevProps.messagesFiltered.length - 1];
     this.handleScrolling(prevNewestMsg);
   }
 
@@ -91,8 +92,8 @@ class Messages extends React.Component {
   }
 
   handleTogglePin = id => {
-    const { actionTogglePin, messages } = this.props;
-    const msg = messages.find(item => item.id === id);
+    const { actionTogglePin, messagesFiltered } = this.props;
+    const msg = messagesFiltered.find(item => item.id === id);
     actionTogglePin(id, msg.isPinned);
   };
 
@@ -103,8 +104,8 @@ class Messages extends React.Component {
 
   handleScrolling = prevNewestMsg => {
     const { hasCompletedFirstLoad } = this.state;
-    const { messages, userId } = this.props;
-    const newMsg = messages[messages.length - 1];
+    const { messages, messagesFiltered, userId } = this.props;
+    const newMsg = messagesFiltered[messagesFiltered.length - 1];
     const wasNewMsgAdded = newMsg !== prevNewestMsg;
 
     if (wasNewMsgAdded && newMsg.senderUserId !== userId) this.scrollToBottom();
@@ -115,13 +116,13 @@ class Messages extends React.Component {
   };
 
   getMsgElement = (msg, hasHeader = true) => {
-    const { members, messages } = this.props;
+    const { members, messagesFiltered } = this.props;
     const sender = members.find(member => member.id === msg.senderUserId);
 
     let msgBeingRepliedTo = {};
     let senderBeingRepliedTo = {};
     if (msg.msgIdBeingRepliedTo) {
-      msgBeingRepliedTo = messages.find(item => item.id === msg.msgIdBeingRepliedTo);
+      msgBeingRepliedTo = messagesFiltered.find(item => item.id === msg.msgIdBeingRepliedTo);
       senderBeingRepliedTo = msgBeingRepliedTo
         ? members.find(member => member.id === msgBeingRepliedTo.senderUserId)
         : null;
@@ -163,13 +164,15 @@ class Messages extends React.Component {
   };
 
   render() {
-    const { hasMoreMessages, isLoadingMessages, isLoadingMembers, messages } = this.props;
+    const { hasMoreMessages, isLoadingMessages, isLoadingMembers, messagesFiltered } = this.props;
 
     if (isLoadingMessages || isLoadingMembers) return <Spinner />;
 
-    const msgsPinnedContainer = messages.filter(msg => msg.isPinned).map(this.getMsgElement);
+    const msgsPinnedContainer = messagesFiltered
+      .filter(msg => msg.isPinned)
+      .map(this.getMsgElement);
 
-    const messagesContainer = _.chain(messages)
+    const messagesContainer = _.chain(messagesFiltered)
       .sort((a, b) => a.timestamp - b.timestamp)
       .map(msg => ({ ...msg, date: moment(msg.timestamp).format('MMM Do') }))
       .groupBy('date')
