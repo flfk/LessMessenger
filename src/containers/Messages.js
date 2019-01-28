@@ -10,18 +10,18 @@ import Content from '../components/Content';
 import { MESSAGES_PER_LOAD, MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import Msg from './Msg';
-import { MessagesContainer, PinnedWrapper } from '../components/messagesPanel';
-import { getMsgSubscription, togglePinMsg } from '../data/messages/messages.actions';
+import { MessagesContainer } from '../components/messagesPanel';
+import { getMsgSubscription } from '../data/messages/messages.actions';
 import { getFilteredMessages, getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
-import { toggleTag } from '../data/tags/tags.actions';
+// import { toggleTag } from '../data/tags/tags.actions';
 import { getTagsSelectedState } from '../data/tags/tags.selectors';
 
 const propTypes = {
   actionGetMsgSubscription: PropTypes.func.isRequired,
-  actionTogglePin: PropTypes.func.isRequired,
+  // actionTogglePin: PropTypes.func.isRequired,
   actionToggleTag: PropTypes.func.isRequired,
   hasMoreMessages: PropTypes.bool.isRequired,
   isLoadingMessages: PropTypes.bool.isRequired,
@@ -65,8 +65,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
-  actionToggleTag: tagName => dispatch(toggleTag(tagName)),
+  // actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
+  // actionToggleTag: tagName => dispatch(toggleTag(tagName)),
   actionGetMsgSubscription: (roomId, lastMsgDoc) =>
     dispatch(getMsgSubscription(roomId, lastMsgDoc)),
 });
@@ -90,12 +90,6 @@ class Messages extends React.Component {
     const { subscriptions } = this.state;
     subscriptions.map(sub => sub());
   }
-
-  handleTogglePin = id => {
-    const { actionTogglePin, messagesFiltered } = this.props;
-    const msg = messagesFiltered.find(item => item.id === id);
-    actionTogglePin(id, msg.isPinned);
-  };
 
   handleLoad = () => {
     const { hasMoreMessages, lastMsgDoc } = this.props;
@@ -133,7 +127,7 @@ class Messages extends React.Component {
         key={msg.id}
         hasHeader={msg.isPinned ? true : hasHeader}
         handleEdit={this.handleEdit}
-        handleTogglePin={this.handleTogglePin}
+        // handleTogglePin={this.handleTogglePin}
         msg={msg}
         msgBeingRepliedTo={msgBeingRepliedTo ? msgBeingRepliedTo.content : ''}
         senderBeingRepliedTo={senderBeingRepliedTo ? senderBeingRepliedTo.name : ''}
@@ -168,10 +162,6 @@ class Messages extends React.Component {
 
     if (isLoadingMessages || isLoadingMembers) return <Spinner />;
 
-    const msgsPinnedContainer = messagesFiltered
-      .filter(msg => msg.isPinned)
-      .map(this.getMsgElement);
-
     const messagesContainer = _.chain(messagesFiltered)
       .sort((a, b) => a.timestamp - b.timestamp)
       .map(msg => ({ ...msg, date: moment(msg.timestamp).format('MMM Do') }))
@@ -202,7 +192,6 @@ class Messages extends React.Component {
 
     return (
       <MessagesContainer>
-        <PinnedWrapper>{msgsPinnedContainer}</PinnedWrapper>
         <Scrollable ref={ref => (this.scrollParentRef = ref)}>
           <InfiniteScroll
             getScrollParent={() => this.scrollParentRef}

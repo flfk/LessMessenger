@@ -94,18 +94,18 @@ export const sendMessage = (msg, tags) => async dispatch => {
     });
   }
 };
-export const togglePinMsg = (id, isPinned) => async dispatch => {
-  try {
-    const isPinnedUpdated = !isPinned;
-    await updateDocMsg(id, { isPinned: isPinnedUpdated });
-    dispatch({
-      type: UPDATE_MESSAGE.SUCCESS,
-      payload: { id, isPinned: isPinnedUpdated },
-    });
-  } catch (error) {
-    console.log('messages.actions, messages, togglePinMsg', error);
-  }
-};
+// export const togglePinMsg = (id, isPinned) => async dispatch => {
+//   try {
+//     const isPinnedUpdated = !isPinned;
+//     await updateDocMsg(id, { isPinned: isPinnedUpdated });
+//     dispatch({
+//       type: UPDATE_MESSAGE.SUCCESS,
+//       payload: { id, isPinned: isPinnedUpdated },
+//     });
+//   } catch (error) {
+//     console.log('messages.actions, messages, togglePinMsg', error);
+//   }
+// };
 
 const updateDocMsg = async (id, fields) => {
   const msgRef = db.collection(COLL_MESSAGES).doc(id);

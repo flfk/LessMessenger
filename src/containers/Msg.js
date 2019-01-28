@@ -4,13 +4,12 @@ import Emojify from 'react-emojione';
 import React from 'react';
 import { connect } from 'react-redux';
 import { FaFileDownload, FaEdit, FaReply, FaTrashAlt } from 'react-icons/fa';
-import { TiPinOutline, TiPin } from 'react-icons/ti';
+// import { TiPinOutline, TiPin } from 'react-icons/ti';
 import Linkify from 'react-linkify';
 import reactStringReplace from 'react-string-replace';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 
-import Colors from '../utils/Colors';
 import Content from '../components/Content';
 import { REGEX_TAG, REGEX_TIMER } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
@@ -26,6 +25,8 @@ import {
 import { Input } from '../components/messagesPanel';
 import { deleteMsg, editMsg, replyToMsg } from '../data/messages/messages.actions';
 import { getTagsState } from '../data/tags/tags.selectors';
+
+// NOTE POSSIBLY GET RID OF PINS LOGIC (REMOVED BTN)
 
 const propTypes = {
   actionDeleteMsg: PropTypes.func.isRequired,
@@ -233,14 +234,11 @@ class Msg extends React.Component {
             {text}
           </Text.Wrapper>
           <ContainerMsg.Buttons wasSentByUser={msg.senderUserId === userId}>
-            <Btn onClick={() => handleTogglePin(msg.id)}>
-              <TiPin />
+            <Btn onClick={() => actionReplyToMsg(msg.id)}>
+              <FaReply />
             </Btn>
             <Btn onClick={this.handleEdit}>
               <FaEdit />
-            </Btn>
-            <Btn onClick={() => actionReplyToMsg(msg.id)}>
-              <FaReply />
             </Btn>
             <Btn>
               <FaTrashAlt onClick={() => actionDeleteMsg(msg.id)} />
