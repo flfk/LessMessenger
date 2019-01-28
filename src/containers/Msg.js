@@ -191,25 +191,19 @@ class Msg extends React.Component {
 
     const attachment = msg.hasAttachment ? this.getAttachmentElement() : null;
 
-    let text = msg.hasAttachment ? (
-      <div>
-        {this.getAttachmentElement()}
-        <br />
-        <Text.Message hasAttachment>{this.getTextWithTags(msg.content)}</Text.Message>
-      </div>
-    ) : (
-      <Text.Message>{this.getTextWithTags(msg.content)}</Text.Message>
-    );
+    let text = <Text.Message>{this.getTextWithTags(msg.content)}</Text.Message>;
 
     if (isBeingEdited) {
       text = (
         <div>
-          <Input
-            type="text"
-            placeholder="Type a message..."
-            onChange={this.handleChangeInput('editInput')}
-            value={editInput}
-          />
+          <Input.Wrapper isEdit>
+            <Input
+              type="text"
+              placeholder="Type a message..."
+              onChange={this.handleChangeInput('editInput')}
+              value={editInput}
+            />
+          </Input.Wrapper>
           <div>
             <button type="button" onClick={this.handleEditSave}>
               Save
@@ -225,9 +219,7 @@ class Msg extends React.Component {
     const spacing = hasHeader && !msg.isPinned ? <Content.Spacing /> : <Content.Spacing8px />;
 
     const replyPreview = msgBeingRepliedTo ? (
-      <ContainerMsg.Reply>
-        <Text.Reply>{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
-      </ContainerMsg.Reply>
+      <Text.Reply>{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
     ) : null;
     return (
       <ContainerMsg.Wrapper>
@@ -238,7 +230,7 @@ class Msg extends React.Component {
             {header}
             {replyPreview}
             {attachment}
-            <Text.Message>{this.getTextWithTags(msg.content)}</Text.Message>
+            {text}
           </Text.Wrapper>
           <ContainerMsg.Buttons wasSentByUser={msg.senderUserId === userId}>
             <Btn onClick={() => handleTogglePin(msg.id)}>

@@ -229,7 +229,7 @@ class MessagePanel extends React.Component {
           {({ getRootProps }) => (
             <div {...getRootProps()} style={{ display: 'flex', flexDirection: 'column' }}>
               <Messages />
-              <InputContainer>
+              <Input.Wrapper>
                 {reply}
                 <Thumbnails.Container>{thumbnails}</Thumbnails.Container>
                 <Input
@@ -240,7 +240,7 @@ class MessagePanel extends React.Component {
                   onKeyDown={this.handleKeyPress}
                   maxRows={10}
                 />
-              </InputContainer>
+              </Input.Wrapper>
             </div>
           )}
         </Dropzone>

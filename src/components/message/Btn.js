@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
+import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 
 const Btn = styled.button`
-  color: white;
-  opacity: ${Fonts.opacity.secondary};
+  color: ${Colors.greys.primary};
+  opacity: ${Fonts.opacity.tertiary};
   background-color: transparent;
   border: none;
   font-size: 14px;
@@ -14,7 +15,7 @@ const Btn = styled.button`
   }
 
   :hover {
-    opacity: ${Fonts.opacity.primary};
+    opacity: ${Fonts.opacity.secondary};
   }
 `;
 

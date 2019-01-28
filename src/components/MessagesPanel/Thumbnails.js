@@ -1,9 +1,6 @@
 import styled from 'styled-components';
 
 const Container = styled.div`
-  padding-bottom: 16px;
-  padding-left: 56px;
-  padding-right: 56px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -17,6 +14,7 @@ const File = styled.div`
   justify-content: center;
   align-items: center;
   margin-right: 16px;
+  margin-bottom: 16px;
 `;
 
 const Img = styled(File)`

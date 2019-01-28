@@ -16,7 +16,7 @@ const FontSizes = {
   h1: '32px',
   h2: '24px',
   h3: '20px',
-  p: '16px',
+  p: '14px',
   finePrint: '12px',
 };
 
@@ -100,6 +100,7 @@ const Err = styled.p`
 `;
 
 const A = styled.a`
+  font-size: ${FontSizes.p};
   text-decoration: none;
   color: ${Colors.primary.red};
   font-weight: bold;

@@ -14,6 +14,7 @@ const ImgDiv = styled.div`
   background-image: url(${props => props.src});
   background-size: cover;
   border-radius: 10px;
+  margin: 8px 0;
 `;
 
 const ImgPreview = ({ src }) => <ImgDiv src={src} />;

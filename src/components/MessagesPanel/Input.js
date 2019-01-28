@@ -14,18 +14,30 @@ const Input = styled(Textarea)`
   min-width: 600px;
   resize: none;
 
-  border: 2px solid ${Colors.greys.tertiary};
-  border-radius: 10px;
-  padding: 1em;
-
   ::placeholder {
     opacity: 0.54;
   }
 
   :focus {
     outline: none;
+  }
+`;
+
+const Wrapper = styled.div`
+  padding: 1em;
+  margin: ${props => (props.isEdit ? '8px 0' : '16px 56px 16px 56px')};
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border: 2px solid ${Colors.greys.tertiary};
+  border-radius: 10px;
+
+  :focus-within {
     border-color: ${Colors.primary.blue};
   }
 `;
+
+Input.Wrapper = Wrapper;
 
 export default Input;

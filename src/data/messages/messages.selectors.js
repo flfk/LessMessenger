@@ -26,6 +26,7 @@ const filterForSelectedTags = tagsSelected => msg => {
 };
 
 const filterForNew = earliestDateLastActive => msg => {
+  return true;
   if (msg.tagIds && msg.tagIds.length > 0) return true;
   if (msg.timestamp > earliestDateLastActive) return true;
   return false;

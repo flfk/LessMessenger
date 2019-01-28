@@ -30,8 +30,11 @@ const Timestamp = styled.span`
 `;
 
 const Reply = styled(Message)`
-  color: white;
-  width: 100%;
+  margin: 8px 0px;
+  padding: 4px 16px;
+  background-color: white;
+  border-left: 3px solid ${Colors.primary.green};
+  border-radius: 5px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
