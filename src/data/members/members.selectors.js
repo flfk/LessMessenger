@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 import { denormalize } from '../../utils/Helpers';
 
 // selector
-const getMembers = state => state.members;
+export const getMembers = state => state.members;
 
 // reselect function
 export const getMembersState = createSelector(

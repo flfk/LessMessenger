@@ -203,7 +203,7 @@ class MessagePanel extends React.Component {
 
   render() {
     const { files, msgInput } = this.state;
-    const { messages, members, msgIdBeingRepliedTo } = this.props;
+    const { members, msgIdBeingRepliedTo } = this.props;
 
     const thumbnails = files.map(file => {
       if (file.type.startsWith('image/')) {

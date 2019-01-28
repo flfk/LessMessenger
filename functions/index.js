@@ -13,8 +13,10 @@ exports.onUserStatusChanged = functions.database
 
     return change.after.ref.once('value').then(statusSnapshot => {
       const status = statusSnapshot.val();
+      const dateLastActive = Math.floor(new Date());
       if (status === 'offline') {
         userRef.update({
+          dateLastActive,
           isOnline: false,
         });
       }
