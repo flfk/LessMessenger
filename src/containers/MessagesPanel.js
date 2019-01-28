@@ -9,7 +9,7 @@ import { createTag } from '../data/tags/tags.actions';
 import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
 import { getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
-import { Container, Thumbnails, Input, InputContainer } from '../components/messagesPanel';
+import { Container, Thumbnails, Input } from '../components/messagesPanel';
 import { Text } from '../components/message';
 import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
 
@@ -100,7 +100,7 @@ class MessagePanel extends React.Component {
     // const tagIds = await this.getTagIds(content);
     return {
       content,
-      isPinned: false,
+      // isPinned: false,
       hasAttachment: false,
       hasTimer,
       msgIdBeingRepliedTo,

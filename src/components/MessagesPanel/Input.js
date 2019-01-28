@@ -25,7 +25,7 @@ const Input = styled(Textarea)`
 
 const Wrapper = styled.div`
   padding: 1em;
-  margin: ${props => (props.isEdit ? '8px 0' : '16px 56px 16px 56px')};
+  margin: ${props => (props.isEdit ? '8px 0' : '0px 56px 16px 56px')};
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
