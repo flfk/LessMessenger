@@ -217,15 +217,12 @@ class Msg extends React.Component {
       );
     }
 
-    const spacing = hasHeader && !msg.isPinned ? <Content.Spacing /> : <Content.Spacing8px />;
-
     const replyPreview = msgBeingRepliedTo ? (
       <Text.Reply>{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
     ) : null;
     return (
       <ContainerMsg.Wrapper>
-        {spacing}
-        <ContainerMsg wasSentByUser={msg.senderUserId === userId}>
+        <ContainerMsg hasHeader={hasHeader} wasSentByUser={msg.senderUserId === userId}>
           {profileImg}
           <Text.Wrapper hasProfileImg={hasHeader} wasSentByUser={msg.senderUserId === userId}>
             {header}

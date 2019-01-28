@@ -67,6 +67,11 @@ const Spacing = styled.div`
   height: 32px;
 `;
 
+const Spacing4px = styled.div`
+  width: 100%;
+  height: 8px;
+`;
+
 const Spacing8px = styled.div`
   width: 100%;
   height: 8px;
@@ -84,6 +89,7 @@ Content.NoPadding = NoPadding;
 Content.Row = Row;
 Content.Seperator = Seperator;
 Content.Spacing = Spacing;
+Content.Spacing4px = Spacing4px;
 Content.Spacing8px = Spacing8px;
 Content.Spacing16px = Spacing16px;
 

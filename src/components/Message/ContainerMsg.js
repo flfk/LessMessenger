@@ -4,8 +4,8 @@ import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 
 const ContainerMsg = styled.div`
-  padding: 4px 0px 4px 16px;
-
+  padding: 0px 0px 0px 16px;
+  margin-top: ${props => (props.hasHeader ? '8px' : '4px')};
   display: flex;
   flex-direction: ${props => (props.wasSentByUser ? 'row-reverse' : 'row')}
   align-items: center;
