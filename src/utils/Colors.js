@@ -1,12 +1,12 @@
 const COLORS = {
   primary: {
     red: '#F31F60',
-    green: '#4CB191',
+    green: '#70DB9F',
     yellow: '#FAC84B',
-    blue: '#4285F4',
+    blue: '#CBD4F9',
   },
   background: {
-    primary: '#191514',
+    primary: '#FCF7F9',
     secondary: '#2C2827',
     tertiary: '#4F4B48',
   },
@@ -14,7 +14,7 @@ const COLORS = {
     primary: '#262626',
     secondary: '#757575',
     tertiary: '#A1A1A1',
-    light: '#F9F9F9',
+    quaternary: '#F9F9F9',
   },
   error: {
     primary: '#D93901',

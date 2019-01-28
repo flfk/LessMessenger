@@ -45,7 +45,7 @@ const Presence = styled.div`
   height: 15px;
   width: 15px;
   border-radius: 8px;
-  background-color: ${props => (props.isOnline ? 'green' : 'red')};
+  background-color: ${props => (props.isOnline ? Colors.primary.green : Colors.primary.red)};
   margin-top: -16px;
 `;
 

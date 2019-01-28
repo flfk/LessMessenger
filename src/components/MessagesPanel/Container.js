@@ -12,7 +12,9 @@ const Container = styled.div`
   margin: auto;
   height: 100%;
 
-  background-color: ${Colors.background.primary};
+  background-color: white;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
 
   > div:focus {
     outline: none;

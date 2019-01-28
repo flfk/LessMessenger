@@ -125,7 +125,7 @@ class Msg extends React.Component {
     });
 
     return (
-      <Linkify properties={{ target: '_blank', style: { color: Colors.primary.blue } }}>
+      <Linkify properties={{ target: '_blank', style: { color: 'black', opacity: '0.8' } }}>
         <Emojify style={{ height: 16, width: 16 }}>{words}</Emojify>
       </Linkify>
     );
@@ -183,7 +183,7 @@ class Msg extends React.Component {
     const profileImg = hasHeader ? <ProfileImg src={profileImgURL} /> : null;
 
     const header = hasHeader ? (
-      <Fonts.Label isSupporting>
+      <Fonts.Label isTertiary>
         <strong>{senderName}</strong>{' '}
         <Text.Timestamp>{moment(msg.timestamp).format('h:mm a')}</Text.Timestamp>
       </Fonts.Label>

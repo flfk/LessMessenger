@@ -30,7 +30,7 @@ const H1 = styled.h1`
   font-size: ${FontSizes.h1};
   font-size: ${props => (props.extraLarge ? FontSizes.xl : '')};
   font-family: ${FontFamily.header};
-  color: white;
+  color: black;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
   opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   font-weight: 600;
@@ -43,7 +43,7 @@ const H1 = styled.h1`
 const H2 = styled.h2`
   font-size: ${FontSizes.h2};
   font-family: ${FontFamily.header};
-  color: white;
+  color: black;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
   opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   font-weight: 600;
@@ -55,7 +55,7 @@ const H2 = styled.h2`
 const H3 = styled.h3`
   font-size: ${FontSizes.h3};
   font-family: ${FontFamily.header};
-  color: white;
+  color: black;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
   opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   font-weight: 400;
@@ -71,7 +71,7 @@ const P = styled.p`
   font-size: ${FontSizes.p};
   font-family: ${FontFamily.body};
   font-weight: 400;
-  color: white;
+  color: black;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
   opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   ${props => (props.isTertiary ? `color: ${Colors.greys.tertiary};` : '')}
@@ -84,7 +84,7 @@ const Label = styled.span`
   font-size: ${FontSizes.finePrint};
   font-family: ${FontFamily.body};
   font-weight: 300;
-  color: white;
+  color: black;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
   opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
 `;

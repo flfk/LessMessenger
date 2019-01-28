@@ -20,7 +20,7 @@ const Message = styled(Fonts.P)`
 `;
 
 const Tag = styled(Fonts.A)`
-  color: ${props => (props.color ? props.color : 'white')};
+  color: ${props => (props.color ? props.color : 'black')};
   opacity: ${Fonts.opacity.primary};
 `;
 
@@ -44,7 +44,9 @@ const Wrapper = styled.div`
   ${props =>
     !props.hasProfileImg && props.wasSentByUser ? 'margin-right: 48px;' : ''}
   max-width: 600px;
-  background-color: ${Colors.background.tertiary};
+  background-color: ${props =>
+    props.wasSentByUser ? Colors.primary.blue : Colors.background.primary};
+  border: 1px solid ${Colors.greys.quaternary};
   border-radius: 5px;
   padding: 8px 16px;
   display: flex;
