@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import Tinycon from 'tinycon';
 
 import ErrorScreen from '../components/ErrorScreen';
 import { getPathname } from '../utils/Helpers';
@@ -54,6 +55,10 @@ class Room extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    this.handleFaviconAlert();
+  }
+
   componentWillUnmount() {
     const { subscriptions } = this.state;
     subscriptions.map(sub => sub());
@@ -67,6 +72,15 @@ class Room extends React.Component {
       }}
     />
   );
+
+  handleFaviconAlert = () => {
+    Tinycon.setOptions({
+      width: 10,
+      height: 10,
+      color: '#4286f4',
+      background: '#4286f4',
+    }).setBubble(' ');
+  };
 
   loadRoom = async pathname => {
     const { actionLoadRoom } = this.props;
