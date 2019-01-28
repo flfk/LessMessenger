@@ -1,22 +1,22 @@
 const functions = require('firebase-functions');
 const Firestore = require('@google-cloud/firestore');
+const admin = require('firebase-admin');
 
-const firestore = new Firestore();
+admin.initializeApp();
+
+const firestore = admin.firestore();
 
 exports.onUserStatusChanged = functions.database
-  .ref('/status/{userId}') // Reference to the Firebase RealTime database key
-  .onUpdate(event => {
-    const usersRef = firestore.collection('users'); // Create a reference to the Firestore Collection
-    return event.data.ref
-      .once('value')
-      .then(statusSnapshot => snapShot.val()) // Get the latest value from the Firebase Realtime database
-      .then(status => {
-        // check if the value is 'offline'
-        if (status === 'offline') {
-          // Set the Firestore's document's online value to false
-          usersRef.doc(event.params.userId).update({
-            isOnline: false,
-          });
-        }
-      });
+  .ref('/status/{uid}') // Reference to the Firebase RealTime database key
+  .onUpdate((change, context) => {
+    const userRef = firestore.collection('users').doc(context.params.uid);
+
+    return change.after.ref.once('value').then(statusSnapshot => {
+      const status = statusSnapshot.val();
+      if (status === 'offline') {
+        userRef.update({
+          isOnline: false,
+        });
+      }
+    });
   });

@@ -24,21 +24,21 @@ export const addUserDoc = async (email, name, userId) => {
   }
 };
 
-const changeUserStatusToOnline = async userId => {
+const changeUserStatusToOnline = async uid => {
   // connect to old Realtime DB and the list of connections
   const onlineRef = oldRealTimeDb.ref('.info/connected');
   onlineRef.on('value', snapshot => {
     oldRealTimeDb
-      .ref(`/status/${userId}`)
+      .ref(`/status/${uid}`)
       // set up the disconnect hook
       .onDisconnect()
       .set('offline')
       .then(() => {
         // set online status in firestore
-        const userRef = db.collection(COLL_USERS).doc(userId);
+        const userRef = db.collection(COLL_USERS).doc(uid);
         userRef.update({ isOnline: true });
         // set online status in real time database
-        oldRealTimeDb.ref(`/status/${userId}`).set('online');
+        oldRealTimeDb.ref(`/status/${uid}`).set('online');
       });
   });
 };
