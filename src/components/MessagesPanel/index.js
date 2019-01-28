@@ -1,3 +1,4 @@
+export { default as AnimationInOffice } from './AnimationInOffice';
 export { default as Container } from './Container';
 export { default as Input } from './Input';
 export { default as MessagesContainer } from './MessagesContainer';

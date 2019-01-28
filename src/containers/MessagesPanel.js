@@ -9,7 +9,7 @@ import { createTag } from '../data/tags/tags.actions';
 import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
 import { getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
-import { Container, Thumbnails, Input } from '../components/messagesPanel';
+import { AnimationInOffice, Container, Thumbnails, Input } from '../components/messagesPanel';
 import { Text } from '../components/message';
 import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
 
@@ -229,6 +229,7 @@ class MessagePanel extends React.Component {
           {({ getRootProps }) => (
             <div {...getRootProps()} style={{ display: 'flex', flexDirection: 'column' }}>
               <Messages />
+              <AnimationInOffice />
               <Input.Wrapper>
                 {reply}
                 <Thumbnails.Container>{thumbnails}</Thumbnails.Container>
