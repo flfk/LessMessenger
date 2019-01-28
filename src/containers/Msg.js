@@ -25,8 +25,7 @@ import {
 } from '../components/message';
 import { Input } from '../components/messagesPanel';
 import { deleteMsg, editMsg, replyToMsg } from '../data/messages/messages.actions';
-
-import { getTagsSelectedState } from '../data/tags/tags.selectors';
+import { getTagsState } from '../data/tags/tags.selectors';
 
 const propTypes = {
   actionDeleteMsg: PropTypes.func.isRequired,
@@ -48,7 +47,7 @@ const defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  tags: getTagsSelectedState(state),
+  tags: getTagsState(state),
   userId: state.user.id,
 });
 
@@ -190,6 +189,8 @@ class Msg extends React.Component {
       </Fonts.Label>
     ) : null;
 
+    const attachment = msg.hasAttachment ? this.getAttachmentElement() : null;
+
     let text = msg.hasAttachment ? (
       <div>
         {this.getAttachmentElement()}
@@ -236,7 +237,8 @@ class Msg extends React.Component {
           <Text.Wrapper hasProfileImg={hasHeader} wasSentByUser={msg.senderUserId === userId}>
             {header}
             {replyPreview}
-            {text}
+            {attachment}
+            <Text.Message>{this.getTextWithTags(msg.content)}</Text.Message>
           </Text.Wrapper>
           <ContainerMsg.Buttons wasSentByUser={msg.senderUserId === userId}>
             <Btn onClick={() => handleTogglePin(msg.id)}>

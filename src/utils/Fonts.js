@@ -87,7 +87,6 @@ const Label = styled.span`
   color: white;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
   opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
-  text-align: center;
 `;
 
 const Err = styled.p`

@@ -8,6 +8,7 @@ const Attachment = styled(Fonts.A)`
   border: 1px solid ${Colors.greys.tertiary};
   border-radius: 5px;
   padding: 0.5em;
+  margin: 4px 0px;
 `;
 
 const Message = styled(Fonts.P)`
@@ -32,7 +33,7 @@ const Reply = styled(Message)`
   color: white;
   width: 100%;
   overflow: hidden;
-  white-space- nowrap;
+  white-space: nowrap;
   text-overflow: ellipsis;
 `;
 
@@ -46,6 +47,9 @@ const Wrapper = styled.div`
   background-color: ${Colors.background.tertiary};
   border-radius: 5px;
   padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  // align-items: flex-start;
 `;
 
 const Text = {};
