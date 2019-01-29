@@ -6,6 +6,7 @@ import {
   LOGIN_USER,
   LOGIN_USER_FACEBOOK,
   SIGNOUT_USER,
+  TOGGLE_TYPING,
   UPDATE_USER,
 } from './user.types';
 
@@ -104,6 +105,15 @@ export const updateDocUser = async (id, fields) => {
   await userRef.update({ ...fields });
 };
 
+export const toggleIsTyping = (id, isTyping, roomId) => dispatch => {
+  dispatch({
+    type: TOGGLE_TYPING.SUCCESS,
+    payload: isTyping,
+  });
+  console.log('toggleIsTyping', isTyping);
+  updateDocUser(id, { [`isTypingByRoomId.${roomId}`]: isTyping });
+};
+
 export const logIn = (email, password) => async dispatch => {
   try {
     const data = await auth.signInWithEmailAndPassword(email, password);
@@ -122,31 +132,31 @@ export const logIn = (email, password) => async dispatch => {
   }
 };
 
-export const logInWithFacebook = () => async dispatch => {
-  dispatch({
-    type: LOGIN_USER_FACEBOOK.PENDING,
-  });
-  const provider = new auth.FacebookAuthProvider();
-  await auth().signInWithPopup(provider);
+// export const logInWithFacebook = () => async dispatch => {
+//   dispatch({
+//     type: LOGIN_USER_FACEBOOK.PENDING,
+//   });
+//   const provider = new auth.FacebookAuthProvider();
+//   await auth().signInWithPopup(provider);
 
-  // fetchUserFacebook().then(response => {
-  //   const { token, name } = response;
-  //   signInWithCredential(token)
-  //     .then(user => {
-  //       dispatch({
-  //         type: LOGIN_USER_FACEBOOK.SUCCESS,
-  //         payload: user,
-  //       });
-  //     })
-  //     .catch(error => {
-  //       dispatch({
-  //         type: LOGIN_USER_FACEBOOK.ERROR,
-  //         payload: error.message,
-  //       });
-  //       console.log('Error actions user login with facebook, ', error);
-  //     });
-  // });
-};
+//   // fetchUserFacebook().then(response => {
+//   //   const { token, name } = response;
+//   //   signInWithCredential(token)
+//   //     .then(user => {
+//   //       dispatch({
+//   //         type: LOGIN_USER_FACEBOOK.SUCCESS,
+//   //         payload: user,
+//   //       });
+//   //     })
+//   //     .catch(error => {
+//   //       dispatch({
+//   //         type: LOGIN_USER_FACEBOOK.ERROR,
+//   //         payload: error.message,
+//   //       });
+//   //       console.log('Error actions user login with facebook, ', error);
+//   //     });
+//   // });
+// };
 
 export const signOut = () => async dispatch => {
   dispatch({

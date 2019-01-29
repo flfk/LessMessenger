@@ -1,12 +1,11 @@
 import { LOAD_ROOM } from './room.types';
-import { CANCEL_REPLY, LOAD_MESSAGES, REPLY_TO_MESSAGE } from '../messages/messages.types';
+import { CANCEL_REPLY, REPLY_TO_MESSAGE } from '../messages/messages.types';
 import { LOAD_MEMBERS } from '../members/members.types';
 
 const initialState = {
   error: false,
   id: '',
   isLoading: true,
-  isLoadingMessages: false,
   isLoadingMembers: true,
   memberUserIds: [],
   name: '',
@@ -18,10 +17,6 @@ const reducerRoom = (state = initialState, action) => {
   switch (action.type) {
     case CANCEL_REPLY.SUCCESS:
       return { ...state, msgIdBeingRepliedTo: '' };
-    case LOAD_MESSAGES.PENDING:
-      return { ...state, isLoadingMessages: true };
-    case LOAD_MESSAGES.SUCCESS:
-      return { ...state, isLoadingMessages: false };
     case LOAD_MEMBERS.SUCCESS:
       return { ...state, isLoadingMembers: false };
     case LOAD_ROOM.PENDING:

@@ -53,7 +53,7 @@ const propTypes = {
 const defaultProps = {};
 
 const mapStateToProps = state => ({
-  isLoadingMessages: state.room.isLoadingMessages,
+  isLoadingMessages: state.messages.isLoading,
   isLoadingMembers: state.room.isLoadingMembers,
   hasMoreMessages: state.messages.hasMoreMessages,
   lastMsgDoc: state.messages.lastMsgDoc,

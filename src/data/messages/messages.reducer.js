@@ -5,15 +5,17 @@ import {
   ADD_MESSAGE,
   ALL_MESSAGES_LOADED,
   DELETE_MSG,
-  UPDATE_MESSAGE,
+  LOADING_MESSAGES,
   SET_LAST_MSG_DOC,
+  UPDATE_MESSAGE,
 } from './messages.types';
 
 const initialState = {
   allIds: [],
   byId: {},
-  lastMsgDoc: {},
+  isLoading: true,
   hasMoreMessages: true,
+  lastMsgDoc: {},
 };
 
 const reducerMessages = (state = initialState, action) => {
@@ -35,6 +37,16 @@ const reducerMessages = (state = initialState, action) => {
         ...state,
         allIds: state.allIds.filter(id => id !== action.payload.id),
         byId: _.omit(state.byId, [action.payload.id]),
+      };
+    case LOADING_MESSAGES.PENDING:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case LOADING_MESSAGES.SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
       };
     case SET_LAST_MSG_DOC.SUCCESS:
       return { ...state, lastMsgDoc: action.payload };

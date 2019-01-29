@@ -6,7 +6,7 @@ import {
   ALL_MESSAGES_LOADED,
   DELETE_MSG,
   CANCEL_REPLY,
-  LOAD_MESSAGES,
+  LOADING_MESSAGES,
   SEND_MESSAGE,
   SET_LAST_MSG_DOC,
   REPLY_TO_MESSAGE,
@@ -182,7 +182,10 @@ const handleMsgSnapshot = dispatch => snapshot => {
       msg.id = id;
       // convert firestore timestamp to unix
       // console.log('snapshot event change add', msg);
-      msg.timestamp = msg.timestamp ? msg.timestamp.toMillis() : dbTimestamp.now().toMillis();
+      msg.timestamp =
+        msg.timestamp && msg.timestamp.toMillis
+          ? msg.timestamp.toMillis()
+          : dbTimestamp.now().toMillis();
       messagesAdded.push(msg);
       // dispatch(addMessage(msg));
       // update last Msg Doc to be used as reference for following load
@@ -195,7 +198,10 @@ const handleMsgSnapshot = dispatch => snapshot => {
       const { id } = doc;
       msg.id = id;
       // console.log('snapshot event change modified', msg);
-      msg.timestamp = msg.timestamp ? msg.timestamp.toMillis() : dbTimestamp.now().toMillis();
+      msg.timestamp =
+        msg.timestamp && msg.timestamp.toMillis
+          ? msg.timestamp.toMillis()
+          : dbTimestamp.now().toMillis();
       // console.log('modified', msg);
       // dispatch(updateMsgInState(msg));
       messagesUpdated.push(msg);
@@ -227,6 +233,9 @@ export const getMsgSubscription = (roomId, lastMsgDoc = null) => async dispatch 
       ? msgRef.startAfter(lastMsgDoc).limit(MESSAGES_PER_LOAD)
       : msgRef.limit(MESSAGES_PER_LOAD);
     subscription = msgRefLimited.onSnapshot(handleMsgSnapshot(dispatch));
+    dispatch({
+      type: LOADING_MESSAGES.SUCCESS,
+    });
   } catch (error) {
     console.log('messages.actions, getMsgSubscription', error);
   }

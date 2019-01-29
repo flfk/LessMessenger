@@ -3,7 +3,7 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
 
-import { REGEX_TIMER } from '../utils/Constants';
+import { REGEX_TIMER, TYPING_TIMEOUT_MILLIS } from '../utils/Constants';
 import Messages from './Messages';
 // import { createTag } from '../data/tags/tags.actions';
 import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
@@ -13,6 +13,7 @@ import { AnimationInOffice, Container, Thumbnails, Input } from '../components/m
 import { Text } from '../components/message';
 import { updateMostRecentSignIn } from '../data/room/room.actions';
 import { getRoomState } from '../data/room/room.selectors';
+import { toggleIsTyping } from '../data/user/user.actions';
 // import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
 
 // import { getSelectorAll } from '../utils/Helpers';
@@ -21,6 +22,8 @@ const propTypes = {
   actionCancelReply: PropTypes.func.isRequired,
   // actionCreateTag: PropTypes.func.isRequired,
   actionSendMessage: PropTypes.func.isRequired,
+  actionToggleIsTyping: PropTypes.func.isRequired,
+  isTyping: PropTypes.bool.isRequired,
   msgIdBeingRepliedTo: PropTypes.string.isRequired,
   roomId: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
@@ -41,6 +44,7 @@ const propTypes = {
 const defaultProps = {};
 
 const mapStateToProps = state => ({
+  isTyping: state.user.isTyping,
   messages: getMessagesState(state),
   members: getMembersState(state),
   msgIdBeingRepliedTo: state.room.msgIdBeingRepliedTo,
@@ -54,12 +58,15 @@ const mapDispatchToProps = dispatch => ({
   actionCancelReply: () => dispatch(cancelReply()),
   // actionCreateTag: (roomId, tagName) => dispatch(createTag(roomId, tagName)),
   actionSendMessage: (message, tags) => dispatch(sendMessage(message, tags)),
+  actionToggleIsTyping: (id, isTyping, roomId) => dispatch(toggleIsTyping(id, isTyping, roomId)),
 });
 
 class MessagePanel extends React.Component {
   state = {
     msgInput: '',
     files: [],
+    isTyping: false,
+    typingTimeout: null,
   };
 
   componentDidMount() {
@@ -79,6 +86,15 @@ class MessagePanel extends React.Component {
   //     this.setTagHelpers(tagsSelectedPrev, wasMsgSent);
   //   }
   // }
+
+  componentWillUnmount() {
+    this.clearTypingTimeout();
+  }
+
+  clearTypingTimeout = () => {
+    const { typingTimeout } = this.state;
+    if (typingTimeout) clearTimeout(typingTimeout);
+  };
 
   createFileObj = file =>
     Object.assign(file, {
@@ -116,7 +132,10 @@ class MessagePanel extends React.Component {
     };
   };
 
-  handleChangeInput = field => event => this.setState({ [field]: event.target.value });
+  handleChangeMsgInput = event => {
+    this.setState({ msgInput: event.target.value });
+    this.resetTypingTimeout();
+  };
 
   handleSubmit = async () => {
     const { files, msgInput } = this.state;
@@ -177,6 +196,20 @@ class MessagePanel extends React.Component {
     }
   };
 
+  resetTypingTimeout = () => {
+    const { actionToggleIsTyping, isTyping, roomId, userId } = this.props;
+    if (!isTyping) {
+      actionToggleIsTyping(userId, true, roomId);
+    }
+    this.clearTypingTimeout();
+    this.setState({
+      typingTimeout: setTimeout(
+        () => actionToggleIsTyping(userId, false, roomId),
+        TYPING_TIMEOUT_MILLIS
+      ),
+    });
+  };
+
   // setTagHelpers = (tagsSelectedPrev, wasMsgSent) => {
   //   const { tagsSelected } = this.props;
   //   const { msgInput } = this.state;
@@ -208,7 +241,7 @@ class MessagePanel extends React.Component {
 
   render() {
     const { files, msgInput } = this.state;
-    const { members, msgIdBeingRepliedTo } = this.props;
+    const { isTyping, members, msgIdBeingRepliedTo, roomId, userId } = this.props;
 
     const thumbnails = files.map(file => {
       if (file.type.startsWith('image/')) {
@@ -228,19 +261,34 @@ class MessagePanel extends React.Component {
       );
     }
 
+    const animations = members
+      .filter(member => member.id !== userId)
+      .map(member => (
+        <AnimationInOffice
+          key={member.id}
+          isOnline={member.isOnline}
+          isTyping={
+            member.isTypingByRoomId && member.isTypingByRoomId[roomId]
+              ? member.isTypingByRoomId[roomId]
+              : false
+          }
+        />
+      ));
+
     return (
       <Container>
         <Dropzone onDrop={this.onDrop} onFileDialogCancel={this.onCancel}>
           {({ getRootProps }) => (
             <div {...getRootProps()} style={{ display: 'flex', flexDirection: 'column' }}>
               <Messages />
+              <AnimationInOffice.Wrapper>{animations}</AnimationInOffice.Wrapper>
               <Input.Wrapper>
                 {reply}
                 <Thumbnails.Container>{thumbnails}</Thumbnails.Container>
                 <Input
                   type="text"
                   placeholder="Type a message..."
-                  onChange={this.handleChangeInput('msgInput')}
+                  onChange={this.handleChangeMsgInput}
                   value={msgInput}
                   onKeyDown={this.handleKeyPress}
                   maxRows={10}

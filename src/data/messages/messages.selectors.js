@@ -37,7 +37,11 @@ export const getFilteredMessages = createSelector(
     const leastRecentSignInDate = Object.values(room.mostRecentSignInById).sort()[0];
     const messagesFiltered = denormalize(messages)
       // .filter(filterForSelectedTags(tagsSelected))
-      .filter(msg => msg.timestamp > leastRecentSignInDate);
+      .filter(
+        msg =>
+          msg.timestamp > leastRecentSignInDate ||
+          (msg.savesByUserId && msg.savesByUserId.length > 0)
+      );
     return messagesFiltered;
   }
 );
