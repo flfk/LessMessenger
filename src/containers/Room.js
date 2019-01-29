@@ -124,7 +124,6 @@ class Room extends React.Component {
 
     return (
       <RoomContainer>
-        <TagPanel />
         <MessagesPanel />
       </RoomContainer>
     );

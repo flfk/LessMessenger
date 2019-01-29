@@ -17,12 +17,12 @@ import { getMembersState } from '../data/members/members.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 // import { toggleTag } from '../data/tags/tags.actions';
-import { getTagsSelectedState } from '../data/tags/tags.selectors';
+// import { getTagsSelectedState } from '../data/tags/tags.selectors';
 
 const propTypes = {
   actionGetMsgSubscription: PropTypes.func.isRequired,
   // actionTogglePin: PropTypes.func.isRequired,
-  actionToggleTag: PropTypes.func.isRequired,
+  // actionToggleTag: PropTypes.func.isRequired,
   hasMoreMessages: PropTypes.bool.isRequired,
   isLoadingMessages: PropTypes.bool.isRequired,
   isLoadingMembers: PropTypes.bool.isRequired,
@@ -60,7 +60,7 @@ const mapStateToProps = state => ({
   messages: getMessagesState(state),
   messagesFiltered: getFilteredMessages(state),
   roomId: state.room.id,
-  tagsSelected: getTagsSelectedState(state),
+  // tagsSelected: getTagsSelectedState(state),
   userId: state.user.id,
 });
 
@@ -132,16 +132,16 @@ class Messages extends React.Component {
         msgBeingRepliedTo={msgBeingRepliedTo ? msgBeingRepliedTo.content : ''}
         senderBeingRepliedTo={senderBeingRepliedTo ? senderBeingRepliedTo.name : ''}
         profileImgURL={sender.profileImgURL}
-        selectTag={this.selectTag}
+        // selectTag={this.selectTag}
         senderName={sender.name}
       />
     );
   };
 
-  selectTag = id => () => {
-    const { actionToggleTag } = this.props;
-    actionToggleTag(id);
-  };
+  // selectTag = id => () => {
+  //   const { actionToggleTag } = this.props;
+  //   actionToggleTag(id);
+  // };
 
   subscribeMessages = async (lastMsgDoc = null) => {
     const { subscriptions } = this.state;
@@ -179,7 +179,7 @@ class Messages extends React.Component {
 
         return (
           <div key={date}>
-            <Fonts.P centered>
+            <Fonts.P isTertiary centered>
               <strong>{date}</strong>
             </Fonts.P>
             <Content.Spacing16px />

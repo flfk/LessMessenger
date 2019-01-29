@@ -229,7 +229,6 @@ class MessagePanel extends React.Component {
           {({ getRootProps }) => (
             <div {...getRootProps()} style={{ display: 'flex', flexDirection: 'column' }}>
               <Messages />
-              <AnimationInOffice />
               <Input.Wrapper>
                 {reply}
                 <Thumbnails.Container>{thumbnails}</Thumbnails.Container>

@@ -1,6 +1,6 @@
 import { db } from '../firebase';
 import { fetchDocUser } from '../user/user.actions';
-import { ADD_MEMBER, DELETE_MEMBER, LOAD_MEMBERS, UPDATE_MEMBER } from './members.types';
+import { ADD_MEMBER, DELETE_MEMBER, LOAD_MEMBERS } from './members.types';
 
 const COLL_USERS = 'users';
 

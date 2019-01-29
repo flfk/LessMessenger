@@ -10,7 +10,6 @@ import reactStringReplace from 'react-string-replace';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 
-import Content from '../components/Content';
 import { REGEX_TAG, REGEX_TIMER } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import {
@@ -24,7 +23,7 @@ import {
 } from '../components/message';
 import { Input } from '../components/messagesPanel';
 import { deleteMsg, editMsg, replyToMsg } from '../data/messages/messages.actions';
-import { getTagsState } from '../data/tags/tags.selectors';
+// import { getTagsState } from '../data/tags/tags.selectors';
 
 // NOTE POSSIBLY GET RID OF PINS LOGIC (REMOVED BTN)
 
@@ -33,11 +32,11 @@ const propTypes = {
   actionEditMsg: PropTypes.func.isRequired,
   actionReplyToMsg: PropTypes.func.isRequired,
   hasHeader: PropTypes.bool.isRequired,
-  handleTogglePin: PropTypes.func.isRequired,
+  // handleTogglePin: PropTypes.func.isRequired,
   msgBeingRepliedTo: PropTypes.string,
   senderBeingRepliedTo: PropTypes.string,
   profileImgURL: PropTypes.string.isRequired,
-  selectTag: PropTypes.func.isRequired,
+  // selectTag: PropTypes.func.isRequired,
   senderName: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
 };
@@ -48,13 +47,14 @@ const defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  tags: getTagsState(state),
+  // tags: getTagsState(state),
   userId: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
   actionDeleteMsg: id => dispatch(deleteMsg(id)),
-  actionEditMsg: (msg, tags) => dispatch(editMsg(msg, tags)),
+  // actionEditMsg: (msg, tags) => dispatch(editMsg(msg, tags)),
+  actionEditMsg: msg => dispatch(editMsg(msg)),
   actionReplyToMsg: id => dispatch(replyToMsg(id)),
 });
 
@@ -92,17 +92,17 @@ class Msg extends React.Component {
     );
   };
 
-  getTag = word => {
-    const { msg, selectTag, tags } = this.props;
-    const tag = tags.find(item => item.name === word.toLowerCase());
-    if (!tag) return `${word} `;
-    const wordTagged = reactStringReplace(word, REGEX_TAG, match => (
-      <Text.Tag key={tag.id} color={tag.color} isSelected={false} onClick={selectTag(tag.id)}>
-        {match}{' '}
-      </Text.Tag>
-    ));
-    return wordTagged;
-  };
+  // getTag = word => {
+  //   const { msg, selectTag, tags } = this.props;
+  //   const tag = tags.find(item => item.name === word.toLowerCase());
+  //   if (!tag) return `${word} `;
+  //   const wordTagged = reactStringReplace(word, REGEX_TAG, match => (
+  //     <Text.Tag key={tag.id} color={tag.color} isSelected={false} onClick={selectTag(tag.id)}>
+  //       {match}{' '}
+  //     </Text.Tag>
+  //   ));
+  //   return wordTagged;
+  // };
 
   getTimer = word => {
     const { msg } = this.props;
@@ -115,19 +115,19 @@ class Msg extends React.Component {
   };
 
   getTextWithTags = text => {
-    const { msg } = this.props;
-    const words = text.split(' ').map(word => {
-      if (msg.hasTimer) {
-        const isTimer = word.match(REGEX_TIMER) !== null;
-        if (isTimer) return this.getTimer(word);
-      }
-      if (msg.tagIds && msg.tagIds.length > 0) return this.getTag(word);
-      return `${word} `;
-    });
+    // const { msg } = this.props;
+    // const words = text.split(' ').map(word => {
+    //   if (msg.hasTimer) {
+    //     const isTimer = word.match(REGEX_TIMER) !== null;
+    //     if (isTimer) return this.getTimer(word);
+    //   }
+    //   if (msg.tagIds && msg.tagIds.length > 0) return this.getTag(word);
+    //   return `${word} `;
+    // });
 
     return (
       <Linkify properties={{ target: '_blank', style: { color: 'black', opacity: '0.8' } }}>
-        <Emojify style={{ height: 16, width: 16 }}>{words}</Emojify>
+        <Emojify style={{ height: 16, width: 16 }}>{text}</Emojify>
       </Linkify>
     );
   };
@@ -135,7 +135,6 @@ class Msg extends React.Component {
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
   handleEdit = () => {
-    console.log('handling Edit in Msg');
     const { msg } = this.props;
     this.setState({ isBeingEdited: true, editInput: msg.content });
   };
@@ -144,8 +143,9 @@ class Msg extends React.Component {
 
   handleEditSave = () => {
     const { editInput } = this.state;
-    const { actionEditMsg, msg, tags } = this.props;
-    actionEditMsg({ ...msg, content: editInput }, tags);
+    const { actionEditMsg, msg } = this.props;
+    // actionEditMsg({ ...msg, content: editInput }, tags);
+    actionEditMsg({ ...msg, content: editInput });
     this.handleEditCancel();
   };
 
