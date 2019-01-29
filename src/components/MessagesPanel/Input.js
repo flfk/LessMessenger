@@ -32,6 +32,7 @@ const Wrapper = styled.div`
   background-color: white;
   border: 2px solid ${Colors.greys.tertiary};
   border-radius: 10px;
+  max-width: 732px;
 
   :focus-within {
     border-color: ${Colors.primary.blue};

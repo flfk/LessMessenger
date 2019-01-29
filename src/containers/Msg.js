@@ -220,6 +220,7 @@ class Msg extends React.Component {
     const replyPreview = msgBeingRepliedTo ? (
       <Text.Reply>{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
     ) : null;
+
     return (
       <ContainerMsg.Wrapper>
         <ContainerMsg hasHeader={hasHeader} wasSentByUser={msg.senderUserId === userId}>
