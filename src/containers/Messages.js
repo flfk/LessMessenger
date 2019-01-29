@@ -14,6 +14,7 @@ import { MessagesContainer } from '../components/messagesPanel';
 import { getMsgSubscription } from '../data/messages/messages.actions';
 import { getFilteredMessages, getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
+import { getRoomState } from '../data/room/room.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 // import { toggleTag } from '../data/tags/tags.actions';
@@ -59,7 +60,7 @@ const mapStateToProps = state => ({
   members: getMembersState(state),
   messages: getMessagesState(state),
   messagesFiltered: getFilteredMessages(state),
-  roomId: state.room.id,
+  roomId: getRoomState(state).id,
   // tagsSelected: getTagsSelectedState(state),
   userId: state.user.id,
 });

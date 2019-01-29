@@ -11,7 +11,7 @@ const Input = styled(Textarea)`
   font-family: ${Fonts.family.body};
   opacity: 0.8;
   background-color: transparent;
-  min-width: 600px;
+  min-width: 564px;
   resize: none;
 
   ::placeholder {

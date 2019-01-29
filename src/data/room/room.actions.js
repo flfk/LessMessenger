@@ -1,8 +1,9 @@
 import { db } from '../firebase';
-import { loadMembers } from '../members/members.actions';
+import { getTimestamp } from '../../utils/Helpers';
 import { LOAD_ROOM } from './room.types';
 
 const COLL_ROOMS = 'rooms';
+const KEY_MOST_RECENT_SIGN_IN = 'mostRecentSignInById';
 
 export const loadRoom = pathname => async dispatch => {
   dispatch({
@@ -35,4 +36,16 @@ export const loadRoom = pathname => async dispatch => {
     });
   }
   return room;
+};
+
+export const updateMostRecentSignIn = async (roomId, userId) => {
+  try {
+    const timestamp = getTimestamp();
+    // db.collection(COLL_ROOMS).doc(roomId).update({ `${KEY_MOST_RECENT_SIGN_IN}.${userId}` : timestamp});
+    db.collection(COLL_ROOMS)
+      .doc(roomId)
+      .update({ [`${KEY_MOST_RECENT_SIGN_IN}.${userId}`]: timestamp });
+  } catch (error) {
+    console.log('Error, room.actions, updateMostRecentSignIn', error);
+  }
 };

@@ -11,6 +11,8 @@ import { getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
 import { AnimationInOffice, Container, Thumbnails, Input } from '../components/messagesPanel';
 import { Text } from '../components/message';
+import { updateMostRecentSignIn } from '../data/room/room.actions';
+import { getRoomState } from '../data/room/room.selectors';
 // import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
 
 // import { getSelectorAll } from '../utils/Helpers';
@@ -21,7 +23,7 @@ const propTypes = {
   actionSendMessage: PropTypes.func.isRequired,
   msgIdBeingRepliedTo: PropTypes.string.isRequired,
   roomId: PropTypes.string.isRequired,
-  senderUserId: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
   // tags: PropTypes.arrayOf(
   //   PropTypes.shape({
   //     name: PropTypes.string.isRequired,
@@ -42,8 +44,8 @@ const mapStateToProps = state => ({
   messages: getMessagesState(state),
   members: getMembersState(state),
   msgIdBeingRepliedTo: state.room.msgIdBeingRepliedTo,
-  roomId: state.room.id,
-  senderUserId: state.user.id,
+  roomId: getRoomState(state).id,
+  userId: state.user.id,
   // tags: getTagsState(state),
   // tagsSelected: getTagsSelectedState(state),
 });
@@ -62,6 +64,8 @@ class MessagePanel extends React.Component {
 
   componentDidMount() {
     document.onpaste = this.onPaste;
+    const { roomId, userId } = this.props;
+    updateMostRecentSignIn(roomId, userId);
   }
 
   // componentDidUpdate(prevProps, prevState) {
@@ -95,7 +99,7 @@ class MessagePanel extends React.Component {
   };
 
   getNewMsg = async content => {
-    const { senderUserId, roomId, msgIdBeingRepliedTo } = this.props;
+    const { userId, roomId, msgIdBeingRepliedTo } = this.props;
     const hasTimer = content.match(REGEX_TIMER) !== null;
     // const tagIds = await this.getTagIds(content);
     return {
@@ -105,7 +109,7 @@ class MessagePanel extends React.Component {
       hasTimer,
       msgIdBeingRepliedTo,
       roomId,
-      senderUserId,
+      senderUserId: userId,
       // tagIds added in actions
       // Timestamp added in actions based on server
     };

@@ -1,8 +1,10 @@
 import { createSelector } from 'reselect';
 
 import { denormalize } from '../../utils/Helpers';
-// import { getTags } from '../tags/tags.selectors';
+
 import { getMembers } from '../members/members.selectors';
+import { getRoom } from '../room/room.selectors';
+// import { getTags } from '../tags/tags.selectors';
 
 // selector
 const getMessages = state => state.messages;
@@ -25,32 +27,17 @@ export const getMessagesState = createSelector(
 //   return false;
 // };
 
-const filterForNew = earliestDateLastActive => msg => {
-  return true;
-  if (msg.tagIds && msg.tagIds.length > 0) return true;
-  if (msg.timestamp > earliestDateLastActive) return true;
-  return false;
-};
-
 export const getFilteredMessages = createSelector(
   // [getMessages, getMembers, getTags],
-  [getMessages, getMembers],
+  [getMessages, getRoom],
   // (messages, members, tags) => {
-  (messages, members) => {
+  (messages, room) => {
     // const tagsSelected = denormalize(tags).filter(tag => tag.isSelected);
 
-    const membersDenormalized = denormalize(members);
-    const earliestMemberInactive = membersDenormalized.sort(
-      (a, b) => a.dateLastActive - b.dateLastActive
-    )[0];
-
-    const earliestDateLastActive = earliestMemberInactive
-      ? earliestMemberInactive.dateLastActive
-      : 0;
-
+    const leastRecentSignInDate = Object.values(room.mostRecentSignInById).sort()[0];
     const messagesFiltered = denormalize(messages)
       // .filter(filterForSelectedTags(tagsSelected))
-      .filter(filterForNew(earliestDateLastActive));
+      .filter(msg => msg.timestamp > leastRecentSignInDate);
     return messagesFiltered;
   }
 );
