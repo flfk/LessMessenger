@@ -46,15 +46,15 @@ const Wrapper = styled.div`
   ${props => (!props.hasProfileImg && !props.wasSentByUser ? 'margin-left: 48px;' : '')}
   ${props =>
     !props.hasProfileImg && props.wasSentByUser ? 'margin-right: 48px;' : ''}
+  padding: 8px 16px;
   max-width: 600px;
   background-color: ${props =>
     props.wasSentByUser ? Colors.primary.blue : Colors.background.primary};
-  border: 1px solid ${Colors.greys.quaternary};
+  border: ${props => (props.isSaved ? `2px solid white` : `2px solid ${Colors.primary.green}`)};
   border-radius: 5px;
-  padding: 8px 16px;
+
   display: flex;
   flex-direction: column;
-  // align-items: flex-start;
 `;
 
 const Text = {};

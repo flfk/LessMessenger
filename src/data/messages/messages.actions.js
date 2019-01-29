@@ -23,6 +23,25 @@ export const addMessage = msg => dispatch => {
   });
 };
 
+const updateDocMsg = async (id, fields) => {
+  const msgRef = db.collection(COLL_MESSAGES).doc(id);
+  await msgRef.update({ ...fields });
+};
+
+const updateLastMsgDoc = doc => dispatch => {
+  dispatch({
+    type: SET_LAST_MSG_DOC.SUCCESS,
+    payload: doc,
+  });
+};
+
+export const updateMsgInState = msg => dispatch => {
+  dispatch({
+    type: UPDATE_MESSAGE.SUCCESS,
+    payload: msg,
+  });
+};
+
 export const cancelReply = () => dispatch => {
   dispatch({
     type: CANCEL_REPLY.SUCCESS,
@@ -50,7 +69,7 @@ export const editMsg = msg => async dispatch => {
   // dispatch(updateMsgInState(msgUpdated));
   // await updateDocMsg(msg.id, { content: msg.content, tagIds });
   dispatch(updateMsgInState(msg));
-  await updateDocMsg(msg.id, msg);
+  await updateDocMsg(msg.id, { content: msg.content });
 };
 
 // const getTagIds = async (content, roomId, tags) => {
@@ -69,6 +88,20 @@ export const editMsg = msg => async dispatch => {
 //   // console.log('tagIds', tagIds);
 //   return tagIds;
 // };
+
+export const toggleSaveMsg = (msg, userId) => async dispatch => {
+  const { savesByUserId } = msg;
+  const msgUpdated = { ...msg };
+
+  if (savesByUserId && savesByUserId.indexOf(userId) > -1) {
+    msgUpdated.savesByUserId = msg.savesByUserId.filter(id => id != userId);
+  } else {
+    msgUpdated.savesByUserId = [...msg.savesByUserId, userId];
+  }
+
+  updateDocMsg(msg.id, { savesByUserId: msgUpdated.savesByUserId });
+  dispatch(updateMsgInState(msgUpdated));
+};
 
 export const replyToMsg = msgId => dispatch => {
   dispatch({
@@ -112,25 +145,6 @@ export const sendMessage = msg => async dispatch => {
 //   }
 // };
 
-const updateDocMsg = async (id, fields) => {
-  const msgRef = db.collection(COLL_MESSAGES).doc(id);
-  await msgRef.update({ ...fields });
-};
-
-const updateLastMsgDoc = doc => dispatch => {
-  dispatch({
-    type: SET_LAST_MSG_DOC.SUCCESS,
-    payload: doc,
-  });
-};
-
-export const updateMsgInState = msg => dispatch => {
-  dispatch({
-    type: UPDATE_MESSAGE.SUCCESS,
-    payload: msg,
-  });
-};
-
 export const uploadFile = async (file, roomId) => {
   try {
     const timestamp = dbTimestamp.now().toMillis();
@@ -166,7 +180,7 @@ const handleMsgSnapshot = dispatch => snapshot => {
       const { id } = doc;
       msg.id = id;
       // convert firestore timestamp to unix
-      // console.log('about to add message', msg);
+      // console.log('snapshot event change add', msg);
       msg.timestamp = msg.timestamp ? msg.timestamp.toMillis() : dbTimestamp.now().toMillis();
       messagesAdded.push(msg);
       // dispatch(addMessage(msg));
@@ -179,7 +193,8 @@ const handleMsgSnapshot = dispatch => snapshot => {
       const msg = doc.data();
       const { id } = doc;
       msg.id = id;
-      msg.timestamp = msg.timestamp.toMillis();
+      // console.log('snapshot event change modified', msg);
+      msg.timestamp = msg.timestamp ? msg.timestamp.toMillis() : dbTimestamp.now().toMillis();
       // console.log('modified', msg);
       // dispatch(updateMsgInState(msg));
       messagesUpdated.push(msg);

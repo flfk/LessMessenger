@@ -109,6 +109,7 @@ class MessagePanel extends React.Component {
       hasTimer,
       msgIdBeingRepliedTo,
       roomId,
+      savesByUserId: [],
       senderUserId: userId,
       // tagIds added in actions
       // Timestamp added in actions based on server

@@ -3,7 +3,7 @@ import axios from 'axios';
 import Emojify from 'react-emojione';
 import React from 'react';
 import { connect } from 'react-redux';
-import { FaFileDownload, FaEdit, FaReply, FaTrashAlt } from 'react-icons/fa';
+import { FaFileDownload, FaEdit, FaRegSave, FaReply, FaTrashAlt } from 'react-icons/fa';
 // import { TiPinOutline, TiPin } from 'react-icons/ti';
 import Linkify from 'react-linkify';
 import reactStringReplace from 'react-string-replace';
@@ -22,7 +22,7 @@ import {
   Text,
 } from '../components/message';
 import { Input } from '../components/messagesPanel';
-import { deleteMsg, editMsg, replyToMsg } from '../data/messages/messages.actions';
+import { deleteMsg, editMsg, replyToMsg, toggleSaveMsg } from '../data/messages/messages.actions';
 // import { getTagsState } from '../data/tags/tags.selectors';
 
 // NOTE POSSIBLY GET RID OF PINS LOGIC (REMOVED BTN)
@@ -30,6 +30,7 @@ import { deleteMsg, editMsg, replyToMsg } from '../data/messages/messages.action
 const propTypes = {
   actionDeleteMsg: PropTypes.func.isRequired,
   actionEditMsg: PropTypes.func.isRequired,
+  actionToggleSave: PropTypes.func.isRequired,
   actionReplyToMsg: PropTypes.func.isRequired,
   hasHeader: PropTypes.bool.isRequired,
   // handleTogglePin: PropTypes.func.isRequired,
@@ -56,6 +57,7 @@ const mapDispatchToProps = dispatch => ({
   // actionEditMsg: (msg, tags) => dispatch(editMsg(msg, tags)),
   actionEditMsg: msg => dispatch(editMsg(msg)),
   actionReplyToMsg: id => dispatch(replyToMsg(id)),
+  actionToggleSave: (msg, userId) => dispatch(toggleSaveMsg(msg, userId)),
 });
 
 class Msg extends React.Component {
@@ -134,21 +136,6 @@ class Msg extends React.Component {
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
-  handleEdit = () => {
-    const { msg } = this.props;
-    this.setState({ isBeingEdited: true, editInput: msg.content });
-  };
-
-  handleEditCancel = () => this.setState({ isBeingEdited: false });
-
-  handleEditSave = () => {
-    const { editInput } = this.state;
-    const { actionEditMsg, msg } = this.props;
-    // actionEditMsg({ ...msg, content: editInput }, tags);
-    actionEditMsg({ ...msg, content: editInput });
-    this.handleEditCancel();
-  };
-
   handleDownload = () => {
     const { msg } = this.props;
     axios({
@@ -165,14 +152,30 @@ class Msg extends React.Component {
     });
   };
 
+  handleEdit = () => {
+    const { msg } = this.props;
+    this.setState({ isBeingEdited: true, editInput: msg.content });
+  };
+
+  handleEditCancel = () => this.setState({ isBeingEdited: false });
+
+  handleEditSave = () => {
+    const { editInput } = this.state;
+    const { actionEditMsg, msg } = this.props;
+    // actionEditMsg({ ...msg, content: editInput }, tags);
+    actionEditMsg({ ...msg, content: editInput });
+    this.handleEditCancel();
+  };
+
   render() {
     const { editInput, isBeingEdited } = this.state;
 
     const {
       actionDeleteMsg,
       actionReplyToMsg,
+      actionToggleSave,
       hasHeader,
-      handleTogglePin,
+      // handleTogglePin,
       msg,
       msgBeingRepliedTo,
       senderBeingRepliedTo,
@@ -221,11 +224,17 @@ class Msg extends React.Component {
       <Text.Reply>{`${senderBeingRepliedTo}: ${msgBeingRepliedTo}`}</Text.Reply>
     ) : null;
 
+    const isSaved = msg.savesByUserId && msg.savesByUserId.length > 0;
+
     return (
       <ContainerMsg.Wrapper>
         <ContainerMsg hasHeader={hasHeader} wasSentByUser={msg.senderUserId === userId}>
           {profileImg}
-          <Text.Wrapper hasProfileImg={hasHeader} wasSentByUser={msg.senderUserId === userId}>
+          <Text.Wrapper
+            hasProfileImg={hasHeader}
+            isSaved={isSaved}
+            wasSentByUser={msg.senderUserId === userId}
+          >
             {header}
             {replyPreview}
             {attachment}
@@ -235,11 +244,14 @@ class Msg extends React.Component {
             <Btn onClick={() => actionReplyToMsg(msg.id)}>
               <FaReply />
             </Btn>
+            <Btn>
+              <FaTrashAlt onClick={() => actionDeleteMsg(msg.id)} />
+            </Btn>
             <Btn onClick={this.handleEdit}>
               <FaEdit />
             </Btn>
-            <Btn>
-              <FaTrashAlt onClick={() => actionDeleteMsg(msg.id)} />
+            <Btn onClick={() => actionToggleSave(msg, userId)}>
+              <FaRegSave />
             </Btn>
           </ContainerMsg.Buttons>
         </ContainerMsg>
