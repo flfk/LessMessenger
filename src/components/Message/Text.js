@@ -50,7 +50,7 @@ const Wrapper = styled.div`
   max-width: 600px;
   background-color: ${props =>
     props.wasSentByUser ? Colors.primary.blue : Colors.background.primary};
-  border: ${props => (props.isSaved ? `2px solid white` : `2px solid ${Colors.primary.green}`)};
+  border: ${props => (props.isSaved ? `2px solid ${Colors.primary.green}` : `2px solid white`)};
   border-radius: 5px;
 
   display: flex;

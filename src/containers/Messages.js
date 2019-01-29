@@ -111,13 +111,13 @@ class Messages extends React.Component {
   };
 
   getMsgElement = (msg, hasHeader = true) => {
-    const { members, messagesFiltered } = this.props;
+    const { members, messages, messagesFiltered } = this.props;
     const sender = members.find(member => member.id === msg.senderUserId);
 
     let msgBeingRepliedTo = {};
     let senderBeingRepliedTo = {};
     if (msg.msgIdBeingRepliedTo) {
-      msgBeingRepliedTo = messagesFiltered.find(item => item.id === msg.msgIdBeingRepliedTo);
+      msgBeingRepliedTo = messages.find(item => item.id === msg.msgIdBeingRepliedTo);
       senderBeingRepliedTo = msgBeingRepliedTo
         ? members.find(member => member.id === msgBeingRepliedTo.senderUserId)
         : null;
