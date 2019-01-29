@@ -92,9 +92,10 @@ export const editMsg = msg => async dispatch => {
 export const toggleSaveMsg = (msg, userId) => async dispatch => {
   const { savesByUserId } = msg;
   const msgUpdated = { ...msg };
-
-  if (savesByUserId && savesByUserId.indexOf(userId) > -1) {
-    msgUpdated.savesByUserId = msg.savesByUserId.filter(id => id != userId);
+  if (!savesByUserId) {
+    msgUpdated.savesByUserId = [userId];
+  } else if (savesByUserId && savesByUserId.indexOf(userId) > -1) {
+    msgUpdated.savesByUserId = msg.savesByUserId.filter(id => id !== userId);
   } else {
     msgUpdated.savesByUserId = [...msg.savesByUserId, userId];
   }
