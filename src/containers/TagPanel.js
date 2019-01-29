@@ -7,8 +7,8 @@ import { connect } from 'react-redux';
 import { getFilteredMessages } from '../data/messages/messages.selectors';
 import Scrollable from '../components/Scrollable';
 import { TagHeader, TagItem, Wrapper } from '../components/tagPanel';
-import { getTagSubscription, toggleTag } from '../data/tags/tags.actions';
-import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
+// import { getTagSubscription, toggleTag } from '../data/tags/tags.actions';
+// import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
 
 const propTypes = {
   actionGetTagSubscription: PropTypes.func.isRequired,
@@ -34,14 +34,14 @@ const defaultProps = {};
 
 const mapStateToProps = state => ({
   messages: getFilteredMessages(state),
-  tags: getTagsState(state),
-  tagsSelected: getTagsSelectedState(state),
+  // tags: getTagsState(state),
+  // tagsSelected: getTagsSelectedState(state),
   roomId: state.room.id,
 });
 
 const mapDispatchToProps = dispatch => ({
-  actionToggleTag: tagName => dispatch(toggleTag(tagName)),
-  actionGetTagSubscription: roomId => dispatch(getTagSubscription(roomId)),
+  // actionToggleTag: tagName => dispatch(toggleTag(tagName)),
+  // actionGetTagSubscription: roomId => dispatch(getTagSubscription(roomId)),
 });
 
 class TagPanel extends React.Component {

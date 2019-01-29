@@ -5,13 +5,13 @@ import { connect } from 'react-redux';
 
 import { REGEX_TIMER } from '../utils/Constants';
 import Messages from './Messages';
-import { createTag } from '../data/tags/tags.actions';
+// import { createTag } from '../data/tags/tags.actions';
 import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
 import { getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
 import { AnimationInOffice, Container, Thumbnails, Input } from '../components/messagesPanel';
 import { Text } from '../components/message';
-import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
+// import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
 
 // import { getSelectorAll } from '../utils/Helpers';
 
@@ -22,18 +22,18 @@ const propTypes = {
   msgIdBeingRepliedTo: PropTypes.string.isRequired,
   roomId: PropTypes.string.isRequired,
   senderUserId: PropTypes.string.isRequired,
-  tags: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      isSelected: PropTypes.bool.isRequired,
-    })
-  ).isRequired,
-  tagsSelected: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      isSelected: PropTypes.bool.isRequired,
-    })
-  ).isRequired,
+  // tags: PropTypes.arrayOf(
+  //   PropTypes.shape({
+  //     name: PropTypes.string.isRequired,
+  //     isSelected: PropTypes.bool.isRequired,
+  //   })
+  // ).isRequired,
+  // tagsSelected: PropTypes.arrayOf(
+  //   PropTypes.shape({
+  //     name: PropTypes.string.isRequired,
+  //     isSelected: PropTypes.bool.isRequired,
+  //   })
+  // ).isRequired,
 };
 
 const defaultProps = {};
@@ -44,8 +44,8 @@ const mapStateToProps = state => ({
   msgIdBeingRepliedTo: state.room.msgIdBeingRepliedTo,
   roomId: state.room.id,
   senderUserId: state.user.id,
-  tags: getTagsState(state),
-  tagsSelected: getTagsSelectedState(state),
+  // tags: getTagsState(state),
+  // tagsSelected: getTagsSelectedState(state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -64,17 +64,17 @@ class MessagePanel extends React.Component {
     document.onpaste = this.onPaste;
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { tagsSelected } = this.props;
-    const { msgInput } = this.state;
-    const tagsSelectedPrev = prevProps.tagsSelected;
-    const msgInputPrev = prevState.msgInput;
-    const wasMsgSent = msgInputPrev && !msgInput;
-    // If a tag was added or if message was sent
-    if (tagsSelectedPrev.length !== tagsSelected.length || wasMsgSent) {
-      this.setTagHelpers(tagsSelectedPrev, wasMsgSent);
-    }
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   const { tagsSelected } = this.props;
+  //   const { msgInput } = this.state;
+  //   const tagsSelectedPrev = prevProps.tagsSelected;
+  //   const msgInputPrev = prevState.msgInput;
+  //   const wasMsgSent = msgInputPrev && !msgInput;
+  //   If a tag was added or if message was sent
+  //   if (tagsSelectedPrev.length !== tagsSelected.length || wasMsgSent) {
+  //     this.setTagHelpers(tagsSelectedPrev, wasMsgSent);
+  //   }
+  // }
 
   createFileObj = file =>
     Object.assign(file, {
@@ -172,34 +172,34 @@ class MessagePanel extends React.Component {
     }
   };
 
-  setTagHelpers = (tagsSelectedPrev, wasMsgSent) => {
-    const { tagsSelected } = this.props;
-    const { msgInput } = this.state;
+  // setTagHelpers = (tagsSelectedPrev, wasMsgSent) => {
+  //   const { tagsSelected } = this.props;
+  //   const { msgInput } = this.state;
 
-    const tagNamesPrev = tagsSelectedPrev.map(tag => tag.name);
-    const tagNamesCurrent = tagsSelected.map(tag => tag.name);
-    let msgInputUpdated = msgInput.trim();
+  //   const tagNamesPrev = tagsSelectedPrev.map(tag => tag.name);
+  //   const tagNamesCurrent = tagsSelected.map(tag => tag.name);
+  //   let msgInputUpdated = msgInput.trim();
 
-    if (wasMsgSent) {
-      tagNamesCurrent.forEach(tag => {
-        msgInputUpdated = `${tag} ${msgInputUpdated}`;
-      });
-    } else {
-      const tagNamesAdded = tagNamesCurrent.filter(tag => !(tagNamesPrev.indexOf(tag) > -1));
-      const tagNamesRemoved = tagNamesPrev.filter(tag => !(tagNamesCurrent.indexOf(tag) > -1));
-      tagNamesAdded.forEach(tag => {
-        msgInputUpdated = `${tag} ${msgInputUpdated}`;
-      });
-      tagNamesRemoved.forEach(tag => {
-        const isTagInInput = msgInputUpdated.indexOf(tag) > -1;
-        if (isTagInInput) {
-          msgInputUpdated = msgInputUpdated.replace(tag, '');
-        }
-      });
-    }
+  //   if (wasMsgSent) {
+  //     tagNamesCurrent.forEach(tag => {
+  //       msgInputUpdated = `${tag} ${msgInputUpdated}`;
+  //     });
+  //   } else {
+  //     const tagNamesAdded = tagNamesCurrent.filter(tag => !(tagNamesPrev.indexOf(tag) > -1));
+  //     const tagNamesRemoved = tagNamesPrev.filter(tag => !(tagNamesCurrent.indexOf(tag) > -1));
+  //     tagNamesAdded.forEach(tag => {
+  //       msgInputUpdated = `${tag} ${msgInputUpdated}`;
+  //     });
+  //     tagNamesRemoved.forEach(tag => {
+  //       const isTagInInput = msgInputUpdated.indexOf(tag) > -1;
+  //       if (isTagInInput) {
+  //         msgInputUpdated = msgInputUpdated.replace(tag, '');
+  //       }
+  //     });
+  //   }
 
-    this.setState({ msgInput: msgInputUpdated });
-  };
+  //   this.setState({ msgInput: msgInputUpdated });
+  // };
 
   render() {
     const { files, msgInput } = this.state;
