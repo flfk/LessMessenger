@@ -27,17 +27,18 @@ const FontOpacity = {
 };
 
 const H1 = styled.h1`
+  color: ${props => (props.isWhite ? 'white' : 'black')};
   font-size: ${FontSizes.h1};
   font-size: ${props => (props.extraLarge ? FontSizes.xl : '')};
   font-family: ${FontFamily.header};
-  color: black;
-  opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
-  opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   font-weight: 600;
-  text-align: ${props => (props.centered ? 'center' : '')};
+  line-height: 1.5em;
   margin: ${props => (props.noMargin ? '0px' : '')};
   margin-bottom: ${props => (props.noMarginBottom ? '0px' : '')};
   margin-bottom: ${props => (props.marginBottom8px ? '8px' : '')};
+  opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
+  opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
+  text-align: ${props => (props.isCentered ? 'center' : '')};
 `;
 
 const H2 = styled.h2`
@@ -46,8 +47,8 @@ const H2 = styled.h2`
   color: black;
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
   opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
-  font-weight: 600;
-  text-align: ${props => (props.centered ? 'center' : '')};
+  font-weight: 400;
+  text-align: ${props => (props.isCentered ? 'center' : '')};
   margin: ${props => (props.noMargin ? '0px' : '')};
   margin-bottom: ${props => (props.noMarginBottom ? '0px' : '')};
 `;
@@ -59,7 +60,7 @@ const H3 = styled.h3`
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
   opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   font-weight: 400;
-  text-align: ${props => (props.centered ? 'center' : '')};
+  text-align: ${props => (props.isCentered ? 'center' : '')};
   margin: ${props => (props.noMargin ? '0px' : '')};
   margin-bottom: ${props => (props.noMarginBottom ? '0px' : '')};
   margin-bottom: ${props => (props.marginBottom4px ? '4px' : '')};
@@ -77,7 +78,7 @@ const P = styled.p`
   ${props => (props.isTertiary ? `color: ${Colors.greys.tertiary};` : '')}
   ${props => (props.isSecondary ? `color: ${Colors.greys.secondary};` : '')}
   margin: 0;
-  text-align: ${props => (props.centered ? 'center' : '')};
+  text-align: ${props => (props.isCentered ? 'center' : '')};
 `;
 
 const Label = styled.span`
@@ -96,7 +97,7 @@ const Err = styled.p`
   color: ${Colors.error.primary};
   margin: 8px 0;
   margin: ${props => (props.noMargin ? '0px' : '')};
-  text-align: ${props => (props.centered ? 'center' : '')};
+  text-align: ${props => (props.isCentered ? 'center' : '')};
 `;
 
 const A = styled.a`
@@ -108,7 +109,7 @@ const A = styled.a`
   :hover {
     text-decoration: underline;
   }
-  text-align: ${props => (props.centered ? 'center' : '')};
+  text-align: ${props => (props.isCentered ? 'center' : '')};
 `;
 
 const Link = styled.span`
@@ -119,7 +120,7 @@ const Link = styled.span`
   :hover {
     text-decoration: underline;
   }
-  text-align: ${props => (props.centered ? 'center' : '')};
+  text-align: ${props => (props.isCentered ? 'center' : '')};
 `;
 
 const Fonts = {};

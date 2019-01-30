@@ -2,8 +2,9 @@ const COLORS = {
   primary: {
     red: '#F31F60',
     green: '#70DB9F',
-    yellow: '#FAC84B',
+    yellow: '#FFDC61',
     blue: '#CBD4F9',
+    darkBlue: '#5168A1',
   },
   background: {
     primary: '#FCF7F9',

@@ -14,6 +14,7 @@ const propTypes = {
   onChange: PropTypes.func.isRequired,
   onBlur: PropTypes.func,
   placeholder: PropTypes.string,
+  marginBottom8px: PropTypes.bool,
   noMargin: PropTypes.bool,
   value: PropTypes.string.isRequired,
 };
@@ -24,6 +25,7 @@ const defaultProps = {
   isPassword: false,
   label: '',
   onBlur: null,
+  marginBottom8px: false,
   noMargin: false,
   placeholder: '',
 };
@@ -35,6 +37,7 @@ const InputText = ({
   isPassword,
   onChange,
   onBlur,
+  marginBottom8px,
   noMargin,
   placeholder,
   value,
@@ -51,6 +54,7 @@ const InputText = ({
         isValid={isValid}
         onChange={onChange}
         onBlur={onBlur}
+        marginBottom8px={marginBottom8px}
         noMargin={noMargin}
         type={isPassword ? 'password' : 'text'}
         placeholder={placeholder}
@@ -108,14 +112,14 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
-  padding: 0.5em 0.5em;
+  padding: 1em 1em;
   border-radius: 3px;
-  border: 1px solid ${Colors.greys.light};
+  border: 1px solid ${Colors.greys.quaternary};
   font-size: 16px;
   font-family: ${Fonts.family.body}
   color: ${Colors.greys.primary};
 
-  margin-bottom: ${props => (props.hasError ? '8px' : '16px')};
+  margin-bottom: ${props => (props.hasError || props.marginBottom8px ? '8px' : '16px')};
   border-color: ${props => (props.hasError ? Colors.error.primary : '')};
   border-color: ${props => (props.isValid ? Colors.primary.green : '')};
 

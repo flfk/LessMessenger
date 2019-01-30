@@ -8,7 +8,7 @@ import Media from '../utils/Media';
 
 const Btn = styled.button`
   flex: 1 0 1;
-  width: ${props => (props.fill ? '100%' : '')};
+  width: 100%;
   width: ${props => (props.narrow ? '96px' : '')};
   padding: ${props => (props.short ? '0.5em 0.5em' : '1em 1em')};
   background-color: transparent;
@@ -17,13 +17,14 @@ const Btn = styled.button`
   font-weight: bold;
   cursor: pointer;
 
-  border: 1px solid ${Colors.primary.red};
-  background-color: ${props => (props.primary ? Colors.primary.red : 'none')};
-  color: ${props => (props.primary ? 'white' : Colors.primary.red)};
+  border: 1px solid ${Colors.primary.green};
+  background-color: ${props => (props.primary ? Colors.primary.green : 'none')};
+  color: ${props => (props.primary ? 'white' : Colors.primary.green)};
 
   :hover {
-    border-color: ${props => (props.primary ? Darken(Colors.primary.red) : Colors.primary.red)};
-    background-color: ${props => (props.primary ? Darken(Colors.primary.red) : Colors.primary.red)};
+    border-color: ${props => (props.primary ? Darken(Colors.primary.green) : Colors.primary.green)};
+    background-color: ${props =>
+      props.primary ? Darken(Colors.primary.green) : Colors.primary.green};
     color: white;
   }
 
