@@ -7,33 +7,30 @@ import Media from '../utils/Media';
 // Default is secondary, for primary button use <Btn primary></Btn>
 
 const Btn = styled.button`
-  flex: 1 0 1;
-  width: 100%;
+  flex: 1 0 auto;
+  // width: 100%;
   width: ${props => (props.narrow ? '96px' : '')};
-  padding: ${props => (props.short ? '0.5em 0.5em' : '1em 1em')};
+  padding: 1em;
   background-color: transparent;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
   cursor: pointer;
 
-  border: 1px solid ${Colors.primary.green};
-  background-color: ${props => (props.primary ? Colors.primary.green : 'none')};
-  color: ${props => (props.primary ? 'white' : Colors.primary.green)};
+  border: 1px solid ${Colors.primary.yellow};
+  background-color: ${props => (props.primary ? Colors.primary.yellow : 'none')};
+  color: ${props => (props.primary ? Colors.primary.darkBlue : Colors.primary.yellow)};
 
   :hover {
-    border-color: ${props => (props.primary ? Darken(Colors.primary.green) : Colors.primary.green)};
+    border-color: ${props =>
+      props.primary ? Darken(Colors.primary.yellow) : Colors.primary.yellow};
     background-color: ${props =>
-      props.primary ? Darken(Colors.primary.green) : Colors.primary.green};
-    color: white;
+      props.primary ? Darken(Colors.primary.yellow) : Colors.primary.yellow};
+    color: ${props => (props.primary ? Darken(Colors.primary.darkBlue) : 'white')};
   }
 
   :focus {
     outline: none;
-  }
-
-  ${Media.tablet} {
-    font-size: 14px;
   }
 
   // Animation for hover, source: Bootstrap 4

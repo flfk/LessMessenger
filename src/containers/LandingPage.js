@@ -8,8 +8,10 @@ import {
   Background,
   BackgroundImg,
   Content,
+  Feature,
+  FooterImg,
+  TextHighlight,
   TitleImg,
-  WrapperFeatures,
   WrapperTitle,
 } from '../components/landingPage';
 
@@ -32,34 +34,35 @@ class LandingPage extends React.Component {
               Declutter your messages. <br /> Declutter your mind.
             </Fonts.H1>
             <TitleImg />
-            <div>
+            <WrapperTitle.Btns>
               <InputText
                 placeholder="Enter your email"
                 value={email}
                 onChange={this.handleChangeEmail}
-                marginBottom8px
+                noMargin
               />
-              <Btn primary>Start</Btn>
-            </div>
+              <Btn primary>Get Started</Btn>
+            </WrapperTitle.Btns>
           </WrapperTitle>
-          <WrapperFeatures>
-            <div>
+          <Feature.Wrapper>
+            <Feature>
               <Fonts.H2>
-                This messenger <strong>does not</strong>
+                This messenger <TextHighlight>does not</TextHighlight>
               </Fonts.H2>
               <Fonts.H3>hoard unimportant messages</Fonts.H3>
               <Fonts.H3>set messages in stone once they're sent</Fonts.H3>
               <Fonts.H3>follow you around on your phone 24-7</Fonts.H3>
-            </div>
-            <div>
+            </Feature>
+            <Feature>
               <Fonts.H2>
-                This messenger <strong>does</strong>
+                This messenger <TextHighlight>does</TextHighlight>
               </Fonts.H2>
               <Fonts.H3>keep messages that matter and discard the rest</Fonts.H3>
               <Fonts.H3>allow you to refine ideas even after they're sent</Fonts.H3>
               <Fonts.H3>let you choose when you're done working</Fonts.H3>
-            </div>
-          </WrapperFeatures>
+            </Feature>
+          </Feature.Wrapper>
+          <FooterImg />
         </Content>
       </Background>
     );

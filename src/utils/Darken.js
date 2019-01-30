@@ -8,7 +8,7 @@ const DARKEN = color => {
   const gInput = color.substr(3, 2);
   const bInput = color.substr(5, 2);
 
-  const addedBlackOpacity = 0.2;
+  const addedBlackOpacity = 0.1;
 
   const darkenHex = primaryColor => {
     const intInput = parseInt(primaryColor, 16);

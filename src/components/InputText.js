@@ -46,9 +46,11 @@ const InputText = ({
 
   const hasError = errMsg.length > 0;
 
+  const labelDiv = label ? <Label>{label}</Label> : null;
+
   return (
     <Container>
-      <Label>{label}</Label>
+      {labelDiv}
       <Input
         hasError={hasError}
         isValid={isValid}
@@ -115,20 +117,21 @@ const Input = styled.input`
   padding: 1em 1em;
   border-radius: 3px;
   border: 1px solid ${Colors.greys.quaternary};
-  font-size: 16px;
-  font-family: ${Fonts.family.body}
-  color: ${Colors.greys.primary};
+  font-size: 20px;
+  font-family: ${Fonts.family.body};
+  color: ${Colors.primary.darkBlue};
 
   margin-bottom: ${props => (props.hasError || props.marginBottom8px ? '8px' : '16px')};
   border-color: ${props => (props.hasError ? Colors.error.primary : '')};
   border-color: ${props => (props.isValid ? Colors.primary.green : '')};
+  margin-bottom: ${props => (props.noMargin ? '0' : '')};
 
   ::placeholder {
     color: ${Colors.greys.tertiary};
   }
 
   :focus {
-    border: 1px solid ${Colors.primary.green};
+    // border: 1px solid ${Colors.primary.green};
     outline: none;
   }
 `;

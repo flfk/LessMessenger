@@ -5,6 +5,7 @@ import mixpanel from 'mixpanel-browser';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
 import store from './data/Store';
+import GlobalStyles from './components/GlobalStyles';
 import Main from './components/Main';
 
 import LandingPage from './containers/LandingPage';
@@ -38,6 +39,7 @@ class App extends Component {
       <Provider store={store}>
         <BrowserRouter>
           <Main>
+            <GlobalStyles />
             <NavBar />
             <Switch>
               <Route path="/home" component={LandingPage} />

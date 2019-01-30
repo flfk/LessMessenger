@@ -5,16 +5,14 @@ import Colors from './Colors';
 import Media from './Media';
 
 const FontFamily = {
-  logo: 'LeckerliOne, sans-serif',
   header: 'Roboto, sans-serif',
   body: 'Roboto, sans-serif',
 };
 
 const FontSizes = {
-  logo: '32px',
-  xl: '40px',
-  h1: '32px',
-  h2: '24px',
+  xl: '56px',
+  h1: '40px',
+  h2: '32px',
   h3: '20px',
   p: '14px',
   finePrint: '12px',
@@ -30,9 +28,8 @@ const H1 = styled.h1`
   color: ${props => (props.isWhite ? 'white' : 'black')};
   font-size: ${FontSizes.h1};
   font-size: ${props => (props.extraLarge ? FontSizes.xl : '')};
-  font-family: ${FontFamily.header};
-  font-weight: 600;
-  line-height: 1.5em;
+  font-family: HammersmithOne;
+  font-weight: 400;
   margin: ${props => (props.noMargin ? '0px' : '')};
   margin-bottom: ${props => (props.noMarginBottom ? '0px' : '')};
   margin-bottom: ${props => (props.marginBottom8px ? '8px' : '')};
@@ -44,10 +41,10 @@ const H1 = styled.h1`
 const H2 = styled.h2`
   font-size: ${FontSizes.h2};
   font-family: ${FontFamily.header};
-  color: black;
+  color: ${Colors.primary.darkBlue};
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
   opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
-  font-weight: 400;
+  font-weight: 300;
   text-align: ${props => (props.isCentered ? 'center' : '')};
   margin: ${props => (props.noMargin ? '0px' : '')};
   margin-bottom: ${props => (props.noMarginBottom ? '0px' : '')};
@@ -56,7 +53,7 @@ const H2 = styled.h2`
 const H3 = styled.h3`
   font-size: ${FontSizes.h3};
   font-family: ${FontFamily.header};
-  color: black;
+  color: ${Colors.primary.darkBlue};
   opacity: ${props => (props.isSecondary ? FontOpacity.secondary : '')};
   opacity: ${props => (props.isTertiary ? FontOpacity.tertiary : '')};
   font-weight: 400;
