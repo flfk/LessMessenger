@@ -110,7 +110,6 @@ export const toggleIsTyping = (id, isTyping, roomId) => dispatch => {
     type: TOGGLE_TYPING.SUCCESS,
     payload: isTyping,
   });
-  console.log('toggleIsTyping', isTyping);
   updateDocUser(id, { [`isTypingByRoomId.${roomId}`]: isTyping });
 };
 
