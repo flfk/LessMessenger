@@ -11,8 +11,8 @@ import Fonts from '../utils/Fonts';
 import { getPathname } from '../utils/Helpers';
 import MessagesPanel from './MessagesPanel';
 import { getMemberSubscription } from '../data/members/members.actions';
-import { loadRoom } from '../data/room/room.actions';
-import RoomContainer from '../components/RoomContainer';
+import { loadRoom, toggleInviteMember } from '../data/room/room.actions';
+import { AddMemberPopup, Wrapper } from '../components/room';
 import Spinner from '../components/Spinner';
 import SignUp from './SignUp';
 // import TagPanel from './TagPanel';
@@ -20,7 +20,9 @@ import SignUp from './SignUp';
 const propTypes = {
   actionGetMemberSubscription: PropTypes.func.isRequired,
   actionLoadRoom: PropTypes.func.isRequired,
+  actionToggleInviteMember: PropTypes.func.isRequired,
   error: PropTypes.bool.isRequired,
+  isInvitingMember: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
   memberUserIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   userId: PropTypes.string,
@@ -32,6 +34,7 @@ const defaultProps = {
 
 const mapStateToProps = state => ({
   error: state.room.error,
+  isInvitingMember: state.room.isInvitingMember,
   isLoading: state.room.isLoading,
   memberUserIds: state.room.memberUserIds,
   userId: state.user.id,
@@ -40,6 +43,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   actionGetMemberSubscription: roomId => dispatch(getMemberSubscription(roomId)),
   actionLoadRoom: pathname => dispatch(loadRoom(pathname)),
+  actionToggleInviteMember: () => dispatch(toggleInviteMember()),
 });
 
 class Room extends React.Component {
@@ -115,7 +119,14 @@ class Room extends React.Component {
 
   render() {
     const { toLandingPage } = this.state;
-    const { error, isLoading, memberUserIds, userId } = this.props;
+    const {
+      actionToggleInviteMember,
+      error,
+      isInvitingMember,
+      isLoading,
+      memberUserIds,
+      userId,
+    } = this.props;
 
     if (toLandingPage) return this.goToLandingPage();
 
@@ -136,10 +147,15 @@ class Room extends React.Component {
         </Content>
       );
 
+    const addMemberPopup = isInvitingMember ? (
+      <AddMemberPopup handleClose={actionToggleInviteMember} />
+    ) : null;
+
     return (
-      <RoomContainer>
+      <Wrapper>
         <MessagesPanel />
-      </RoomContainer>
+        {addMemberPopup}
+      </Wrapper>
     );
   }
 }

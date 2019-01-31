@@ -1,3 +1,4 @@
+export { default as AddMemberIcon } from './AddMemberIcon';
 export { default as Dropdown } from './Dropdown';
 export { default as List } from './List';
 export { default as Profile } from './Profile';

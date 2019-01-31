@@ -18,11 +18,11 @@ const Background = styled.div`
   overflow-y: auto;
 `;
 
-const BackgroundLight = styled(Background)`
-  background-color: white;
-  opacity: 0.95;
-  opacity: 1;
-`;
+// const BackgroundLight = styled(Background)`
+//   background-color: white;
+//   opacity: 0.95;
+//   opacity: 1;
+// `;
 
 const Card = styled.div`
   position: fixed;
@@ -36,6 +36,8 @@ const Card = styled.div`
   background-color: white;
   opacity: 1;
   border-radius: 5px;
+  padding-left: 40px;
+  padding-right: 40px;
 
   ${Media.tablet} {
     width: 95%;
@@ -43,15 +45,15 @@ const Card = styled.div`
   }
 `;
 
-const CardTransparent = styled(Card)`
-  background-color: transparent;
-  display: flex;
-  flex-direction: column;
-  ${Media.tablet} {
-    width: 90%;
-    margin: 0;
-  }
-`;
+// const CardTransparent = styled(Card)`
+//   background-color: transparent;
+//   display: flex;
+//   flex-direction: column;
+//   ${Media.tablet} {
+//     width: 90%;
+//     margin: 0;
+//   }
+// `;
 
 const Emoji = styled.div`
   font-size: 96px;
@@ -79,9 +81,9 @@ BtnClose.defaultProps = defaultProps;
 
 const Popup = {};
 Popup.Background = Background;
-Popup.BackgroundLight = BackgroundLight;
+// Popup.BackgroundLight = BackgroundLight;
 Popup.Card = Card;
-Popup.CardTransparent = CardTransparent;
+// Popup.CardTransparent = CardTransparent;
 Popup.BtnClose = BtnClose;
 Popup.Emoji = Emoji;
 

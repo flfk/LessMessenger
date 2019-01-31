@@ -7,7 +7,8 @@ import moment from 'moment-timezone';
 import Btn from '../components/Btn';
 import { auth } from '../data/firebase';
 import Fonts from '../utils/Fonts';
-import { Dropdown, List, Profile, Wrapper } from '../components/navBar';
+import { AddMemberIcon, Dropdown, List, Profile, Wrapper } from '../components/navBar';
+import { toggleInviteMember } from '../data/room/room.actions';
 import { getMembersState } from '../data/members/members.selectors';
 import { getLoggedInUser, signOut } from '../data/user/user.actions';
 
@@ -15,6 +16,7 @@ const MILLIS_PER_SECOND = 1000;
 
 const propTypes = {
   actionGetLoggedInUser: PropTypes.func.isRequired,
+  actionToggleInviteMember: PropTypes.func.isRequired,
   actionSignOut: PropTypes.func.isRequired,
   roomName: PropTypes.string,
   userId: PropTypes.string,
@@ -34,6 +36,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   actionGetLoggedInUser: user => dispatch(getLoggedInUser(user)),
+  actionToggleInviteMember: () => dispatch(toggleInviteMember()),
   actionSignOut: () => dispatch(signOut()),
 });
 
@@ -59,6 +62,11 @@ class NavBar extends React.Component {
     });
   };
 
+  handleAddMember = () => {
+    const { actionToggleInviteMember } = this.props;
+    actionToggleInviteMember();
+  };
+
   handleClickProfile = () => {
     // this.setState({ showDropDown: true });
   };
@@ -74,15 +82,24 @@ class NavBar extends React.Component {
   };
 
   render() {
-    const { showDropDown, timestamp } = this.state;
+    const { showDropDown, timestamp, showPopupAddMember } = this.state;
 
-    const { actionSignOut, members, roomName, userId } = this.props;
+    const { actionToggleInviteMember, actionSignOut, members, roomName, userId } = this.props;
 
     const dropdown = showDropDown ? (
       <Dropdown>
         <Btn.Tertiary fill>test</Btn.Tertiary>
       </Dropdown>
     ) : null;
+
+    const addMemberBtn =
+      members && members.length > 0 ? (
+        <li>
+          <Btn.Tertiary onClick={actionToggleInviteMember}>
+            <AddMemberIcon />
+          </Btn.Tertiary>
+        </li>
+      ) : null;
 
     const profileBtn = userId ? (
       <li>
@@ -127,6 +144,7 @@ class NavBar extends React.Component {
             <li>
               <Fonts.H2 isSecondary>{roomName}</Fonts.H2>
             </li>
+            {addMemberBtn}
             {memberProfiles}
             {profileBtn}
           </List>

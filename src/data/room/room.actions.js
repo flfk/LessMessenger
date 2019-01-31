@@ -2,10 +2,16 @@ import shortid from 'shortid';
 
 import { db } from '../firebase';
 import { getTimestamp } from '../../utils/Helpers';
-import { CREATE_ROOM, LOAD_ROOM } from './room.types';
+import { CREATE_ROOM, TOGGLE_INVITE_MEMBER, LOAD_ROOM } from './room.types';
 
 const COLL_ROOMS = 'rooms';
 const KEY_MOST_RECENT_SIGN_IN = 'mostRecentSignInById';
+
+export const toggleInviteMember = () => dispatch => {
+  dispatch({
+    type: TOGGLE_INVITE_MEMBER.SUCCESS,
+  });
+};
 
 const isPathnameTaken = async pathname => {
   try {

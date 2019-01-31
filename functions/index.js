@@ -1,10 +1,14 @@
 const functions = require('firebase-functions');
 const Firestore = require('@google-cloud/firestore');
 const admin = require('firebase-admin');
+const sgMail = require('@sendgrid/mail');
 
 admin.initializeApp();
 
 const firestore = admin.firestore();
+
+const SENDGRID_API_KEY = functions.config().sendgrid.key;
+sgMail.setApiKey(SENDGRID_API_KEY);
 
 exports.onUserStatusChanged = functions.database
   .ref('/status/{uid}') // Reference to the Firebase RealTime database key
@@ -21,17 +25,16 @@ exports.onUserStatusChanged = functions.database
     });
   });
 
-exports.emailRequests = functions.firestore.document('emails/{emails}').onCreate(snap => {
+exports.emailRequests = functions.firestore.document('emails/{email}').onCreate(snap => {
   const emailRequest = snap.data();
-
   let msg = {};
-  let type = 'No Type';
+  let type = 'NO_TYPE';
 
-  if (emailRequest.type === 'parent') {
-    type = 'parent';
+  if (emailRequest.type === 'signUp') {
+    type = 'signUp';
     msg = {
       to: emailRequest.email,
-      from: 'contact.meetsta@gmail.com',
+      from: 'The.Lessmessenger@gmail.com',
       templateId: 'd-9151449bb4e4476eb06436f9574a0a01',
       dynamic_template_data: {
         nameFirst: emailRequest.nameFirst,
@@ -45,7 +48,7 @@ exports.emailRequests = functions.firestore.document('emails/{emails}').onCreate
     type = 'invite';
     msg = {
       to: emailRequest.email,
-      from: 'contact.meetsta@gmail.com',
+      from: 'The.Lessmessenger@gmail.com',
       templateId: 'd-c94784d256ee4157bb28b62a937c2ec5',
       dynamic_template_data: {
         inviteeName: emailRequest.inviteeName,

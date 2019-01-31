@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-import Media from '../utils/Media';
+import Media from '../../utils/Media';
 
-const RoomContainer = styled.div`
+const Wrapper = styled.div`
   display: flex;
   flex: 1;
   margin: auto;
@@ -15,4 +15,4 @@ const RoomContainer = styled.div`
   }
 `;
 
-export default RoomContainer;
+export default Wrapper;

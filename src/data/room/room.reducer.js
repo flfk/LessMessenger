@@ -1,4 +1,4 @@
-import { CREATE_ROOM, LOAD_ROOM } from './room.types';
+import { CREATE_ROOM, LOAD_ROOM, TOGGLE_INVITE_MEMBER } from './room.types';
 import { CANCEL_REPLY, REPLY_TO_MESSAGE } from '../messages/messages.types';
 import { LOAD_MEMBERS } from '../members/members.types';
 
@@ -8,9 +8,10 @@ const initialState = {
   isLoading: true,
   isLoadingMembers: true,
   memberUserIds: [],
+  msgIdBeingRepliedTo: '',
   name: '',
   pathname: '',
-  msgIdBeingRepliedTo: '',
+  isInvitingMember: false,
 };
 
 const reducerRoom = (state = initialState, action) => {
@@ -21,6 +22,8 @@ const reducerRoom = (state = initialState, action) => {
       return { ...state, ...action.payload, isLoading: false };
     case CANCEL_REPLY.SUCCESS:
       return { ...state, msgIdBeingRepliedTo: '' };
+    case TOGGLE_INVITE_MEMBER.SUCCESS:
+      return { ...state, isInvitingMember: !state.isInvitingMember };
     case LOAD_MEMBERS.SUCCESS:
       return { ...state, isLoadingMembers: false };
     case LOAD_ROOM.PENDING:
