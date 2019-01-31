@@ -1,6 +1,7 @@
 import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import validator from 'validator';
 
@@ -12,25 +13,34 @@ import Spinner from '../components/Spinner';
 import LogIn from './LogIn';
 import { getParams } from '../utils/Helpers';
 
+import { createRoom } from '../data/room/room.actions';
 import { createUser } from '../data/user/user.actions';
 
 const propTypes = {
+  actionCreateRoom: PropTypes.func.isRequired,
   actionSignUp: PropTypes.func.isRequired,
   errorCode: PropTypes.string,
   isPending: PropTypes.bool,
+  newRoomPathname: PropTypes.string,
+  userId: PropTypes.string,
 };
 
 const defaultProps = {
   errorCode: '',
   isPending: false,
+  newRoomPathname: '',
+  userId: '',
 };
 
 const mapStateToProps = state => ({
   errorCode: state.user.errorCode,
   isPending: state.user.isPending,
+  newRoomPathname: state.room.pathname,
+  userId: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
+  actionCreateRoom: room => dispatch(createRoom(room)),
   actionSignUp: (email, name, password) => dispatch(createUser(email, name, password)),
 });
 
@@ -43,13 +53,29 @@ class SignUp extends React.Component {
     emailErrMsg: '',
     emailIsValid: false,
     isLoading: false,
+    isCreatingNewRoom: false,
+    inviteeEmail: '',
+    inviteeEmailErrMsg: '',
+    inviteeEmailIsValid: false,
     password: '',
     passwordErrMsg: '',
     passwordIsValid: false,
+    roomName: '',
+    roomNameErrMsg: '',
+    roomNameIsValid: false,
     showLogIn: false,
   };
 
   componentDidMount() {
+    // Check if email passed because sent from landing page
+
+    if (this.props.location) {
+      const { email } = this.props.location.state;
+      if (email) {
+        this.setState({ email, isCreatingNewRoom: true });
+        this.isEmailValid(email);
+      }
+    }
     // mixpanel.track('Visited Sign Up Page');
     // this.setData();
   }
@@ -62,10 +88,24 @@ class SignUp extends React.Component {
     return "Oops, something wen't wrong. Please try again or contact us at ilydotsm@gmail.com for help.";
   };
 
+  getNewRoom = () => {
+    const { inviteeEmail, roomName } = this.state;
+    const { userId } = this.props;
+    return {
+      emailsInvited: [inviteeEmail],
+      memberUserIds: [userId],
+      mostRecentSignInById: {},
+      name: roomName,
+      pathname: roomName.replace(' ', '-'),
+    };
+  };
+
   handleBlur = field => () => {
     let isValid = false;
     if (field === 'email') isValid = this.isEmailValid();
+    if (field === 'inviteeEmail') isValid = this.isInviteeEmailValid();
     if (field === 'name') isValid = this.isNameValid();
+    if (field === 'roomName') isValid = this.isRoomNameValid();
     if (field === 'password') isValid = this.isPasswordValid();
     const validFieldId = `${field}IsValid`;
     this.setState({ [validFieldId]: isValid });
@@ -73,11 +113,20 @@ class SignUp extends React.Component {
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
+  handleCreateRoom = () => {
+    console.log('handling create room');
+    if (this.isRoomFormValid()) {
+      const { actionCreateRoom } = this.props;
+      const newRoom = this.getNewRoom();
+      actionCreateRoom(newRoom);
+    }
+  };
+
   handleClickLogIn = () => this.setState({ showLogIn: true });
 
   handleSignUp = () => {
     this.setState({ isLoading: true });
-    if (this.isFormValid()) {
+    if (this.isSignUpFormValid()) {
       const { email, name, password } = this.state;
       const { actionSignUp } = this.props;
       actionSignUp(email, name, password);
@@ -91,20 +140,47 @@ class SignUp extends React.Component {
     this.setState({ isLoading: false });
   };
 
-  isFormValid = () => {
+  goToRoom = () => {
+    const { newRoomPathname } = this.props;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: `/${newRoomPathname}`,
+        }}
+      />
+    );
+  };
+
+  isRoomFormValid = () => {
+    const { inviteeEmail } = this.state;
+    return this.isRoomNameValid() && (!inviteeEmail || this.isInviteeEmailValid());
+  };
+
+  isSignUpFormValid = () => {
     if (this.isEmailValid() && this.isNameValid() && this.isPasswordValid()) {
       return true;
     }
     return false;
   };
 
-  isEmailValid = () => {
-    const { email } = this.state;
+  isEmailValid = (emailInput = '') => {
+    const email = emailInput || this.state.email;
     if (!validator.isEmail(email)) {
       this.setState({ emailErrMsg: 'Valid email address required.' });
       return false;
     }
-    this.setState({ emailErrMsg: '' });
+    this.setState({ emailErrMsg: '', emailIsValid: true });
+    return true;
+  };
+
+  isInviteeEmailValid = () => {
+    const { inviteeEmail } = this.state;
+    if (!validator.isEmail(inviteeEmail)) {
+      this.setState({ inviteeEmailErrMsg: 'Valid Email address required.' });
+      return false;
+    }
+    this.setState({ inviteeEmailErrMsg: '', inviteeEmailIsValid: true });
     return true;
   };
 
@@ -115,6 +191,16 @@ class SignUp extends React.Component {
       return false;
     }
     this.setState({ nameErrMsg: '' });
+    return true;
+  };
+
+  isRoomNameValid = () => {
+    const { roomName } = this.state;
+    if (roomName === '') {
+      this.setState({ roomNameErrMsg: "Don't forget to include a name for your workspace." });
+      return false;
+    }
+    this.setState({ roomNameErrMsg: '' });
     return true;
   };
 
@@ -134,46 +220,89 @@ class SignUp extends React.Component {
       emailErrMsg,
       emailIsValid,
       isLoading,
+      isCreatingNewRoom,
+      inviteeEmail,
+      inviteeEmailErrMsg,
+      inviteeEmailIsValid,
       name,
       nameErrMsg,
       nameIsValid,
       password,
       passwordErrMsg,
       passwordIsValid,
+      roomName,
+      roomNameErrMsg,
+      roomNameIsValid,
       showLogIn,
     } = this.state;
 
-    const { errorCode, isPending } = this.props;
+    const { errorCode, isPending, newRoomPathname, userId } = this.props;
 
     if (showLogIn) return <LogIn />;
 
     if (isLoading || isPending) return <Spinner />;
 
-    const signUpErrMsg = errorCode ? (
-      <Fonts.ERROR>{this.getErrorText(errorCode)}</Fonts.ERROR>
-    ) : null;
+    const signUpErrMsg = errorCode ? <Fonts.Err>{this.getErrorText(errorCode)}</Fonts.Err> : null;
 
-    return (
-      <Content>
-        <Content.Spacing16px />
-        <Fonts.H1 centered>Sign up to join this workspace</Fonts.H1>
-        <InputText
-          errMsg={nameErrMsg}
-          label="First off, What's your name?"
-          placeholder="Jane Doe"
-          onBlur={this.handleBlur('name')}
-          onChange={this.handleChangeInput('name')}
-          value={name}
-          isValid={nameIsValid}
-        />
+    if (isCreatingNewRoom && newRoomPathname) return this.goToRoom();
+
+    const emailDiv =
+      isCreatingNewRoom && emailIsValid ? null : (
         <InputText
           errMsg={emailErrMsg}
-          label="Tell us your email"
+          label="First off, tell us your email?"
           placeholder="example@email.com"
           onBlur={this.handleBlur('email')}
           onChange={this.handleChangeInput('email')}
           value={email}
           isValid={emailIsValid}
+        />
+      );
+
+    // Allow room creation
+    if (userId && isCreatingNewRoom) {
+      return (
+        <Content>
+          <Content.Spacing16px />
+          <Fonts.H2 isCentered>Last question</Fonts.H2>
+          <InputText
+            errMsg={roomNameErrMsg}
+            label="What do you want to call your workspace"
+            placeholder="The Office"
+            onBlur={this.handleBlur('roomName')}
+            onChange={this.handleChangeInput('roomName')}
+            value={roomName}
+            isValid={roomNameIsValid}
+          />
+          <InputText
+            errMsg={inviteeEmailErrMsg}
+            label="Want to invite a teammate right away? (You can skip this or do it later)"
+            placeholder="Teammate's email"
+            onBlur={this.handleBlur('inviteeEmail')}
+            onChange={this.handleChangeInput('inviteeEmail')}
+            value={inviteeEmail}
+            isValid={inviteeEmailIsValid}
+          />
+          <Btn primary onClick={this.handleCreateRoom}>
+            All Done!
+          </Btn>
+        </Content>
+      );
+    }
+
+    return (
+      <Content>
+        <Content.Spacing16px />
+        <Fonts.H2 isCentered>Just a few quick things to Sign Up</Fonts.H2>
+        {emailDiv}
+        <InputText
+          errMsg={nameErrMsg}
+          label="What's your name?"
+          placeholder="Jane Doe"
+          onBlur={this.handleBlur('name')}
+          onChange={this.handleChangeInput('name')}
+          value={name}
+          isValid={nameIsValid}
         />
         <InputText
           errMsg={passwordErrMsg}
@@ -192,27 +321,13 @@ class SignUp extends React.Component {
         </Btn>
         <Content.Spacing16px />
         <Content.Centered>
-          <Fonts.P>Already using Meetsta?</Fonts.P>{' '}
+          <Fonts.P>Already using LessMessenger?</Fonts.P>{' '}
           <Btn.Tertiary onClick={this.handleClickLogIn}>Log In</Btn.Tertiary>
         </Content.Centered>
       </Content>
     );
   }
 }
-
-// <Content>
-//   <Fonts.Label>
-//     By clicking on Sign Up, you agree with the{' '}
-//     <Link to="/termsConditions" target="_blank" style={{ textDecoration: 'none' }}>
-//       <Fonts.Link>Terms and Conditions of Use</Fonts.Link>
-//     </Link>{' '}
-//     and{' '}
-//     <Link to="/privacyPolicy" target="_blank" style={{ textDecoration: 'none' }}>
-//       <Fonts.Link>Privacy Policy</Fonts.Link>
-//     </Link>
-//     .
-//   </Fonts.Label>
-// </Content>;
 
 SignUp.propTypes = propTypes;
 SignUp.defaultProps = defaultProps;

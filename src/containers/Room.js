@@ -5,7 +5,9 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import Tinycon from 'tinycon';
 
+import Content from '../components/Content';
 import ErrorScreen from '../components/ErrorScreen';
+import Fonts from '../utils/Fonts';
 import { getPathname } from '../utils/Helpers';
 import MessagesPanel from './MessagesPanel';
 import { getMemberSubscription } from '../data/members/members.actions';
@@ -13,7 +15,7 @@ import { loadRoom } from '../data/room/room.actions';
 import RoomContainer from '../components/RoomContainer';
 import Spinner from '../components/Spinner';
 import SignUp from './SignUp';
-import TagPanel from './TagPanel';
+// import TagPanel from './TagPanel';
 
 const propTypes = {
   actionGetMemberSubscription: PropTypes.func.isRequired,
@@ -55,8 +57,12 @@ class Room extends React.Component {
     }
   }
 
-  componentDidUpdate() {
-    this.handleFaviconAlert();
+  componentDidUpdate(prevProps) {
+    const { memberUserIds, userId } = this.props;
+    if (userId && !prevProps.userId && memberUserIds) {
+      this.loadMembers(memberUserIds, userId);
+    }
+    // this.handleFaviconAlert();
   }
 
   componentWillUnmount() {
@@ -85,7 +91,13 @@ class Room extends React.Component {
   loadRoom = async pathname => {
     const { actionLoadRoom } = this.props;
     const room = await actionLoadRoom(pathname);
-    this.subscribeMembers(room.memberUserIds);
+  };
+
+  loadMembers = async (memberUserIds, userId) => {
+    const hasRoomAccess = memberUserIds.indexOf(userId) > -1;
+    if (hasRoomAccess) {
+      this.subscribeMembers(memberUserIds);
+    }
   };
 
   subscribeMembers = async memberUserIds => {
@@ -116,10 +128,12 @@ class Room extends React.Component {
     const hasRoomAccess = memberUserIds.indexOf(userId) > -1;
     if (!hasRoomAccess)
       return (
-        <div>
-          Oops, looks like you don't have access to this room. Contact your room administrator to
-          request an invitation.
-        </div>
+        <Content>
+          <Fonts.H2 isCentered>
+            Oops, looks like you don't have access to this workspace. Contact your room
+            administrator to request an invitation.
+          </Fonts.H2>
+        </Content>
       );
 
     return (

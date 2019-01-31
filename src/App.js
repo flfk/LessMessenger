@@ -11,6 +11,7 @@ import Main from './components/Main';
 import LandingPage from './containers/LandingPage';
 import NavBar from './containers/NavBar';
 import Room from './containers/Room';
+import SignUp from './containers/SignUp';
 
 class App extends Component {
   constructor(props) {
@@ -43,6 +44,7 @@ class App extends Component {
             <NavBar />
             <Switch>
               <Route path="/home" component={LandingPage} />
+              <Route path="/signup" component={SignUp} />
               <Route path="/" component={Room} />
             </Switch>
           </Main>

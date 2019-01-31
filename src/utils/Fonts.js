@@ -88,7 +88,7 @@ const Label = styled.span`
 `;
 
 const Err = styled.p`
-  font-size: ${FontSizes.p};
+  font-size: ${FontSizes.h3};
   font-family: ${FontFamily.body};
   font-weight: bold;
   color: ${Colors.error.primary};

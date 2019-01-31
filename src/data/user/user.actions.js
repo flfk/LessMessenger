@@ -12,6 +12,8 @@ import {
 
 const COLL_USERS = 'users';
 
+const DEFAULT_AVATAR_ID = 'gVepxC2MyKG1hMZmGXJe';
+
 export const addUserDoc = async (email, name, userId) => {
   try {
     // guess timezone
@@ -19,7 +21,7 @@ export const addUserDoc = async (email, name, userId) => {
     await db
       .collection(COLL_USERS)
       .doc(userId)
-      .set({ email, timezone, name });
+      .set({ avatarId: DEFAULT_AVATAR_ID, email, timezone, name });
   } catch (error) {
     console.log('Actions, user, addUserDoc', error);
   }
@@ -77,6 +79,7 @@ export const createUser = (email, name, password) => async dispatch => {
       payload: { email, id: userId, name },
     });
   } catch (error) {
+    console.log('Error user.actions, createUser', error);
     dispatch({
       type: CREATE_USER.ERROR,
       payload: error.code,

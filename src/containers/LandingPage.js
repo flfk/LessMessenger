@@ -1,5 +1,14 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import styled from 'styled-components';
+import {
+  MdLayersClear,
+  MdMarkunread,
+  MdPhonelinkErase,
+  MdTurnedIn,
+  MdSpeakerNotes,
+  MdHotel,
+} from 'react-icons/md';
 
 import Btn from '../components/Btn';
 import Fonts from '../utils/Fonts';
@@ -18,12 +27,30 @@ import {
 class LandingPage extends React.Component {
   state = {
     email: '',
+    toSignUp: false,
   };
 
   handleChangeEmail = event => this.setState({ email: event.target.value });
 
-  render() {
+  handleStart = () => this.setState({ toSignUp: true });
+
+  goToSignUp = () => {
     const { email } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/signup',
+          state: { email },
+        }}
+      />
+    );
+  };
+
+  render() {
+    const { email, toSignUp } = this.state;
+
+    if (toSignUp) return this.goToSignUp();
 
     return (
       <Background>
@@ -34,6 +61,7 @@ class LandingPage extends React.Component {
               Declutter your messages. <br /> Declutter your mind.
             </Fonts.H1>
             <TitleImg />
+            <Fonts.H2>The work messenger for small remote teams</Fonts.H2>
             <WrapperTitle.Btns>
               <InputText
                 placeholder="Enter your email"
@@ -41,7 +69,9 @@ class LandingPage extends React.Component {
                 onChange={this.handleChangeEmail}
                 noMargin
               />
-              <Btn primary>Get Started</Btn>
+              <Btn primary onClick={this.handleStart}>
+                Start Free Trial
+              </Btn>
             </WrapperTitle.Btns>
           </WrapperTitle>
           <Feature.Wrapper>
@@ -49,17 +79,29 @@ class LandingPage extends React.Component {
               <Fonts.H2>
                 This messenger <TextHighlight>does not</TextHighlight>
               </Fonts.H2>
-              <Fonts.H3>hoard unimportant messages</Fonts.H3>
-              <Fonts.H3>set messages in stone once they're sent</Fonts.H3>
-              <Fonts.H3>follow you around on your phone 24-7</Fonts.H3>
+              <Fonts.H3>
+                <MdLayersClear /> clutter your workspace by saving all messages
+              </Fonts.H3>
+              <Fonts.H3>
+                <MdMarkunread /> make messages unalterable after sending
+              </Fonts.H3>
+              <Fonts.H3>
+                <MdPhonelinkErase /> have a mobile app
+              </Fonts.H3>
             </Feature>
             <Feature>
               <Fonts.H2>
                 This messenger <TextHighlight>does</TextHighlight>
               </Fonts.H2>
-              <Fonts.H3>keep messages that matter and discard the rest</Fonts.H3>
-              <Fonts.H3>allow you to refine ideas even after they're sent</Fonts.H3>
-              <Fonts.H3>let you choose when you're done working</Fonts.H3>
+              <Fonts.H3>
+                <MdTurnedIn /> filter out noise by saving only what matters to you
+              </Fonts.H3>
+              <Fonts.H3>
+                <MdSpeakerNotes /> let you organize ideas before they're seen by teammates
+              </Fonts.H3>
+              <Fonts.H3>
+                <MdHotel /> let you switch off when you're done working
+              </Fonts.H3>
             </Feature>
           </Feature.Wrapper>
           <FooterImg />

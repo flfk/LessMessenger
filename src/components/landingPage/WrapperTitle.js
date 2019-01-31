@@ -6,7 +6,7 @@ const WrapperTitle = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 56px;
+  margin-top: 72px;
   width: 680px;
   margin-bottom: 32px;
 `;

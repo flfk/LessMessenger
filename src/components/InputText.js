@@ -108,9 +108,11 @@ const Container = styled.div`
 `;
 
 const Label = styled.label`
-  color: ${Colors.greys.secondary};
+  color: ${Colors.primary.darkBlue};
+  opacity: 0.8;
   margin-bottom: 8px;
   display: inline-block;
+  font-size: 20px;
 `;
 
 const Input = styled.input`
@@ -163,6 +165,7 @@ const ErrLabel = styled(Label)`
   color: ${Colors.error.primary};
   margin-bottom: 16px;
   font-weight: bold;
+  opacity: 1;
 `;
 
 InputText.Area = Area;

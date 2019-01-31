@@ -1,14 +1,21 @@
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 import Lottie from 'react-lottie';
 
-import animationOnline from '../../assets/Online.json';
-import animationTypingStart from '../../assets/TypingStart.json';
-import animationTypingMiddle from '../../assets/TypingMiddle.json';
-import animationTypingEnd from '../../assets/TypingEnd.json';
+// import animationOnline from '../../assets/Online.json';
+// import animationTypingStart from '../../assets/TypingStart.json';
+// import animationTypingMid from '../../assets/TypingMiddle.json';
+// import animationTypingEnd from '../../assets/TypingEnd.json';
 
 const propTypes = {
+  avatar: PropTypes.shape({
+    animationOnlineURL: PropTypes.string.isRequired,
+    animationTypingStartURL: PropTypes.string.isRequired,
+    animationTypingMidURL: PropTypes.string.isRequired,
+    animationTypingEndURL: PropTypes.string.isRequired,
+  }).isRequired,
   isOnline: PropTypes.bool,
   isTyping: PropTypes.bool,
 };
@@ -20,39 +27,67 @@ const defaultProps = {
 
 class MemberAnimation extends React.Component {
   state = {
-    animationData: animationOnline,
+    currentAnimationData: null,
+    animationTypingStartData: null,
+    animationTypingMidData: null,
+    animationTypingEndData: null,
+    animationOnlineData: null,
+    hasLoadedData: false,
     isLooping: false,
     isStopped: false,
   };
 
+  componentDidMount() {
+    this.loadAnimationData();
+  }
+
   componentDidUpdate(prevProps) {
+    const { animationTypingStartData, animationTypingEndData } = this.state;
     const { isTyping } = this.props;
     if (isTyping && !prevProps.isTyping) {
-      this.setState({ animationData: animationTypingStart });
+      this.setState({ currentAnimationData: animationTypingStartData });
     }
     if (!isTyping && prevProps.isTyping) {
-      this.setState({ animationData: animationTypingEnd, isLooping: false });
+      this.setState({ currentAnimationData: animationTypingEndData, isLooping: false });
     }
   }
 
   handleStartTypingComplete = () => {
-    this.setState({ animationData: animationTypingMiddle, isLooping: true });
+    const { animationTypingMidData } = this.state;
+    this.setState({ currentAnimationData: animationTypingMidData, isLooping: true });
   };
 
   handleStopTypingComplete = () => {
-    this.setState({ animationData: animationOnline, isLooping: false, isStopped: true });
+    const { animationOnlineData } = this.state;
+    this.setState({ currentAnimationData: animationOnlineData, isLooping: false, isStopped: true });
+  };
+
+  loadAnimationData = async () => {
+    const { avatar } = this.props;
+    const animationOnline = await axios.get(avatar.animationOnlineURL);
+    const animationTypingStart = await axios.get(avatar.animationTypingStartURL);
+    const animationTypingMid = await axios.get(avatar.animationTypingMidURL);
+    const animationTypingEnd = await axios.get(avatar.animationTypingEndURL);
+    this.setState({
+      currentAnimationData: animationOnline.data,
+      animationOnlineData: animationOnline.data,
+      animationTypingStartData: animationTypingStart.data,
+      animationTypingMidData: animationTypingMid.data,
+      animationTypingEndData: animationTypingEnd.data,
+      hasLoadedData: true,
+    });
   };
 
   render() {
-    const { animationData, isLooping, isStopped } = this.state;
+    const { currentAnimationData, hasLoadedData, isLooping, isStopped } = this.state;
     const { isOnline, isTyping } = this.props;
 
-    if (!isOnline) return null;
+    if (!isOnline || !hasLoadedData) return null;
 
     const defaultOptions = {
       loop: isLooping,
       autoplay: true,
-      animationData,
+      animationData: currentAnimationData,
       rendererSettings: {
         preserveAspectRatio: 'xMidYMid slice',
       },

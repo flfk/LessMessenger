@@ -12,6 +12,7 @@ export const createActionSet = actionName => ({
 
 export const denormalize = state => {
   const { allIds, byId } = state;
+  if (!allIds) return [];
   return allIds.map(id => byId[id]);
 };
 
@@ -24,7 +25,7 @@ export const getParams = props => {
 
 export const getPathname = props => {
   const { pathname } = props.location;
-  const pathnameFormatted = pathname.replace('/', '').toLowerCase();
+  const pathnameFormatted = pathname.replace('/', '');
   return pathnameFormatted;
 };
 

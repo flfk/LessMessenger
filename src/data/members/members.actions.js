@@ -2,6 +2,7 @@ import { db } from '../firebase';
 import { fetchDocUser } from '../user/user.actions';
 import { ADD_MEMBER, DELETE_MEMBER, LOAD_MEMBERS } from './members.types';
 
+const COLL_AVATARS = 'avatars';
 const COLL_USERS = 'users';
 
 export const addMember = member => dispatch => {
@@ -11,11 +12,26 @@ export const addMember = member => dispatch => {
   });
 };
 
+const getAvatar = async avatarId => {
+  let avatar = null;
+  try {
+    const avatarRef = db.collection(COLL_AVATARS).doc(avatarId);
+    const snapshot = await avatarRef.get();
+    avatar = snapshot.data();
+    avatar.id = snapshot.id;
+  } catch (error) {
+    console.log('members.actions, getAvatar', error);
+  }
+  return avatar;
+};
+
 // SUBSCRIPTIONS
-const handleMemberSnapshot = dispatch => doc => {
+const handleMemberSnapshot = dispatch => async doc => {
   const member = doc.data();
   const { id } = doc;
   member.id = id;
+  const avatar = await getAvatar(member.avatarId);
+  member.avatar = avatar;
   dispatch(addMember(member));
 };
 

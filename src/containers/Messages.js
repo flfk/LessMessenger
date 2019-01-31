@@ -132,7 +132,7 @@ class Messages extends React.Component {
         msg={msg}
         msgBeingRepliedTo={msgBeingRepliedTo ? msgBeingRepliedTo.content : ''}
         senderBeingRepliedTo={senderBeingRepliedTo ? senderBeingRepliedTo.name : ''}
-        profileImgURL={sender.profileImgURL}
+        profileImgURL={sender.avatar.profileImgURL}
         // selectTag={this.selectTag}
         senderName={sender.name}
       />
@@ -180,7 +180,7 @@ class Messages extends React.Component {
 
         return (
           <div key={date}>
-            <Fonts.P isTertiary centered>
+            <Fonts.P isTertiary isCentered>
               <strong>{date}</strong>
             </Fonts.P>
             <Content.Spacing16px />

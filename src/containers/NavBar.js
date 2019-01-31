@@ -22,6 +22,7 @@ const propTypes = {
 
 const defaultProps = {
   roomName: '',
+  roomMemberUserIds: [],
   userId: '',
 };
 
@@ -102,7 +103,7 @@ class NavBar extends React.Component {
           return (
             <Profile key={member.id}>
               <Profile.ImgWrapper>
-                <Profile.Img src={member.profileImgURL} />
+                <Profile.Img src={member.avatar.profileImgURL} />
                 <Profile.Presence isOnline={member.isOnline} />
               </Profile.ImgWrapper>
               <Profile.TextWrapper>

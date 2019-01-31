@@ -121,14 +121,12 @@ class LogIn extends React.Component {
 
     if (isLoading || isPending) return <Spinner />;
 
-    const logInErrMsg = errorCode ? (
-      <Fonts.ERROR>{this.getErrorText(errorCode)}</Fonts.ERROR>
-    ) : null;
+    const logInErrMsg = errorCode ? <Fonts.Err>{this.getErrorText(errorCode)}</Fonts.Err> : null;
 
     return (
       <Content>
         <Content.Spacing16px />
-        <Fonts.H1 centered>Log into your Meetsta account</Fonts.H1>
+        <Fonts.H2 isCentered>Log into your LessMessenger account</Fonts.H2>
         <InputText
           errMsg={emailErrMsg}
           placeholder="Email"
