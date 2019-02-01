@@ -4,8 +4,17 @@ import { db, firebase } from '../firebase';
 import { getTimestamp } from '../../utils/Helpers';
 import { CREATE_ROOM, TOGGLE_INVITE_MEMBER, LOAD_ROOM } from './room.types';
 
+const COLL_EMAILS = 'emailRequests';
 const COLL_ROOMS = 'rooms';
 const KEY_MOST_RECENT_SIGN_IN = 'mostRecentSignInById';
+
+export const addDocEmailRequest = async emailReq => dispatch => {
+  try {
+    db.collection(COLL_EMAILS).add(emailReq);
+  } catch (error) {
+    console.error('Error room.actions, addDocEmailRequest', error);
+  }
+};
 
 export const addUserIdToMembers = (roomId, userId) => async dispatch => {
   try {
@@ -58,10 +67,24 @@ export const createRoom = room => async dispatch => {
   }
 };
 
-export const inviteMember = (email, roomId) => async dispatch => {
+export const inviteMember = (
+  email,
+  inviterName,
+  roomId,
+  roomName,
+  roomPathname
+) => async dispatch => {
   try {
     const roomRef = db.collection(COLL_ROOMS).doc(roomId);
     roomRef.update({ emailsInvited: firebase.firestore.FieldValue.arrayUnion(email) });
+    const emailReq = {
+      email: 'invite',
+      inviterName,
+      roomName,
+      roomURL: roomPathname,
+      type: 'invite',
+    };
+    addDocEmailRequest(emailReq);
   } catch (error) {
     console.error('Error room.actions, inviteMember', error);
   }

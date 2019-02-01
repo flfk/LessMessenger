@@ -25,7 +25,7 @@ exports.onUserStatusChanged = functions.database
     });
   });
 
-exports.emailRequests = functions.firestore.document('emails/{email}').onCreate(snap => {
+exports.emailRequests = functions.firestore.document('emailRequests/{email}').onCreate(snap => {
   const emailRequest = snap.data();
   let msg = {};
   let type = 'NO_TYPE';
@@ -35,11 +35,10 @@ exports.emailRequests = functions.firestore.document('emails/{email}').onCreate(
     msg = {
       to: emailRequest.email,
       from: 'The.Lessmessenger@gmail.com',
-      templateId: 'd-9151449bb4e4476eb06436f9574a0a01',
+      templateId: 'd-af3c425d79864ad581c317d523b74de1',
       dynamic_template_data: {
-        nameFirst: emailRequest.nameFirst,
-        influencerName: emailRequest.influencerName,
-        eventURL: emailRequest.eventURL,
+        roomName: emailRequest.roomName,
+        roomURL: emailRequest.roomURL,
       },
     };
   }
@@ -49,13 +48,11 @@ exports.emailRequests = functions.firestore.document('emails/{email}').onCreate(
     msg = {
       to: emailRequest.email,
       from: 'The.Lessmessenger@gmail.com',
-      templateId: 'd-c94784d256ee4157bb28b62a937c2ec5',
+      templateId: 'd-35152d996b7a43d1889fff72a9ddf14d',
       dynamic_template_data: {
-        inviteeName: emailRequest.inviteeName,
-        refereeName: emailRequest.refereeName,
-        influencerName: emailRequest.influencerName,
-        eventURL: emailRequest.eventURL,
-        daysLeft: emailRequest.daysLeft,
+        inviterName: emailRequest.inviterName,
+        roomName: emailRequest.roomName,
+        roomURL: emailRequest.roomURL,
       },
     };
   }

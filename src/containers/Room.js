@@ -34,8 +34,10 @@ const propTypes = {
   emailsInvited: PropTypes.arrayOf(PropTypes.string),
   memberUserIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   roomId: PropTypes.string.isRequired,
+  roomName: PropTypes.string.isRequired,
+  roomPathname: PropTypes.string.isRequired,
   userId: PropTypes.string,
-  userEmail: PropTypes.string,
+  userName: PropTypes.string,
 };
 
 const defaultProps = {
@@ -51,14 +53,17 @@ const mapStateToProps = state => ({
   emailsInvited: state.room.emailsInvited,
   memberUserIds: state.room.memberUserIds,
   roomId: state.room.id,
+  roomName: state.room.name,
+  roomPathname: state.room.pathname,
   userId: state.user.id,
-  userEmail: state.user.email,
+  userName: state.user.name,
 });
 
 const mapDispatchToProps = dispatch => ({
   actionAddUserIdToMembers: (roomId, userId) => dispatch(addUserIdToMembers(roomId, userId)),
   actionGetMemberSubscription: roomId => dispatch(getMemberSubscription(roomId)),
-  actionInviteMember: (email, roomId) => dispatch(inviteMember(email, roomId)),
+  actionInviteMember: (email, inviterName, roomId, roomName, roomPathname) =>
+    dispatch(inviteMember(email, inviterName, roomId, roomName, roomPathname)),
   actionLoadRoom: pathname => dispatch(loadRoom(pathname)),
   actionToggleInviteMember: () => dispatch(toggleInviteMember()),
 });
@@ -122,8 +127,8 @@ class Room extends React.Component {
   };
 
   handleInviteMember = email => {
-    const { actionInviteMember, roomId } = this.props;
-    actionInviteMember(email, roomId);
+    const { actionInviteMember, roomId, roomName, roomPathname, userName } = this.props;
+    actionInviteMember((email, userName, roomId, roomName, roomPathname));
   };
 
   loadRoom = async pathname => {

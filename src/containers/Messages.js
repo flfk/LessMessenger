@@ -54,7 +54,7 @@ const defaultProps = {};
 
 const mapStateToProps = state => ({
   isLoadingMessages: state.messages.isLoading,
-  isLoadingMembers: state.room.isLoadingMembers,
+  isLoadingMembers: state.members.isLoading,
   hasMoreMessages: state.messages.hasMoreMessages,
   lastMsgDoc: state.messages.lastMsgDoc,
   members: getMembersState(state),
@@ -111,8 +111,9 @@ class Messages extends React.Component {
   };
 
   getMsgElement = (msg, hasHeader = true) => {
-    const { members, messages, messagesFiltered } = this.props;
+    const { members, messages } = this.props;
     const sender = members.find(member => member.id === msg.senderUserId);
+    if (!sender) return null;
 
     let msgBeingRepliedTo = {};
     let senderBeingRepliedTo = {};
@@ -159,9 +160,9 @@ class Messages extends React.Component {
   };
 
   render() {
-    const { hasMoreMessages, isLoadingMessages, isLoadingMembers, messagesFiltered } = this.props;
+    const { hasMoreMessages, isLoadingMessages, messagesFiltered } = this.props;
 
-    if (isLoadingMessages || isLoadingMembers) return <Spinner />;
+    if (isLoadingMessages) return <Spinner />;
 
     const messagesContainer = _.chain(messagesFiltered)
       .sort((a, b) => a.timestamp - b.timestamp)
