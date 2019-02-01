@@ -11,7 +11,7 @@ import Fonts from '../utils/Fonts';
 import InputText from '../components/InputText';
 import Spinner from '../components/Spinner';
 import LogIn from './LogIn';
-import { getParams } from '../utils/Helpers';
+import { getParams, getTimestamp } from '../utils/Helpers';
 
 import { createRoom, inviteMember } from '../data/room/room.actions';
 import { createUser } from '../data/user/user.actions';
@@ -99,7 +99,9 @@ class SignUp extends React.Component {
     return {
       emailsInvited: [inviteeEmail],
       memberUserIds: [userId],
-      mostRecentSignInById: {},
+      mostRecentSignInById: {
+        [userId]: getTimestamp(),
+      },
       name: roomName,
       pathname: roomName.replace(' ', '-'),
     };
@@ -119,13 +121,11 @@ class SignUp extends React.Component {
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
   handleCreateRoom = async () => {
-    console.log('handling create room');
     if (this.isRoomFormValid()) {
       const { email, inviteeEmail } = this.state;
       const { actionCreateRoom } = this.props;
       const newRoom = this.getNewRoom();
       const roomAdded = await actionCreateRoom(email, newRoom);
-      console.log('SignUp roomAdded', roomAdded);
       if (inviteeEmail) this.handleInviteMember(roomAdded);
     }
   };

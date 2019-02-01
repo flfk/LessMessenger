@@ -34,7 +34,7 @@ export const getFilteredMessages = createSelector(
   (messages, room) => {
     // const tagsSelected = denormalize(tags).filter(tag => tag.isSelected);
 
-    const leastRecentSignInDate = Object.values(room.mostRecentSignInById).sort()[0] || 0;
+    const leastRecentSignInDate = Object.values(room.mostRecentSignInById).sort()[0];
     const messagesFiltered = denormalize(messages)
       // .filter(filterForSelectedTags(tagsSelected))
       .filter(
@@ -42,7 +42,6 @@ export const getFilteredMessages = createSelector(
           msg.timestamp > leastRecentSignInDate ||
           (msg.savesByUserId && msg.savesByUserId.length > 0)
       );
-    console.log('messagesFiltered are', messagesFiltered);
     return messagesFiltered;
   }
 );

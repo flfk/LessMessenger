@@ -69,7 +69,6 @@ export const createRoom = (email, room) => async dispatch => {
       roomURL: `${BASE_URL}${pathnameUpdated}`,
       type: 'signUp',
     };
-    console.log('room.actions, emailReq', emailReq);
     addDocEmailRequest(emailReq);
   } catch (error) {
     dispatch({
@@ -97,7 +96,6 @@ export const inviteMember = (
       roomURL: `${BASE_URL}${roomPathname}`,
       type: 'invite',
     };
-    console.log('room.actions, emailReq', emailReq);
     addDocEmailRequest(emailReq);
   } catch (error) {
     console.error('Error room.actions, inviteMember', error);

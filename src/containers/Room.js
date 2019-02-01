@@ -93,7 +93,6 @@ class Room extends React.Component {
     const { hasLoadedMembers } = this.state;
     const { roomId, userId } = this.props;
     if (!hasLoadedMembers && roomId && userId) {
-      console.log('userId', userId);
       this.loadMembers();
     }
 
@@ -147,7 +146,6 @@ class Room extends React.Component {
   loadRoom = async pathname => {
     const { actionLoadRoom } = this.props;
     const room = await actionLoadRoom(pathname);
-    console.log('loaded Room', room);
   };
 
   loadMembers = () => {
@@ -179,9 +177,6 @@ class Room extends React.Component {
   render() {
     const { hasLoadedMembers, hasRoomAccess, toLandingPage } = this.state;
     const { actionToggleInviteMember, error, isInvitingMember, isLoading, userId } = this.props;
-
-    console.log('hasLoadedMembers', hasLoadedMembers);
-    console.log('hasRoomAccess', hasRoomAccess);
 
     if (toLandingPage) return this.goToLandingPage();
 
