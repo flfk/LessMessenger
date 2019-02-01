@@ -11,43 +11,61 @@ import Fonts from '../utils/Fonts';
 import { getPathname } from '../utils/Helpers';
 import MessagesPanel from './MessagesPanel';
 import { getMemberSubscription } from '../data/members/members.actions';
-import { loadRoom, toggleInviteMember } from '../data/room/room.actions';
+import {
+  addUserIdToMembers,
+  inviteMember,
+  loadRoom,
+  toggleInviteMember,
+} from '../data/room/room.actions';
 import { AddMemberPopup, Wrapper } from '../components/room';
 import Spinner from '../components/Spinner';
 import SignUp from './SignUp';
 // import TagPanel from './TagPanel';
 
 const propTypes = {
+  actionAddUserIdToMembers: PropTypes.func.isRequired,
   actionGetMemberSubscription: PropTypes.func.isRequired,
+  actionInviteMember: PropTypes.func.isRequired,
   actionLoadRoom: PropTypes.func.isRequired,
   actionToggleInviteMember: PropTypes.func.isRequired,
   error: PropTypes.bool.isRequired,
   isInvitingMember: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  emailsInvited: PropTypes.arrayOf(PropTypes.string),
   memberUserIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  roomId: PropTypes.string.isRequired,
   userId: PropTypes.string,
+  userEmail: PropTypes.string,
 };
 
 const defaultProps = {
+  emailsInvited: [],
   userId: '',
+  userEmail: '',
 };
 
 const mapStateToProps = state => ({
   error: state.room.error,
   isInvitingMember: state.room.isInvitingMember,
   isLoading: state.room.isLoading,
+  emailsInvited: state.room.emailsInvited,
   memberUserIds: state.room.memberUserIds,
+  roomId: state.room.id,
   userId: state.user.id,
+  userEmail: state.user.email,
 });
 
 const mapDispatchToProps = dispatch => ({
+  actionAddUserIdToMembers: (roomId, userId) => dispatch(addUserIdToMembers(roomId, userId)),
   actionGetMemberSubscription: roomId => dispatch(getMemberSubscription(roomId)),
+  actionInviteMember: (email, roomId) => dispatch(inviteMember(email, roomId)),
   actionLoadRoom: pathname => dispatch(loadRoom(pathname)),
   actionToggleInviteMember: () => dispatch(toggleInviteMember()),
 });
 
 class Room extends React.Component {
   state = {
+    hasRoomAccess: false,
     toLandingPage: false,
     subscriptions: [],
   };
@@ -62,17 +80,28 @@ class Room extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { memberUserIds, userId } = this.props;
+    const { emailsInvited, memberUserIds, roomId, userEmail, userId } = this.props;
     if (userId && !prevProps.userId && memberUserIds) {
-      this.loadMembers(memberUserIds, userId);
+      const hasRoomAccess = memberUserIds.indexOf(userId) > -1;
+      if (hasRoomAccess) {
+        this.subscribeMembers(memberUserIds);
+      } else if (emailsInvited.indexOf(userEmail) > -1) {
+        this.subscribeMembers([...memberUserIds, userId]);
+        this.addEmailInvitedToMemberUserIds(roomId);
+      }
+      this.setState({ hasRoomAccess });
     }
-    // this.handleFaviconAlert();
   }
 
   componentWillUnmount() {
     const { subscriptions } = this.state;
     subscriptions.map(sub => sub());
   }
+
+  addEmailInvitedToMemberUserIds = () => {
+    const { actionAddUserIdToMembers, userId, roomId } = this.props;
+    actionAddUserIdToMembers(roomId, userId);
+  };
 
   goToLandingPage = () => (
     <Redirect
@@ -92,16 +121,14 @@ class Room extends React.Component {
     }).setBubble(' ');
   };
 
-  loadRoom = async pathname => {
-    const { actionLoadRoom } = this.props;
-    const room = await actionLoadRoom(pathname);
+  handleInviteMember = email => {
+    const { actionInviteMember, roomId } = this.props;
+    actionInviteMember(email, roomId);
   };
 
-  loadMembers = async (memberUserIds, userId) => {
-    const hasRoomAccess = memberUserIds.indexOf(userId) > -1;
-    if (hasRoomAccess) {
-      this.subscribeMembers(memberUserIds);
-    }
+  loadRoom = async pathname => {
+    const { actionLoadRoom } = this.props;
+    await actionLoadRoom(pathname);
   };
 
   subscribeMembers = async memberUserIds => {
@@ -118,15 +145,8 @@ class Room extends React.Component {
   };
 
   render() {
-    const { toLandingPage } = this.state;
-    const {
-      actionToggleInviteMember,
-      error,
-      isInvitingMember,
-      isLoading,
-      memberUserIds,
-      userId,
-    } = this.props;
+    const { hasRoomAccess, toLandingPage } = this.state;
+    const { actionToggleInviteMember, error, isInvitingMember, isLoading, userId } = this.props;
 
     if (toLandingPage) return this.goToLandingPage();
 
@@ -136,7 +156,6 @@ class Room extends React.Component {
 
     if (!userId) return <SignUp />;
 
-    const hasRoomAccess = memberUserIds.indexOf(userId) > -1;
     if (!hasRoomAccess)
       return (
         <Content>
@@ -148,7 +167,10 @@ class Room extends React.Component {
       );
 
     const addMemberPopup = isInvitingMember ? (
-      <AddMemberPopup handleClose={actionToggleInviteMember} />
+      <AddMemberPopup
+        handleClose={actionToggleInviteMember}
+        handleInviteMember={this.handleInviteMember}
+      />
     ) : null;
 
     return (

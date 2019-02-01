@@ -262,7 +262,7 @@ class MessagePanel extends React.Component {
     }
 
     const animations = members
-      // .filter(member => member.id !== userId)
+      .filter(member => member.id !== userId)
       .map(member => (
         <AnimationInOffice
           key={member.id}

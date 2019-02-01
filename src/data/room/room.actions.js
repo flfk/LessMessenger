@@ -1,11 +1,20 @@
 import shortid from 'shortid';
 
-import { db } from '../firebase';
+import { db, firebase } from '../firebase';
 import { getTimestamp } from '../../utils/Helpers';
 import { CREATE_ROOM, TOGGLE_INVITE_MEMBER, LOAD_ROOM } from './room.types';
 
 const COLL_ROOMS = 'rooms';
 const KEY_MOST_RECENT_SIGN_IN = 'mostRecentSignInById';
+
+export const addUserIdToMembers = (roomId, userId) => async dispatch => {
+  try {
+    const roomRef = db.collection(COLL_ROOMS).doc(roomId);
+    roomRef.update({ memberUserIds: firebase.firestore.FieldValue.arrayUnion(userId) });
+  } catch (error) {
+    console.error('Error room.actions, addUserIdToMembers', error);
+  }
+};
 
 export const toggleInviteMember = () => dispatch => {
   dispatch({
@@ -46,6 +55,15 @@ export const createRoom = room => async dispatch => {
       type: CREATE_ROOM.ERROR,
       payload: error.code,
     });
+  }
+};
+
+export const inviteMember = (email, roomId) => async dispatch => {
+  try {
+    const roomRef = db.collection(COLL_ROOMS).doc(roomId);
+    roomRef.update({ emailsInvited: firebase.firestore.FieldValue.arrayUnion(email) });
+  } catch (error) {
+    console.error('Error room.actions, inviteMember', error);
   }
 };
 

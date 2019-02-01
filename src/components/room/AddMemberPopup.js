@@ -11,6 +11,7 @@ import Popup from '../Popup';
 
 const propTypes = {
   handleClose: PropTypes.func.isRequired,
+  handleInviteMember: PropTypes.func.isRequired,
 };
 
 const defaultProps = {};
@@ -33,7 +34,10 @@ class AddMemberPopup extends React.Component {
 
   handleInvite = () => {
     if (this.isInviteeEmailValid()) {
-      console.log('XX TODO HANDLE INVITE');
+      const { inviteeEmail } = this.state;
+      const { handleClose, handleInviteMember } = this.props;
+      handleInviteMember(inviteeEmail);
+      handleClose();
     }
   };
 
