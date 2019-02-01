@@ -93,7 +93,7 @@ class NavBar extends React.Component {
     ) : null;
 
     const addMemberBtn =
-      members && members.length > 0 ? (
+      userId && members && members.length > 0 ? (
         <li>
           <Btn.Tertiary onClick={actionToggleInviteMember}>
             <AddMemberIcon />
