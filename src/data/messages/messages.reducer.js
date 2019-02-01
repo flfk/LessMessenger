@@ -21,7 +21,7 @@ const initialState = {
 const reducerMessages = (state = initialState, action) => {
   switch (action.type) {
     case ADD_MESSAGE.SUCCESS:
-      if (state.byId[action.payload.id]) return state;
+      if (state.byId && state.byId[action.payload.id]) return state;
       return {
         ...state,
         allIds: [...state.allIds, action.payload.id],

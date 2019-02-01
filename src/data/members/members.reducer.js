@@ -12,7 +12,7 @@ const reducerMembers = (state = initialState, action) => {
   switch (action.type) {
     case ADD_MEMBER.SUCCESS:
       // snapshots on individual documents, hence all changes result in new document added
-      if (state.byId[action.payload.id])
+      if (state.byId && state.byId[action.payload.id])
         return {
           ...state,
           byId: {

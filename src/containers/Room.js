@@ -74,6 +74,7 @@ const mapDispatchToProps = dispatch => ({
 class Room extends React.Component {
   state = {
     hasRoomAccess: false,
+    hasLoadedMembers: false,
     toLandingPage: false,
     subscriptions: [],
   };
@@ -88,17 +89,26 @@ class Room extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { emailsInvited, memberUserIds, roomId, userEmail, userId } = this.props;
-    if (userId && !prevProps.userId && memberUserIds) {
-      const hasRoomAccess = memberUserIds.indexOf(userId) > -1;
-      if (hasRoomAccess) {
-        this.subscribeMembers(memberUserIds);
-      } else if (emailsInvited.indexOf(userEmail) > -1) {
-        this.subscribeMembers([...memberUserIds, userId]);
-        this.addEmailInvitedToMemberUserIds(roomId);
-      }
-      this.setState({ hasRoomAccess });
+    // if the room has loaded + there is a userID + has not loaded members
+    const { hasLoadedMembers } = this.state;
+    const { roomId, userId } = this.props;
+    if (!hasLoadedMembers && roomId && userId) {
+      console.log('userId', userId);
+      this.loadMembers();
     }
+
+    // const { emailsInvited, memberUserIds, roomId, userEmail, userId } = this.props;
+    // if (userId && !prevProps.userId && memberUserIds) {
+    //   console.log('componentDidUpdate with user', memberUserIds, userId, emailsInvited, userEmail);
+    //   if (memberUserIds.indexOf(userId) > -1) {
+    //     this.subscribeMembers(memberUserIds);
+    //     this.setState({ hasRoomAccess: true });
+    //   } else if (emailsInvited.indexOf(userEmail) > -1) {
+    //     this.subscribeMembers([...memberUserIds, userId]);
+    //     this.addEmailInvitedToMemberUserIds(roomId);
+    //     this.setState({ hasRoomAccess: true });
+    //   }
+    // }
   }
 
   componentWillUnmount() {
@@ -136,7 +146,21 @@ class Room extends React.Component {
 
   loadRoom = async pathname => {
     const { actionLoadRoom } = this.props;
-    await actionLoadRoom(pathname);
+    const room = await actionLoadRoom(pathname);
+    console.log('loaded Room', room);
+  };
+
+  loadMembers = () => {
+    const { emailsInvited, memberUserIds, roomId, userEmail, userId } = this.props;
+    if (memberUserIds.indexOf(userId) > -1) {
+      this.subscribeMembers(memberUserIds);
+      this.setState({ hasRoomAccess: true });
+    } else if (emailsInvited.indexOf(userEmail) > -1) {
+      this.subscribeMembers([...memberUserIds, userId]);
+      this.addEmailInvitedToMemberUserIds(roomId);
+      this.setState({ hasRoomAccess: true });
+    }
+    this.setState({ hasLoadedMembers: true });
   };
 
   subscribeMembers = async memberUserIds => {
@@ -153,18 +177,21 @@ class Room extends React.Component {
   };
 
   render() {
-    const { hasRoomAccess, toLandingPage } = this.state;
+    const { hasLoadedMembers, hasRoomAccess, toLandingPage } = this.state;
     const { actionToggleInviteMember, error, isInvitingMember, isLoading, userId } = this.props;
+
+    console.log('hasLoadedMembers', hasLoadedMembers);
+    console.log('hasRoomAccess', hasRoomAccess);
 
     if (toLandingPage) return this.goToLandingPage();
 
     if (error) return <ErrorScreen />;
 
-    if (isLoading) return <Spinner />;
+    if (isLoading || !hasLoadedMembers) return <Spinner />;
 
     if (!userId) return <SignUp />;
 
-    if (!hasRoomAccess)
+    if (hasLoadedMembers && !hasRoomAccess)
       return (
         <Content>
           <Fonts.H2 isCentered>

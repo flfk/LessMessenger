@@ -9,7 +9,7 @@ const initialState = {
 const reducerTags = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TAG.SUCCESS:
-      if (state.byId[action.payload.id]) return state;
+      if (state.byId && state.byId[action.payload.id]) return state;
       return {
         ...state,
         allIds: [...state.allIds, action.payload.id],
