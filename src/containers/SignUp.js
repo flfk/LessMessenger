@@ -190,7 +190,7 @@ class SignUp extends React.Component {
 
   isInviteeEmailValid = () => {
     const { inviteeEmail } = this.state;
-    if (!validator.isEmail(inviteeEmail)) {
+    if (inviteeEmail && !validator.isEmail(inviteeEmail)) {
       this.setState({ inviteeEmailErrMsg: 'Valid Email address required.' });
       return false;
     }

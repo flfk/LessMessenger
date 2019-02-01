@@ -10,18 +10,33 @@ import {
   UPDATE_USER,
 } from './user.types';
 
+const COLL_AVATARS = 'avatars';
 const COLL_USERS = 'users';
 
 const DEFAULT_AVATAR_ID = 'gVepxC2MyKG1hMZmGXJe';
 
+const getAvatarIds = async () => {
+  const avatarIds = [];
+  try {
+    const avatarsRef = db.collection(COLL_AVATARS);
+    const snapshot = await avatarsRef.get();
+    snapshot.forEach(snap => avatarIds.push(snap.id));
+  } catch (error) {
+    console.log('Actions, user, getAvatarIds', error);
+  }
+  return avatarIds;
+};
+
 export const addUserDoc = async (email, name, userId) => {
   try {
     // guess timezone
+    const avatarIds = await getAvatarIds();
+    const randomAvatarId = avatarIds[Math.floor(Math.random() * avatarIds.length)];
     const timezone = moment.tz.guess();
     await db
       .collection(COLL_USERS)
       .doc(userId)
-      .set({ avatarId: DEFAULT_AVATAR_ID, email, timezone, name });
+      .set({ avatarId: randomAvatarId || DEFAULT_AVATAR_ID, email, timezone, name });
   } catch (error) {
     console.log('Actions, user, addUserDoc', error);
   }

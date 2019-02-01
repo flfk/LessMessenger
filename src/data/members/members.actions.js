@@ -28,7 +28,6 @@ const getAvatar = async avatarId => {
 // SUBSCRIPTIONS
 const handleMemberSnapshot = dispatch => async doc => {
   const member = doc.data();
-  console.log('adding member', member);
   const { id } = doc;
   member.id = id;
   const avatar = await getAvatar(member.avatarId);

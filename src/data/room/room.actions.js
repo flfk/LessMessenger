@@ -35,11 +35,9 @@ export const toggleInviteMember = () => dispatch => {
 
 const isPathnameTaken = async pathname => {
   try {
-    const roomRef = await db.collection(COLL_ROOMS).where('pathname', '==', pathname);
-    const snapshot = roomRef.get();
-    console.log('isPathnameTaken snapshot', snapshot);
+    const roomRef = db.collection(COLL_ROOMS).where('pathname', '==', pathname);
+    const snapshot = await roomRef.get();
     if (snapshot.empty) {
-      console.log('roompathname is not taken');
       return false;
     }
   } catch (error) {
