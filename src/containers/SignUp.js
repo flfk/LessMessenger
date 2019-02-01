@@ -307,7 +307,7 @@ class SignUp extends React.Component {
     return (
       <Content>
         <Content.Spacing16px />
-        <Fonts.H2 isCentered>Just a few quick things to Sign Up</Fonts.H2>
+        <Fonts.H2 isCentered>Just a few quick things to sign up</Fonts.H2>
         {emailDiv}
         <InputText
           errMsg={nameErrMsg}

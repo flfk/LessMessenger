@@ -92,7 +92,9 @@ class Room extends React.Component {
     // if the room has loaded + there is a userID + has not loaded members
     const { hasLoadedMembers } = this.state;
     const { roomId, userId } = this.props;
+    console.log('roomId userId', roomId, userId);
     if (!hasLoadedMembers && roomId && userId) {
+      console.log('loading members');
       this.loadMembers();
     }
 
@@ -178,13 +180,16 @@ class Room extends React.Component {
     const { hasLoadedMembers, hasRoomAccess, toLandingPage } = this.state;
     const { actionToggleInviteMember, error, isInvitingMember, isLoading, userId } = this.props;
 
+    console.log('hasLoadedMembers', hasLoadedMembers);
+    console.log('isLoading', isLoading);
+
     if (toLandingPage) return this.goToLandingPage();
 
     if (error) return <ErrorScreen />;
 
-    if (isLoading || !hasLoadedMembers) return <Spinner />;
-
     if (!userId) return <SignUp />;
+
+    if (isLoading || !hasLoadedMembers) return <Spinner />;
 
     if (hasLoadedMembers && !hasRoomAccess)
       return (
