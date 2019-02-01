@@ -34,7 +34,7 @@ exports.emailRequests = functions.firestore.document('emailRequests/{email}').on
     type = 'signUp';
     msg = {
       to: emailRequest.email,
-      from: 'The.Lessmessenger@gmail.com',
+      from: 'TheLessMessenger@gmail.com',
       templateId: 'd-af3c425d79864ad581c317d523b74de1',
       dynamic_template_data: {
         roomName: emailRequest.roomName,
@@ -47,7 +47,7 @@ exports.emailRequests = functions.firestore.document('emailRequests/{email}').on
     type = 'invite';
     msg = {
       to: emailRequest.email,
-      from: 'The.Lessmessenger@gmail.com',
+      from: 'TheLessMessenger@gmail.com',
       templateId: 'd-35152d996b7a43d1889fff72a9ddf14d',
       dynamic_template_data: {
         inviterName: emailRequest.inviterName,

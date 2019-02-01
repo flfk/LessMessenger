@@ -8,7 +8,9 @@ const COLL_EMAILS = 'emailRequests';
 const COLL_ROOMS = 'rooms';
 const KEY_MOST_RECENT_SIGN_IN = 'mostRecentSignInById';
 
-export const addDocEmailRequest = async emailReq => dispatch => {
+const BASE_URL = 'https://lessmessenger.com/';
+
+export const addDocEmailRequest = async emailReq => {
   try {
     db.collection(COLL_EMAILS).add(emailReq);
   } catch (error) {
@@ -35,7 +37,9 @@ const isPathnameTaken = async pathname => {
   try {
     const roomRef = await db.collection(COLL_ROOMS).where('pathname', '==', pathname);
     const snapshot = roomRef.get();
+    console.log('isPathnameTaken snapshot', snapshot);
     if (snapshot.empty) {
+      console.log('roompathname is not taken');
       return false;
     }
   } catch (error) {
@@ -44,7 +48,9 @@ const isPathnameTaken = async pathname => {
   return true;
 };
 
-export const createRoom = room => async dispatch => {
+export const createRoom = (email, room) => async dispatch => {
+  let roomUpdated = {};
+  let roomAdded = {};
   dispatch({
     type: CREATE_ROOM.PENDING,
   });
@@ -53,18 +59,27 @@ export const createRoom = room => async dispatch => {
     const { pathname } = room;
     const pathnameIsTaken = await isPathnameTaken(pathname);
     const pathnameUpdated = pathnameIsTaken ? `${pathname}-${shortid.generate()}` : pathname;
-    const roomUpdated = { ...room, pathname: pathnameUpdated };
-    const roomRef = await db.collection(COLL_ROOMS).add(roomUpdated);
+    roomUpdated = { ...room, pathname: pathnameUpdated };
+    roomAdded = await db.collection(COLL_ROOMS).add(roomUpdated);
     dispatch({
       type: CREATE_ROOM.SUCCESS,
-      payload: { ...roomUpdated, id: roomRef.id },
+      payload: { ...roomUpdated, id: roomAdded.id },
     });
+    const emailReq = {
+      email,
+      roomName: room.name,
+      roomURL: `${BASE_URL}${pathnameUpdated}`,
+      type: 'signUp',
+    };
+    console.log('room.actions, emailReq', emailReq);
+    addDocEmailRequest(emailReq);
   } catch (error) {
     dispatch({
       type: CREATE_ROOM.ERROR,
       payload: error.code,
     });
   }
+  return { ...roomUpdated, id: roomAdded.id };
 };
 
 export const inviteMember = (
@@ -78,12 +93,13 @@ export const inviteMember = (
     const roomRef = db.collection(COLL_ROOMS).doc(roomId);
     roomRef.update({ emailsInvited: firebase.firestore.FieldValue.arrayUnion(email) });
     const emailReq = {
-      email: 'invite',
+      email,
       inviterName,
       roomName,
-      roomURL: roomPathname,
+      roomURL: `${BASE_URL}${roomPathname}`,
       type: 'invite',
     };
+    console.log('room.actions, emailReq', emailReq);
     addDocEmailRequest(emailReq);
   } catch (error) {
     console.error('Error room.actions, inviteMember', error);

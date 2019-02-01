@@ -13,16 +13,18 @@ import Spinner from '../components/Spinner';
 import LogIn from './LogIn';
 import { getParams } from '../utils/Helpers';
 
-import { createRoom } from '../data/room/room.actions';
+import { createRoom, inviteMember } from '../data/room/room.actions';
 import { createUser } from '../data/user/user.actions';
 
 const propTypes = {
   actionCreateRoom: PropTypes.func.isRequired,
+  actionInviteMember: PropTypes.func.isRequired,
   actionSignUp: PropTypes.func.isRequired,
   errorCode: PropTypes.string,
   isPending: PropTypes.bool,
   newRoomPathname: PropTypes.string,
   userId: PropTypes.string,
+  userName: PropTypes.string,
 };
 
 const defaultProps = {
@@ -30,6 +32,7 @@ const defaultProps = {
   isPending: false,
   newRoomPathname: '',
   userId: '',
+  userName: '',
 };
 
 const mapStateToProps = state => ({
@@ -37,10 +40,13 @@ const mapStateToProps = state => ({
   isPending: state.user.isPending,
   newRoomPathname: state.room.pathname,
   userId: state.user.id,
+  userName: state.user.name,
 });
 
 const mapDispatchToProps = dispatch => ({
-  actionCreateRoom: room => dispatch(createRoom(room)),
+  actionCreateRoom: (email, room) => dispatch(createRoom(email, room)),
+  actionInviteMember: (email, inviterName, roomId, roomName, roomPathname) =>
+    dispatch(inviteMember(email, inviterName, roomId, roomName, roomPathname)),
   actionSignUp: (email, name, password) => dispatch(createUser(email, name, password)),
 });
 
@@ -68,7 +74,6 @@ class SignUp extends React.Component {
 
   componentDidMount() {
     // Check if email passed because sent from landing page
-
     if (this.props.location) {
       const { email } = this.props.location.state;
       if (email) {
@@ -113,12 +118,15 @@ class SignUp extends React.Component {
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
-  handleCreateRoom = () => {
+  handleCreateRoom = async () => {
     console.log('handling create room');
     if (this.isRoomFormValid()) {
+      const { email, inviteeEmail } = this.state;
       const { actionCreateRoom } = this.props;
       const newRoom = this.getNewRoom();
-      actionCreateRoom(newRoom);
+      const roomAdded = await actionCreateRoom(email, newRoom);
+      console.log('SignUp roomAdded', roomAdded);
+      if (inviteeEmail) this.handleInviteMember(roomAdded);
     }
   };
 
@@ -138,6 +146,12 @@ class SignUp extends React.Component {
       // mixpanel.track('Signed Up');
     }
     this.setState({ isLoading: false });
+  };
+
+  handleInviteMember = room => {
+    const { inviteeEmail } = this.state;
+    const { actionInviteMember, userName } = this.props;
+    actionInviteMember(inviteeEmail, userName, room.id, room.name, room.pathname);
   };
 
   goToRoom = () => {

@@ -36,14 +36,16 @@ const propTypes = {
   roomId: PropTypes.string.isRequired,
   roomName: PropTypes.string.isRequired,
   roomPathname: PropTypes.string.isRequired,
+  userEmail: PropTypes.string,
   userId: PropTypes.string,
   userName: PropTypes.string,
 };
 
 const defaultProps = {
   emailsInvited: [],
-  userId: '',
   userEmail: '',
+  userId: '',
+  userName: '',
 };
 
 const mapStateToProps = state => ({
@@ -55,6 +57,7 @@ const mapStateToProps = state => ({
   roomId: state.room.id,
   roomName: state.room.name,
   roomPathname: state.room.pathname,
+  userEmail: state.user.email,
   userId: state.user.id,
   userName: state.user.name,
 });
@@ -128,7 +131,7 @@ class Room extends React.Component {
 
   handleInviteMember = email => {
     const { actionInviteMember, roomId, roomName, roomPathname, userName } = this.props;
-    actionInviteMember((email, userName, roomId, roomName, roomPathname));
+    actionInviteMember(email, userName, roomId, roomName, roomPathname);
   };
 
   loadRoom = async pathname => {
