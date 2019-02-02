@@ -42,6 +42,8 @@ export const getFilteredMessages = createSelector(
           msg.timestamp > leastRecentSignInDate ||
           (msg.savesByUserId && msg.savesByUserId.length > 0)
       );
+
+    console.log('messages.selectors messagesFiltered', messagesFiltered);
     return messagesFiltered;
   }
 );

@@ -162,7 +162,7 @@ class Messages extends React.Component {
   render() {
     const { hasMoreMessages, isLoadingMessages, messagesFiltered } = this.props;
 
-    if (isLoadingMessages) return <Spinner />;
+    // if (isLoadingMessages) return <Spinner />;
 
     const messagesContainer = _.chain(messagesFiltered)
       .sort((a, b) => a.timestamp - b.timestamp)
@@ -205,6 +205,7 @@ class Messages extends React.Component {
             useWindow={false}
           >
             {messagesContainer}
+            <div style={{ height: '500px', width: '100%' }} />
             <div
               style={{ float: 'left', clear: 'both' }}
               ref={el => {
