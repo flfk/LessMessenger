@@ -81,8 +81,7 @@ class SignUp extends React.Component {
         this.isEmailValid(email);
       }
     }
-    // mixpanel.track('Visited Sign Up Page');
-    // this.setData();
+    mixpanel.track('Visited Sign Up Page');
   }
 
   getErrorText = errorCode => {
@@ -126,7 +125,11 @@ class SignUp extends React.Component {
       const { actionCreateRoom } = this.props;
       const newRoom = this.getNewRoom();
       const roomAdded = await actionCreateRoom(email, newRoom);
-      if (inviteeEmail) this.handleInviteMember(roomAdded);
+      mixpanel.track('Created Room', { roomId: roomAdded.id });
+      if (inviteeEmail) {
+        this.handleInviteMember(roomAdded);
+        mixpanel.track('Invited Teammate', { roomId: roomAdded.id });
+      }
     }
   };
 
@@ -138,12 +141,12 @@ class SignUp extends React.Component {
       const { email, name, password } = this.state;
       const { actionSignUp } = this.props;
       actionSignUp(email, name, password);
-      // mixpanel.alias(email);
-      // mixpanel.people.set({
-      //   $name: usernameFormatted,
-      // });
-      // mixpanel.people.set({ username: usernameFormatted });
-      // mixpanel.track('Signed Up');
+      mixpanel.alias(email);
+      mixpanel.people.set({
+        $name: name,
+        email,
+      });
+      mixpanel.track('Signed Up');
     }
     this.setState({ isLoading: false });
   };

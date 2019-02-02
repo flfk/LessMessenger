@@ -1,4 +1,4 @@
-// import mixpanel from 'mixpanel-browser';
+import mixpanel from 'mixpanel-browser';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -97,19 +97,7 @@ class Room extends React.Component {
       console.log('loading members');
       this.loadMembers();
     }
-
-    // const { emailsInvited, memberUserIds, roomId, userEmail, userId } = this.props;
-    // if (userId && !prevProps.userId && memberUserIds) {
-    //   console.log('componentDidUpdate with user', memberUserIds, userId, emailsInvited, userEmail);
-    //   if (memberUserIds.indexOf(userId) > -1) {
-    //     this.subscribeMembers(memberUserIds);
-    //     this.setState({ hasRoomAccess: true });
-    //   } else if (emailsInvited.indexOf(userEmail) > -1) {
-    //     this.subscribeMembers([...memberUserIds, userId]);
-    //     this.addEmailInvitedToMemberUserIds(roomId);
-    //     this.setState({ hasRoomAccess: true });
-    //   }
-    // }
+    mixpanel.track('Visited Room');
   }
 
   componentWillUnmount() {
@@ -143,6 +131,7 @@ class Room extends React.Component {
   handleInviteMember = email => {
     const { actionInviteMember, roomId, roomName, roomPathname, userName } = this.props;
     actionInviteMember(email, userName, roomId, roomName, roomPathname);
+    mixpanel.track('Invited Teammate', { roomId });
   };
 
   loadRoom = async pathname => {

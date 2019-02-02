@@ -1,16 +1,25 @@
 import React from 'react';
-import { BounceLoader } from 'react-spinners';
+import Lottie from 'react-lottie';
 
+import AnimationLoading from '../assets/AnimationLoading';
 import Content from './Content';
-import Colors from '../utils/Colors';
 
 const Spinner = () => {
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: AnimationLoading,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice',
+    },
+  };
+
   return (
     <div>
       <Content.Spacing />
       <Content.Spacing />
       <Content.Row justifyCenter>
-        <BounceLoader sizeUnit="px" size={24} color={Colors.primary.red} />
+        <Lottie options={defaultOptions} height={48} width={48} />
       </Content.Row>
       <Content.Spacing />
       <Content.Spacing />

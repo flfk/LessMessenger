@@ -1,3 +1,4 @@
+import mixpanel from 'mixpanel-browser';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Dropzone from 'react-dropzone';
@@ -156,6 +157,8 @@ class MessagePanel extends React.Component {
       actionSendMessage(newMsg, tags);
     }
     if (msgIdBeingRepliedTo) actionCancelReply();
+
+    mixpanel.track('Sent Message', { roomId });
   };
 
   // To allows form to be submitted using enter key

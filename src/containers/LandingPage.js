@@ -1,3 +1,4 @@
+import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import styled from 'styled-components';
@@ -30,12 +31,17 @@ class LandingPage extends React.Component {
     toSignUp: false,
   };
 
+  componentDidMount() {
+    mixpanel.track('Visited Landing Page');
+  }
+
   handleChangeEmail = event => this.setState({ email: event.target.value });
 
   handleStart = () => this.setState({ toSignUp: true });
 
   goToSignUp = () => {
     const { email } = this.state;
+    mixpanel.track('Clicked Start Trial', { email });
     return (
       <Redirect
         push
