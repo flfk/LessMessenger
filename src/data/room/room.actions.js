@@ -2,7 +2,7 @@ import shortid from 'shortid';
 
 import { db, firebase, oldRealTimeDb } from '../firebase';
 import { getTimestamp } from '../../utils/Helpers';
-import { CREATE_ROOM, TOGGLE_INVITE_MEMBER, LOAD_ROOM } from './room.types';
+import { CREATE_ROOM, TOGGLE_INVITE_MEMBER, LOAD_ROOM, UPDATE_ROOM } from './room.types';
 
 const COLL_EMAILS = 'emailRequests';
 const COLL_ROOMS = 'rooms';
@@ -155,6 +155,16 @@ export const toggleInviteMember = () => dispatch => {
   });
 };
 
+export const updateDocRoom = async (id, fields) => {
+  try {
+    const roomRef = db.collection(COLL_ROOMS).doc(id);
+    console.log('room.actions, updateDocUser, fields', fields);
+    await roomRef.update({ ...fields });
+  } catch (error) {
+    console.log('Error room.actions, updateDocRoom', error);
+  }
+};
+
 export const updateMostRecentSignIn = async (roomId, userId) => {
   try {
     if (roomId) {
@@ -181,4 +191,60 @@ export const updateLastActive = async (roomId, userId) => {
   } catch (error) {
     console.log('Error, room.actions, updateMostRecentSignIn', error);
   }
+};
+
+// SUBSCRIPTIONS
+const handleRoomSnapshot = dispatch => async snapshot => {
+  if (snapshot.empty) {
+    dispatch({
+      type: LOAD_ROOM.ERROR,
+    });
+  }
+  snapshot.docChanges().forEach(change => {
+    if (change.type === 'added') {
+      const { doc } = change;
+      const room = doc.data();
+      const { id } = doc;
+      room.id = id;
+      console.log('room added', room);
+      dispatch({
+        type: LOAD_ROOM.SUCCESS,
+        payload: room,
+      });
+    }
+    if (change.type === 'modified') {
+      // will be modified when the timestamp updates
+
+      const { doc } = change;
+      const room = doc.data();
+      const { id } = doc;
+      room.id = id;
+      console.log('room updated', room);
+      dispatch({
+        type: UPDATE_ROOM.SUCCESS,
+        payload: room,
+      });
+    }
+  });
+};
+
+export const getRoomSubscription = pathname => async dispatch => {
+  dispatch({
+    type: LOAD_ROOM.PENDING,
+  });
+  let subscription = null;
+  try {
+    // const roomRef = db.collection(COLL_ROOMS).doc(roomId);
+    const roomRef = db
+      .collection(COLL_ROOMS)
+      .where('pathname', '==', pathname)
+      .limit(1);
+    subscription = roomRef.onSnapshot(handleRoomSnapshot(dispatch));
+    dispatch({
+      type: LOAD_ROOM.SUCCESS,
+    });
+  } catch (error) {
+    console.log('room.actions, getRoomSubscription', error);
+  }
+  return subscription;
 };

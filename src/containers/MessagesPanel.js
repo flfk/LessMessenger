@@ -15,31 +15,20 @@ import { Text } from '../components/message';
 import { updateMostRecentSignIn } from '../data/room/room.actions';
 import { getRoomState } from '../data/room/room.selectors';
 import { toggleIsTyping } from '../data/user/user.actions';
-// import { getTagsState, getTagsSelectedState } from '../data/tags/tags.selectors';
-
-// import { getSelectorAll } from '../utils/Helpers';
 
 const propTypes = {
   actionCancelReply: PropTypes.func.isRequired,
-  // actionCreateTag: PropTypes.func.isRequired,
   actionSendMessage: PropTypes.func.isRequired,
   actionToggleIsTyping: PropTypes.func.isRequired,
   isTyping: PropTypes.bool.isRequired,
   msgIdBeingRepliedTo: PropTypes.string.isRequired,
   roomId: PropTypes.string.isRequired,
+  roomMembers: PropTypes.shape({
+    isOnline: PropTypes.bool.isRequired,
+    isTyping: PropTypes.bool.isRequired,
+    mostRecentSignOut: PropTypes.number.isRequired,
+  }).isRequired,
   userId: PropTypes.string.isRequired,
-  // tags: PropTypes.arrayOf(
-  //   PropTypes.shape({
-  //     name: PropTypes.string.isRequired,
-  //     isSelected: PropTypes.bool.isRequired,
-  //   })
-  // ).isRequired,
-  // tagsSelected: PropTypes.arrayOf(
-  //   PropTypes.shape({
-  //     name: PropTypes.string.isRequired,
-  //     isSelected: PropTypes.bool.isRequired,
-  //   })
-  // ).isRequired,
 };
 
 const defaultProps = {};
@@ -50,9 +39,8 @@ const mapStateToProps = state => ({
   members: getMembersState(state),
   msgIdBeingRepliedTo: state.room.msgIdBeingRepliedTo,
   roomId: getRoomState(state).id,
+  roomMembers: state.room.members,
   userId: state.user.id,
-  // tags: getTagsState(state),
-  // tagsSelected: getTagsSelectedState(state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -66,7 +54,6 @@ class MessagePanel extends React.Component {
   state = {
     msgInput: '',
     files: [],
-    isTyping: false,
     typingTimeout: null,
   };
 
@@ -245,7 +232,7 @@ class MessagePanel extends React.Component {
 
   render() {
     const { files, msgInput } = this.state;
-    const { isTyping, members, msgIdBeingRepliedTo, roomId, userId } = this.props;
+    const { members, msgIdBeingRepliedTo, roomId, roomMembers, userId } = this.props;
 
     const thumbnails = files.map(file => {
       if (file.type.startsWith('image/')) {
@@ -272,11 +259,7 @@ class MessagePanel extends React.Component {
           key={member.id}
           avatar={member.avatar}
           isOnline={member.isOnline}
-          isTyping={
-            member.isTypingByRoomId && member.isTypingByRoomId[roomId]
-              ? member.isTypingByRoomId[roomId]
-              : false
-          }
+          isTyping={roomMembers[member.id].isTyping}
         />
       ));
 

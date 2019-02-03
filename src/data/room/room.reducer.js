@@ -1,4 +1,4 @@
-import { CREATE_ROOM, LOAD_ROOM, TOGGLE_INVITE_MEMBER } from './room.types';
+import { CREATE_ROOM, LOAD_ROOM, TOGGLE_INVITE_MEMBER, UPDATE_ROOM } from './room.types';
 import { CANCEL_REPLY, REPLY_TO_MESSAGE } from '../messages/messages.types';
 import { LOAD_MEMBERS } from '../members/members.types';
 
@@ -34,6 +34,8 @@ const reducerRoom = (state = initialState, action) => {
       return { ...state, error: true, isLoading: false };
     case REPLY_TO_MESSAGE.SUCCESS:
       return { ...state, msgIdBeingRepliedTo: action.payload };
+    case UPDATE_ROOM.SUCCESS:
+      return { ...state, ...action.payload };
     default:
       return state;
   }

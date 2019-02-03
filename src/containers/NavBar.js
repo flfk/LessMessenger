@@ -18,6 +18,11 @@ const propTypes = {
   actionGetLoggedInUser: PropTypes.func.isRequired,
   actionToggleInviteMember: PropTypes.func.isRequired,
   actionSignOut: PropTypes.func.isRequired,
+  roomMembers: PropTypes.shape({
+    isOnline: PropTypes.bool.isRequired,
+    isTyping: PropTypes.bool.isRequired,
+    mostRecentSignOut: PropTypes.number.isRequired,
+  }).isRequired,
   roomName: PropTypes.string,
   userId: PropTypes.string,
 };

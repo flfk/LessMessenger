@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 import { auth, db, oldRealTimeDb } from '../firebase';
+import { updateDocRoom } from '../room/room.actions';
 import {
   CREATE_USER,
   GET_LOGGED_IN_USER,
@@ -98,22 +99,21 @@ export const getLoggedInUser = () => async dispatch => {
   }
 };
 
-const updateDocUser = async (id, fields) => {
-  try {
-    const userRef = db.collection(COLL_USERS).doc(id);
-    console.log('user.actions, updateDocUser, fields', fields);
-    await userRef.update({ ...fields });
-  } catch (error) {
-    console.log('Error user.actions, updateDocUser', error);
-  }
-};
+// const updateDocUser = async (id, fields) => {
+//   try {
+//     const userRef = db.collection(COLL_USERS).doc(id);
+//     await userRef.update({ ...fields });
+//   } catch (error) {
+//     console.log('Error user.actions, updateDocUser', error);
+//   }
+// };
 
 export const toggleIsTyping = (id, isTyping, roomId) => dispatch => {
   dispatch({
     type: TOGGLE_TYPING.SUCCESS,
     payload: isTyping,
   });
-  updateDocUser(id, { [`isTypingByRoomId.${roomId}`]: isTyping });
+  updateDocRoom(roomId, { [`members.${id}.isTyping`]: isTyping });
 };
 
 export const logIn = (email, password) => async dispatch => {

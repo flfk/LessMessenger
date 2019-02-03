@@ -14,6 +14,7 @@ import { getMemberSubscription } from '../data/members/members.actions';
 import {
   addUserIdToMembers,
   changeUserStatusToOnline,
+  getRoomSubscription,
   inviteMember,
   loadRoom,
   toggleInviteMember,
@@ -28,8 +29,9 @@ const propTypes = {
   actionAddUserIdToMembers: PropTypes.func.isRequired,
   actionChangeUserStatusToOnline: PropTypes.func.isRequired,
   actionGetMemberSubscription: PropTypes.func.isRequired,
+  actionGetRoomSubscription: PropTypes.func.isRequired,
   actionInviteMember: PropTypes.func.isRequired,
-  actionLoadRoom: PropTypes.func.isRequired,
+  // actionLoadRoom: PropTypes.func.isRequired,
   actionToggleInviteMember: PropTypes.func.isRequired,
   error: PropTypes.bool.isRequired,
   isInvitingMember: PropTypes.bool.isRequired,
@@ -70,9 +72,10 @@ const mapDispatchToProps = dispatch => ({
   actionChangeUserStatusToOnline: (roomId, userId) =>
     dispatch(changeUserStatusToOnline(roomId, userId)),
   actionGetMemberSubscription: roomId => dispatch(getMemberSubscription(roomId)),
+  actionGetRoomSubscription: pathname => dispatch(getRoomSubscription(pathname)),
   actionInviteMember: (email, inviterName, roomId, roomName, roomPathname) =>
     dispatch(inviteMember(email, inviterName, roomId, roomName, roomPathname)),
-  actionLoadRoom: pathname => dispatch(loadRoom(pathname)),
+  // actionLoadRoom: pathname => dispatch(loadRoom(pathname)),
   actionToggleInviteMember: () => dispatch(toggleInviteMember()),
 });
 
@@ -97,7 +100,7 @@ class Room extends React.Component {
     // if the room has loaded + there is a userID + has not loaded members
     const { hasLoadedMembers } = this.state;
     const { actionChangeUserStatusToOnline, roomId, userId } = this.props;
-    console.log('roomId userId', roomId, userId);
+    // console.log('roomId userId', roomId, userId);
     if (!hasLoadedMembers && roomId && userId) {
       console.log('loading members');
       this.loadMembers();
@@ -140,9 +143,10 @@ class Room extends React.Component {
   };
 
   loadRoom = async pathname => {
-    const { actionLoadRoom } = this.props;
-    const room = await actionLoadRoom(pathname);
-    if (room) mixpanel.track('Visited Room', { name: room.name });
+    // const { actionLoadRoom } = this.props;
+    // const room = await actionLoadRoom(pathname);
+    await this.subscribeRoom(pathname);
+    // if (room) mixpanel.track('Visited Room', { name: room.name });
   };
 
   loadMembers = () => {
@@ -156,6 +160,14 @@ class Room extends React.Component {
       this.setState({ hasRoomAccess: true });
     }
     this.setState({ hasLoadedMembers: true });
+  };
+
+  subscribeRoom = async pathname => {
+    const { subscriptions } = this.state;
+    const { actionGetRoomSubscription } = this.props;
+    const newSub = await actionGetRoomSubscription(pathname);
+    const subscriptionsUpdated = [...subscriptions, newSub];
+    this.setState({ subscriptions: subscriptionsUpdated });
   };
 
   subscribeMembers = async memberUserIds => {
@@ -181,8 +193,6 @@ class Room extends React.Component {
       memberUserIds,
       userId,
     } = this.props;
-
-    console.log('memberUserIds', memberUserIds);
 
     if (toLandingPage) return this.goToLandingPage();
 
