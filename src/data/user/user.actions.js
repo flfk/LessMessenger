@@ -118,9 +118,14 @@ export const getLoggedInUser = () => async dispatch => {
   }
 };
 
-export const updateDocUser = async (id, fields) => {
-  const userRef = db.collection(COLL_USERS).doc(id);
-  await userRef.update({ ...fields });
+const updateDocUser = async (id, fields) => {
+  try {
+    const userRef = db.collection(COLL_USERS).doc(id);
+    console.log('user.actions, updateDocUser, fields', fields);
+    await userRef.update({ ...fields });
+  } catch (error) {
+    console.log('Error user.actions, updateDocUser', error);
+  }
 };
 
 export const toggleIsTyping = (id, isTyping, roomId) => dispatch => {
@@ -135,7 +140,6 @@ export const logIn = (email, password) => async dispatch => {
   try {
     const data = await auth.signInWithEmailAndPassword(email, password);
     const userId = data.user.uid;
-    await updateDocUser({});
     const userDoc = await fetchDocUser(userId);
     dispatch({
       type: LOGIN_USER.SUCCESS,
@@ -148,32 +152,6 @@ export const logIn = (email, password) => async dispatch => {
     });
   }
 };
-
-// export const logInWithFacebook = () => async dispatch => {
-//   dispatch({
-//     type: LOGIN_USER_FACEBOOK.PENDING,
-//   });
-//   const provider = new auth.FacebookAuthProvider();
-//   await auth().signInWithPopup(provider);
-
-//   // fetchUserFacebook().then(response => {
-//   //   const { token, name } = response;
-//   //   signInWithCredential(token)
-//   //     .then(user => {
-//   //       dispatch({
-//   //         type: LOGIN_USER_FACEBOOK.SUCCESS,
-//   //         payload: user,
-//   //       });
-//   //     })
-//   //     .catch(error => {
-//   //       dispatch({
-//   //         type: LOGIN_USER_FACEBOOK.ERROR,
-//   //         payload: error.message,
-//   //       });
-//   //       console.log('Error actions user login with facebook, ', error);
-//   //     });
-//   // });
-// };
 
 export const signOut = () => async dispatch => {
   dispatch({

@@ -148,3 +148,17 @@ export const updateMostRecentSignIn = async (roomId, userId) => {
     console.log('Error, room.actions, updateMostRecentSignIn', error);
   }
 };
+
+export const updateLastActive = async (roomId, userId) => {
+  try {
+    if (roomId) {
+      const timestamp = getTimestamp();
+      // db.collection(COLL_ROOMS).doc(roomId).update({ `${KEY_MOST_RECENT_SIGN_IN}.${userId}` : timestamp});
+      db.collection(COLL_ROOMS)
+        .doc(roomId)
+        .update({ [`lastActiveByUserId.${userId}`]: timestamp });
+    }
+  } catch (error) {
+    console.log('Error, room.actions, updateMostRecentSignIn', error);
+  }
+};

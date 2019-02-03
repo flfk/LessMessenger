@@ -1,3 +1,4 @@
+import shortid from 'shortid';
 import { MESSAGES_PER_LOAD } from '../../utils/Constants';
 import { db, dbTimestamp, firebase, storage } from '../firebase';
 // import { getTags } from '../../utils/Helpers';
@@ -121,8 +122,13 @@ export const sendMessage = msg => async dispatch => {
     // });
     await db
       .collection(COLL_MESSAGES)
-      // .add({ ...msg, tagIds, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+      // Maybe problem is that using add with firebase.firestore.FieldValue.serverTimestamp() so use set instead
       .add({ ...msg, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+    // .doc(shortid.generate())
+    // .set({
+    //   ...msg,
+    //   timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    // });
     dispatch({
       type: SEND_MESSAGE.SUCCESS,
     });
@@ -133,18 +139,6 @@ export const sendMessage = msg => async dispatch => {
     });
   }
 };
-// export const togglePinMsg = (id, isPinned) => async dispatch => {
-//   try {
-//     const isPinnedUpdated = !isPinned;
-//     await updateDocMsg(id, { isPinned: isPinnedUpdated });
-//     dispatch({
-//       type: UPDATE_MESSAGE.SUCCESS,
-//       payload: { id, isPinned: isPinnedUpdated },
-//     });
-//   } catch (error) {
-//     console.log('messages.actions, messages, togglePinMsg', error);
-//   }
-// };
 
 export const uploadFile = async (file, roomId) => {
   try {
@@ -164,9 +158,18 @@ export const uploadFile = async (file, roomId) => {
   }
 };
 
+export const markMsgAsSeen = async (id, userId) => {
+  try {
+    const msgRef = db.collection(COLL_MESSAGES).doc(id);
+    msgRef.update({ seenByUserId: firebase.firestore.FieldValue.arrayUnion(userId) });
+  } catch (error) {
+    console.log('messages.actions, messages, markMsgAsSeen', error);
+  }
+};
+
 // SUBSCRIPTIONS
 
-const handleMsgSnapshot = dispatch => snapshot => {
+const handleMsgSnapshot = (dispatch, userId) => snapshot => {
   if (snapshot.empty) {
     dispatch({
       type: ALL_MESSAGES_LOADED.SUCCESS,
@@ -180,6 +183,8 @@ const handleMsgSnapshot = dispatch => snapshot => {
       const msg = doc.data();
       const { id } = doc;
       msg.id = id;
+      // Mark as seen if not already marked as seen
+      if (!msg.seenByUserId || !(msg.seenByUserId.indexOf(userId) > -1)) markMsgAsSeen(id, userId);
       // convert firestore timestamp to unix
       // console.log('snapshot event change add', msg);
       msg.timestamp =
@@ -222,7 +227,7 @@ const handleMsgSnapshot = dispatch => snapshot => {
   messagesUpdated.map(msg => dispatch(updateMsgInState(msg)));
 };
 
-export const getMsgSubscription = (roomId, lastMsgDoc = null) => async dispatch => {
+export const getMsgSubscription = (roomId, lastMsgDoc, userId) => async dispatch => {
   let subscription = null;
   try {
     const msgRef = db
@@ -232,7 +237,7 @@ export const getMsgSubscription = (roomId, lastMsgDoc = null) => async dispatch 
     const msgRefLimited = lastMsgDoc
       ? msgRef.startAfter(lastMsgDoc).limit(MESSAGES_PER_LOAD)
       : msgRef.limit(MESSAGES_PER_LOAD);
-    subscription = msgRefLimited.onSnapshot(handleMsgSnapshot(dispatch));
+    subscription = msgRefLimited.onSnapshot(handleMsgSnapshot(dispatch, userId));
     dispatch({
       type: LOADING_MESSAGES.SUCCESS,
     });

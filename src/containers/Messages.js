@@ -14,7 +14,7 @@ import { MessagesContainer } from '../components/messagesPanel';
 import { getMsgSubscription } from '../data/messages/messages.actions';
 import { getFilteredMessages, getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
-import { getRoomState } from '../data/room/room.selectors';
+import { getRoomState, updateLastActive } from '../data/room/room.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 // import { toggleTag } from '../data/tags/tags.actions';
@@ -68,8 +68,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   // actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
   // actionToggleTag: tagName => dispatch(toggleTag(tagName)),
-  actionGetMsgSubscription: (roomId, lastMsgDoc) =>
-    dispatch(getMsgSubscription(roomId, lastMsgDoc)),
+  actionGetMsgSubscription: (roomId, lastMsgDoc, userId) =>
+    dispatch(getMsgSubscription(roomId, lastMsgDoc, userId)),
 });
 
 class Messages extends React.Component {
@@ -147,8 +147,8 @@ class Messages extends React.Component {
 
   subscribeMessages = async (lastMsgDoc = null) => {
     const { subscriptions } = this.state;
-    const { actionGetMsgSubscription, roomId } = this.props;
-    const newSub = await actionGetMsgSubscription(roomId, lastMsgDoc);
+    const { actionGetMsgSubscription, roomId, userId } = this.props;
+    const newSub = await actionGetMsgSubscription(roomId, lastMsgDoc, userId);
     const subscriptionsUpdated = [...subscriptions, newSub];
     this.setState({ subscriptions: subscriptionsUpdated });
   };
@@ -192,6 +192,8 @@ class Messages extends React.Component {
       })
       .value();
 
+    // <div style={{ height: '500px', width: '100%' }} />
+
     return (
       <MessagesContainer>
         <Scrollable ref={ref => (this.scrollParentRef = ref)}>
@@ -205,7 +207,7 @@ class Messages extends React.Component {
             useWindow={false}
           >
             {messagesContainer}
-            <div style={{ height: '500px', width: '100%' }} />
+
             <div
               style={{ float: 'left', clear: 'both' }}
               ref={el => {

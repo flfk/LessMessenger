@@ -41,6 +41,7 @@ const Reply = styled(Message)`
 `;
 
 const Wrapper = styled.div`
+  min-height: 21px;
   margin-left: 16px;
   margin-right: 16px;
   ${props => (!props.hasProfileImg && !props.wasSentByUser ? 'margin-left: 48px;' : '')}

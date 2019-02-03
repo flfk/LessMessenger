@@ -82,9 +82,7 @@ class MemberAnimation extends React.Component {
     const { currentAnimationData, hasLoadedData, isLooping, isStopped } = this.state;
     const { isOnline, isTyping } = this.props;
 
-    if (!isOnline || !hasLoadedData || !currentAnimationData) return null;
-
-    console.log('Animation In Office animationData is', currentAnimationData);
+    if (!isOnline || !hasLoadedData) return null;
 
     const defaultOptions = {
       loop: isLooping,
