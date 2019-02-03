@@ -123,7 +123,6 @@ class Messages extends React.Component {
         ? members.find(member => member.id === msgBeingRepliedTo.senderUserId)
         : null;
     }
-
     return (
       <Msg
         key={msg.id}
@@ -139,6 +138,34 @@ class Messages extends React.Component {
       />
     );
   };
+
+  getMessagesByDateElement = messages =>
+    _.chain(messages)
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map(msg => ({ ...msg, date: moment(msg.timestamp).format('MMM Do') }))
+      .groupBy('date')
+      .map((group, date) => {
+        const msgs = group.map((msg, index) => {
+          const isFirstInGroup = index === 0;
+          const isNewSender = isFirstInGroup
+            ? true
+            : !(group[index - 1].senderUserId === msg.senderUserId);
+          const timeDiffLastMsg = isFirstInGroup ? 0 : msg.timestamp - group[index - 1].timestamp;
+          const hasHeader = isNewSender || timeDiffLastMsg > MIN_TIME_DIFF_UNTIL_HEADER_MILLIS;
+          return this.getMsgElement(msg, hasHeader);
+        });
+        return (
+          <div key={date}>
+            <Fonts.P isTertiary isCentered>
+              <strong>{date}</strong>
+            </Fonts.P>
+            <Content.Spacing16px />
+            {msgs}
+            <Content.Spacing16px />
+          </div>
+        );
+      })
+      .value();
 
   // selectTag = id => () => {
   //   const { actionToggleTag } = this.props;
@@ -160,37 +187,21 @@ class Messages extends React.Component {
   };
 
   render() {
-    const { hasMoreMessages, isLoadingMessages, messagesFiltered } = this.props;
+    const { hasMoreMessages, isLoadingMessages, messagesFiltered, userId } = this.props;
 
     // if (isLoadingMessages) return <Spinner />;
 
-    const messagesContainer = _.chain(messagesFiltered)
-      .sort((a, b) => a.timestamp - b.timestamp)
-      .map(msg => ({ ...msg, date: moment(msg.timestamp).format('MMM Do') }))
-      .groupBy('date')
-      .map((group, date) => {
-        const msgs = group.map((msg, index) => {
-          const isFirstInGroup = index === 0;
-          const isNewSender = isFirstInGroup
-            ? true
-            : !(group[index - 1].senderUserId === msg.senderUserId);
-          const timeDiffLastMsg = isFirstInGroup ? 0 : msg.timestamp - group[index - 1].timestamp;
-          const hasHeader = isNewSender || timeDiffLastMsg > MIN_TIME_DIFF_UNTIL_HEADER_MILLIS;
-          return this.getMsgElement(msg, hasHeader);
-        });
+    const messagesSeen = messagesFiltered.filter(msg => msg.savesByUserId.indexOf(userId) > -1);
 
-        return (
-          <div key={date}>
-            <Fonts.P isTertiary isCentered>
-              <strong>{date}</strong>
-            </Fonts.P>
-            <Content.Spacing16px />
-            {msgs}
-            <Content.Spacing16px />
-          </div>
-        );
-      })
-      .value();
+    const messagesUnseen = messagesFiltered.filter(
+      msg => !(msg.savesByUserId.indexOf(userId) > -1)
+    );
+
+    console.log('messagesSeen', messagesSeen);
+    console.log('messagesUnseen', messagesUnseen);
+
+    const messagesSeenElement = this.getMessagesByDateElement(messagesSeen);
+    const messagesUnseenElement = this.getMessagesByDateElement(messagesUnseen);
 
     // <div style={{ height: '500px', width: '100%' }} />
 
@@ -206,8 +217,9 @@ class Messages extends React.Component {
             loadMore={this.handleLoad}
             useWindow={false}
           >
-            {messagesContainer}
-
+            {messagesSeenElement}
+            <Fonts.H3>Unseen messages below</Fonts.H3>
+            {messagesUnseenElement}
             <div
               style={{ float: 'left', clear: 'both' }}
               ref={el => {
