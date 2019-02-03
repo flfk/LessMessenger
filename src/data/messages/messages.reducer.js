@@ -52,7 +52,7 @@ const reducerMessages = (state = initialState, action) => {
       return { ...state, lastMsgDoc: action.payload };
     case SIGNOUT_USER.SUCCESS:
       return {
-        initialState,
+        ...initialState,
       };
     case UPDATE_MESSAGE.SUCCESS:
       return {

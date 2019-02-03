@@ -209,7 +209,11 @@ const handleMsgSnapshot = (dispatch, userId) => snapshot => {
           : dbTimestamp.now().toMillis();
       // console.log('modified', msg);
       // dispatch(updateMsgInState(msg));
-      messagesUpdated.push(msg);
+
+      // Don't update any changes in who has seen message so it isn't filtered out in selector
+      const msgUpdated = { ...msg };
+      if (msgUpdated.seenByUserId) delete msgUpdated.seenByUserId;
+      messagesUpdated.push(msgUpdated);
     }
     if (change.type === 'removed') {
       const { doc } = change;

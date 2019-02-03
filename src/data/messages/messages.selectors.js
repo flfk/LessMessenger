@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { createSelector } from 'reselect';
 
 import { denormalize } from '../../utils/Helpers';
@@ -15,33 +16,29 @@ export const getMessagesState = createSelector(
   messages => denormalize(messages)
 );
 
-// const filterForSelectedTags = tagsSelected => msg => {
-//   if (tagsSelected.length === 0) return true;
-//   if (msg.tagIds) {
-//     let areMsgTagsSelected = true;
-//     tagsSelected.forEach(tag => {
-//       areMsgTagsSelected = areMsgTagsSelected && msg.tagIds.indexOf(tag.id) > -1;
-//     });
-//     if (areMsgTagsSelected) return true;
-//   }
-//   return false;
-// };
+const filterNotSeenByAllOrSaved = memberIds => msg => {
+  if (msg.savesByUserId && msg.savesByUserId.length > 0) {
+    // console.log('saved by a user', msg.savesByUserId);
+    return true;
+  }
+  if (!msg.seenByUserId || msg.seenByUserId.length !== memberIds.length) {
+    // console.log('not seen by UserId or not by as many users', msg.seenByUserId, memberIds.length);
+    return true;
+  }
+  if (_.isEqual(_.sortBy(msg.seenByUserId), _.sortBy(memberIds))) {
+    // console.log('seen by all users');
+    return false;
+  }
+  // console.log('No cases matched, return true');
+  return true;
+};
 
 export const getFilteredMessages = createSelector(
-  // [getMessages, getMembers, getTags],
-  [getMessages, getRoom],
-  // (messages, members, tags) => {
-  (messages, room) => {
-    // const tagsSelected = denormalize(tags).filter(tag => tag.isSelected);
-
-    const leastRecentSignInDate = Object.values(room.mostRecentSignInById).sort()[0];
-    const messagesFiltered = denormalize(messages)
-      // .filter(filterForSelectedTags(tagsSelected))
-      .filter(
-        msg =>
-          msg.timestamp > leastRecentSignInDate ||
-          (msg.savesByUserId && msg.savesByUserId.length > 0)
-      );
+  [getMessages, getMembers],
+  (messages, members) => {
+    // const leastRecentSignInDate = Object.values(room.mostRecentSignInById).sort()[0];
+    const memberIds = denormalize(members).map(member => member.id);
+    const messagesFiltered = denormalize(messages).filter(filterNotSeenByAllOrSaved(memberIds));
 
     // console.log('messages.selectors messagesFiltered', messagesFiltered);
     return messagesFiltered;

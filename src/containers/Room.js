@@ -97,7 +97,6 @@ class Room extends React.Component {
       console.log('loading members');
       this.loadMembers();
     }
-    mixpanel.track('Visited Room');
   }
 
   componentWillUnmount() {
@@ -137,6 +136,7 @@ class Room extends React.Component {
   loadRoom = async pathname => {
     const { actionLoadRoom } = this.props;
     const room = await actionLoadRoom(pathname);
+    if (room) mixpanel.track('Visited Room', { name: room.name });
   };
 
   loadMembers = () => {
