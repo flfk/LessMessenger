@@ -197,8 +197,8 @@ class Messages extends React.Component {
       msg => !(msg.savesByUserId.indexOf(userId) > -1)
     );
 
-    console.log('messagesSeen', messagesSeen);
-    console.log('messagesUnseen', messagesUnseen);
+    // console.log('messagesSeen', messagesSeen);
+    // console.log('messagesUnseen', messagesUnseen);
 
     const messagesSeenElement = this.getMessagesByDateElement(messagesSeen);
     const messagesUnseenElement = this.getMessagesByDateElement(messagesUnseen);

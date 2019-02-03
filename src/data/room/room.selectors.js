@@ -8,3 +8,13 @@ export const getRoomState = createSelector(
   [getRoom],
   room => room
 );
+
+export const getMemberIds = createSelector(
+  [getRoom],
+  room => {
+    // if available get keys from member objects
+    if (room.members) return Object.keys(room.members);
+    // if not yet loaded return empty
+    return [];
+  }
+);

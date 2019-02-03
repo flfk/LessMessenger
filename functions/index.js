@@ -6,20 +6,25 @@ const sgMail = require('@sendgrid/mail');
 admin.initializeApp();
 
 const firestore = admin.firestore();
+// To ensure ensure firestore timestamp objects supported in future
+const settings = { timestampsInSnapshots: true };
+firestore.settings(settings);
 
 const SENDGRID_API_KEY = functions.config().sendgrid.key;
 sgMail.setApiKey(SENDGRID_API_KEY);
 
 exports.onUserStatusChanged = functions.database
-  .ref('/status/{uid}') // Reference to the Firebase RealTime database key
+  .ref('/status/{roomId}/{userId}') // Reference to the Firebase RealTime database key
   .onUpdate((change, context) => {
-    const userRef = firestore.collection('users').doc(context.params.uid);
+    const roomRef = firestore.collection('rooms').doc(context.params.roomId);
 
     return change.after.ref.once('value').then(statusSnapshot => {
       const status = statusSnapshot.val();
       if (status === 'offline') {
-        userRef.update({
-          isOnline: false,
+        const timestamp = Math.floor(new Date());
+        roomRef.update({
+          [`members.${context.params.userId}.isOnline`]: false,
+          [`members.${context.params.userId}.mostRecentSignOut`]: timestamp,
         });
       }
     });

@@ -13,10 +13,12 @@ import MessagesPanel from './MessagesPanel';
 import { getMemberSubscription } from '../data/members/members.actions';
 import {
   addUserIdToMembers,
+  changeUserStatusToOnline,
   inviteMember,
   loadRoom,
   toggleInviteMember,
 } from '../data/room/room.actions';
+import { getMemberIds } from '../data/room/room.selectors';
 import { AddMemberPopup, Wrapper } from '../components/room';
 import Spinner from '../components/Spinner';
 import SignUp from './SignUp';
@@ -24,6 +26,7 @@ import SignUp from './SignUp';
 
 const propTypes = {
   actionAddUserIdToMembers: PropTypes.func.isRequired,
+  actionChangeUserStatusToOnline: PropTypes.func.isRequired,
   actionGetMemberSubscription: PropTypes.func.isRequired,
   actionInviteMember: PropTypes.func.isRequired,
   actionLoadRoom: PropTypes.func.isRequired,
@@ -53,7 +56,7 @@ const mapStateToProps = state => ({
   isInvitingMember: state.room.isInvitingMember,
   isLoading: state.room.isLoading,
   emailsInvited: state.room.emailsInvited,
-  memberUserIds: state.room.memberUserIds,
+  memberUserIds: getMemberIds(state),
   roomId: state.room.id,
   roomName: state.room.name,
   roomPathname: state.room.pathname,
@@ -64,6 +67,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   actionAddUserIdToMembers: (roomId, userId) => dispatch(addUserIdToMembers(roomId, userId)),
+  actionChangeUserStatusToOnline: (roomId, userId) =>
+    dispatch(changeUserStatusToOnline(roomId, userId)),
   actionGetMemberSubscription: roomId => dispatch(getMemberSubscription(roomId)),
   actionInviteMember: (email, inviterName, roomId, roomName, roomPathname) =>
     dispatch(inviteMember(email, inviterName, roomId, roomName, roomPathname)),
@@ -91,11 +96,12 @@ class Room extends React.Component {
   componentDidUpdate(prevProps) {
     // if the room has loaded + there is a userID + has not loaded members
     const { hasLoadedMembers } = this.state;
-    const { roomId, userId } = this.props;
+    const { actionChangeUserStatusToOnline, roomId, userId } = this.props;
     console.log('roomId userId', roomId, userId);
     if (!hasLoadedMembers && roomId && userId) {
       console.log('loading members');
       this.loadMembers();
+      actionChangeUserStatusToOnline(roomId, userId);
     }
   }
 
@@ -167,10 +173,16 @@ class Room extends React.Component {
 
   render() {
     const { hasLoadedMembers, hasRoomAccess, toLandingPage } = this.state;
-    const { actionToggleInviteMember, error, isInvitingMember, isLoading, userId } = this.props;
+    const {
+      actionToggleInviteMember,
+      error,
+      isInvitingMember,
+      isLoading,
+      memberUserIds,
+      userId,
+    } = this.props;
 
-    console.log('hasLoadedMembers', hasLoadedMembers);
-    console.log('isLoading', isLoading);
+    console.log('memberUserIds', memberUserIds);
 
     if (toLandingPage) return this.goToLandingPage();
 

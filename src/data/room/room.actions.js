@@ -1,6 +1,6 @@
 import shortid from 'shortid';
 
-import { db, firebase } from '../firebase';
+import { db, firebase, oldRealTimeDb } from '../firebase';
 import { getTimestamp } from '../../utils/Helpers';
 import { CREATE_ROOM, TOGGLE_INVITE_MEMBER, LOAD_ROOM } from './room.types';
 
@@ -27,23 +27,24 @@ export const addUserIdToMembers = (roomId, userId) => async dispatch => {
   }
 };
 
-export const toggleInviteMember = () => dispatch => {
-  dispatch({
-    type: TOGGLE_INVITE_MEMBER.SUCCESS,
+export const changeUserStatusToOnline = (roomId, userId) => async dispatch => {
+  // connect to old Realtime DB and the list of connections
+  console.log('marking user as online', roomId, userId);
+  const onlineRef = oldRealTimeDb.ref('.info/connected');
+  const oldRealTimeDbRef = `/status/${roomId}/${userId}`;
+  onlineRef.on('value', snapshot => {
+    oldRealTimeDb
+      .ref(oldRealTimeDbRef)
+      .onDisconnect()
+      .set('offline')
+      .then(() => {
+        // set online status in firestore
+        const roomRef = db.collection(COLL_ROOMS).doc(roomId);
+        roomRef.update({ [`members.${userId}.isOnline`]: true });
+        // set online status in real time database
+        oldRealTimeDb.ref(oldRealTimeDbRef).set('online');
+      });
   });
-};
-
-const isPathnameTaken = async pathname => {
-  try {
-    const roomRef = db.collection(COLL_ROOMS).where('pathname', '==', pathname);
-    const snapshot = await roomRef.get();
-    if (snapshot.empty) {
-      return false;
-    }
-  } catch (error) {
-    console.error('Error room.actions, isPathnameTaken', error);
-  }
-  return true;
 };
 
 export const createRoom = (email, room) => async dispatch => {
@@ -77,6 +78,19 @@ export const createRoom = (email, room) => async dispatch => {
     });
   }
   return { ...roomUpdated, id: roomAdded.id };
+};
+
+const isPathnameTaken = async pathname => {
+  try {
+    const roomRef = db.collection(COLL_ROOMS).where('pathname', '==', pathname);
+    const snapshot = await roomRef.get();
+    if (snapshot.empty) {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error room.actions, isPathnameTaken', error);
+  }
+  return true;
 };
 
 export const inviteMember = (
@@ -133,6 +147,12 @@ export const loadRoom = pathname => async dispatch => {
     });
   }
   return room;
+};
+
+export const toggleInviteMember = () => dispatch => {
+  dispatch({
+    type: TOGGLE_INVITE_MEMBER.SUCCESS,
+  });
 };
 
 export const updateMostRecentSignIn = async (roomId, userId) => {

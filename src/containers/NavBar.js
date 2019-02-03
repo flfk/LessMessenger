@@ -24,12 +24,12 @@ const propTypes = {
 
 const defaultProps = {
   roomName: '',
-  roomMemberUserIds: [],
   userId: '',
 };
 
 const mapStateToProps = state => ({
   members: getMembersState(state),
+  roomMembers: state.room.members,
   roomName: state.room.name,
   userId: state.user.id,
 });
@@ -84,7 +84,14 @@ class NavBar extends React.Component {
   render() {
     const { showDropDown, timestamp, showPopupAddMember } = this.state;
 
-    const { actionToggleInviteMember, actionSignOut, members, roomName, userId } = this.props;
+    const {
+      actionToggleInviteMember,
+      actionSignOut,
+      members,
+      roomMembers,
+      roomName,
+      userId,
+    } = this.props;
 
     const dropdown = showDropDown ? (
       <Dropdown>
@@ -117,11 +124,12 @@ class NavBar extends React.Component {
       ? null
       : membersSorted.map(member => {
           const isUser = member.id === userId;
+          const { isOnline } = roomMembers[member.id];
           return (
             <Profile key={member.id}>
               <Profile.ImgWrapper>
                 <Profile.Img src={member.avatar.profileImgURL} />
-                <Profile.Presence isOnline={member.isOnline} />
+                <Profile.Presence isOnline={isOnline} />
               </Profile.ImgWrapper>
               <Profile.TextWrapper>
                 <Fonts.Label isSecondary>
