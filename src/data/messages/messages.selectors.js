@@ -43,7 +43,7 @@ export const getFilteredMessages = createSelector(
           (msg.savesByUserId && msg.savesByUserId.length > 0)
       );
 
-    console.log('messages.selectors messagesFiltered', messagesFiltered);
+    // console.log('messages.selectors messagesFiltered', messagesFiltered);
     return messagesFiltered;
   }
 );
