@@ -8,7 +8,7 @@ const ErrorScreen = () => {
     <Content>
       <Fonts.H2>Oops, something went wrong</Fonts.H2>
       <Fonts.P>
-        Please try again. If things still don't work please contact us at contact.meetsta@gmail.com
+        Please try again. If things still don't work please contact us at TheLessMessenger@gmail.com
       </Fonts.P>
     </Content>
   );

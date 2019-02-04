@@ -168,7 +168,7 @@ export const markMsgAsSeen = async (id, userId) => {
 
 // SUBSCRIPTIONS
 
-const handleMsgSnapshot = (dispatch, userId) => snapshot => {
+const handleMsgSnapshot = (dispatch, userId) => async snapshot => {
   if (snapshot.empty) {
     dispatch({
       type: ALL_MESSAGES_LOADED.SUCCESS,
@@ -228,6 +228,10 @@ const handleMsgSnapshot = (dispatch, userId) => snapshot => {
   });
   messagesAdded.map(msg => dispatch(addMessage(msg)));
   messagesUpdated.map(msg => dispatch(updateMsgInState(msg)));
+  console.log('all messages loaded', messagesAdded.length, messagesUpdated.length);
+  dispatch({
+    type: LOADING_MESSAGES.SUCCESS,
+  });
 };
 
 export const getMsgSubscription = (roomId, lastMsgDoc, userId) => async dispatch => {
@@ -241,9 +245,6 @@ export const getMsgSubscription = (roomId, lastMsgDoc, userId) => async dispatch
       ? msgRef.startAfter(lastMsgDoc).limit(MESSAGES_PER_LOAD)
       : msgRef.limit(MESSAGES_PER_LOAD);
     subscription = msgRefLimited.onSnapshot(handleMsgSnapshot(dispatch, userId));
-    dispatch({
-      type: LOADING_MESSAGES.SUCCESS,
-    });
   } catch (error) {
     console.log('messages.actions, getMsgSubscription', error);
   }

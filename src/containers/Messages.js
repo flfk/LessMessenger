@@ -10,7 +10,7 @@ import Content from '../components/Content';
 import { MESSAGES_PER_LOAD, MIN_TIME_DIFF_UNTIL_HEADER_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import Msg from './Msg';
-import { MessagesContainer } from '../components/messagesPanel';
+import { Divider, MessagesContainer } from '../components/messagesPanel';
 import { getMsgSubscription } from '../data/messages/messages.actions';
 import { getFilteredMessages, getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
@@ -19,6 +19,8 @@ import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 // import { toggleTag } from '../data/tags/tags.actions';
 // import { getTagsSelectedState } from '../data/tags/tags.selectors';
+
+const NEW_MESSAGES_SPACER_HEIGHT = 468;
 
 const propTypes = {
   actionGetMsgSubscription: PropTypes.func.isRequired,
@@ -41,6 +43,13 @@ const propTypes = {
     })
   ).isRequired,
   roomId: PropTypes.string.isRequired,
+  roomMembers: PropTypes.objectOf(
+    PropTypes.shape({
+      isOnline: PropTypes.bool.isRequired,
+      isTyping: PropTypes.bool.isRequired,
+      mostRecentSignOut: PropTypes.number.isRequired,
+    }).isRequired
+  ).isRequired,
   userId: PropTypes.string.isRequired,
 };
 
@@ -48,12 +57,14 @@ const defaultProps = {};
 
 const mapStateToProps = state => ({
   isLoadingMembers: state.members.isLoading,
+  hasLoadedMessages: state.messages.hasLoaded,
   hasMoreMessages: state.messages.hasMoreMessages,
   lastMsgDoc: state.messages.lastMsgDoc,
   members: getMembersState(state),
   messages: getMessagesState(state),
   messagesFiltered: getFilteredMessages(state),
   roomId: getRoomState(state).id,
+  roomMembers: state.room.members,
   userId: state.user.id,
 });
 
@@ -66,6 +77,7 @@ class Messages extends React.Component {
   state = {
     hasCompletedFirstLoad: false,
     subscriptions: [],
+    newMessagesSpacerHeight: 0,
   };
 
   componentDidMount() {
@@ -75,12 +87,36 @@ class Messages extends React.Component {
   componentDidUpdate(prevProps) {
     const prevNewestMsg = prevProps.messagesFiltered[prevProps.messagesFiltered.length - 1];
     this.handleScrolling(prevNewestMsg);
+    if (
+      (!prevProps.hasLoadedMessages && this.props.hasLoadedMessages) ||
+      (this.props.hasLoadedMessages && prevProps.messages.length !== this.props.messages.length)
+    ) {
+      console.log('new message');
+      this.setNewMessagesSpacerHeight();
+    }
   }
 
   componentWillUnmount() {
     const { subscriptions } = this.state;
     subscriptions.map(sub => sub());
   }
+
+  setNewMessagesSpacerHeight = () => {
+    const newMessagesHeight = this.newMessagesElement.clientHeight;
+    console.log('newMessagesclientHeight is ', this.newMessagesElement.clientHeight);
+    console.log('newMessagesscrollHeight is ', this.newMessagesElement.scrollHeight);
+    console.log('newMessagesoffsetHeight is ', this.newMessagesElement.offsetHeight);
+    console.log(
+      'newMessages.getBoundingClientRect() is ',
+      this.newMessagesElement.getBoundingClientRect()
+    );
+    const newSpacerHeight =
+      newMessagesHeight >= NEW_MESSAGES_SPACER_HEIGHT
+        ? 0
+        : NEW_MESSAGES_SPACER_HEIGHT - newMessagesHeight;
+    console.log('newSpacerHeight is ', newSpacerHeight);
+    // this.setState({ newMessagesSpacerHeight: newSpacerHeight });
+  };
 
   handleLoad = () => {
     const { hasMoreMessages, lastMsgDoc } = this.props;
@@ -177,23 +213,30 @@ class Messages extends React.Component {
   };
 
   render() {
-    const { hasMoreMessages, messagesFiltered, userId } = this.props;
+    const { newMessagesSpacerHeight } = this.state;
+    const {
+      hasMoreMessages,
+      hasLoadedMessages,
+      messagesFiltered,
+      roomMembers,
+      userId,
+    } = this.props;
+
+    // console.log(hasLoadedMessages);
+    if (!hasLoadedMessages) return null;
 
     // if (isLoadingMessages) return <Spinner />;
 
-    const messagesSeen = messagesFiltered.filter(msg => msg.savesByUserId.indexOf(userId) > -1);
+    const mostRecentSignOut = roomMembers[userId].mostRecentSignOut || 0;
+    const messagesOld = messagesFiltered.filter(msg => msg.timestamp < mostRecentSignOut);
+    const messagesNew = messagesFiltered.filter(msg => msg.timestamp >= mostRecentSignOut);
 
-    const messagesUnseen = messagesFiltered.filter(
-      msg => !(msg.savesByUserId.indexOf(userId) > -1)
+    const messagesOldElement = this.getMessagesByDateElement(messagesOld);
+    const messagesNewElement = (
+      <div ref={newMessagesElement => (this.newMessagesElement = newMessagesElement)}>
+        {this.getMessagesByDateElement(messagesNew)}
+      </div>
     );
-
-    // console.log('messagesSeen', messagesSeen);
-    // console.log('messagesUnseen', messagesUnseen);
-
-    const messagesSeenElement = this.getMessagesByDateElement(messagesSeen);
-    const messagesUnseenElement = this.getMessagesByDateElement(messagesUnseen);
-
-    // <div style={{ height: '500px', width: '100%' }} />
 
     return (
       <MessagesContainer>
@@ -207,9 +250,16 @@ class Messages extends React.Component {
             loadMore={this.handleLoad}
             useWindow={false}
           >
-            {messagesSeenElement}
-            <Fonts.H3>Unseen messages below</Fonts.H3>
-            {messagesUnseenElement}
+            {messagesOldElement}
+            <Divider text={'New messages'} />
+            {messagesNewElement}
+            <div
+              style={{
+                backgroundColor: 'red',
+                width: '100%',
+                height: `${newMessagesSpacerHeight}px`,
+              }}
+            />
             <div
               style={{ float: 'left', clear: 'both' }}
               ref={el => {

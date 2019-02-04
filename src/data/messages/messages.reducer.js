@@ -14,6 +14,7 @@ const initialState = {
   allIds: [],
   byId: {},
   isLoading: true,
+  hasLoaded: false,
   hasMoreMessages: true,
   lastMsgDoc: {},
 };
@@ -47,6 +48,7 @@ const reducerMessages = (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
+        hasLoaded: true,
       };
     case SET_LAST_MSG_DOC.SUCCESS:
       return { ...state, lastMsgDoc: action.payload };

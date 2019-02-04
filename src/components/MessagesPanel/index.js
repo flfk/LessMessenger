@@ -1,5 +1,6 @@
 export { default as AnimationInOffice } from './AnimationInOffice';
 export { default as Container } from './Container';
+export { default as Divider } from './Divider';
 export { default as Input } from './Input';
 export { default as MessagesContainer } from './MessagesContainer';
 export { default as PanelContainer } from './PanelContainer';
