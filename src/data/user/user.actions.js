@@ -1,14 +1,12 @@
 import moment from 'moment-timezone';
-import { auth, db, oldRealTimeDb } from '../firebase';
+import { auth, db } from '../firebase';
 import { updateDocRoom } from '../room/room.actions';
 import {
   CREATE_USER,
   GET_LOGGED_IN_USER,
   LOGIN_USER,
-  LOGIN_USER_FACEBOOK,
   SIGNOUT_USER,
   TOGGLE_TYPING,
-  UPDATE_USER,
 } from './user.types';
 
 const COLL_AVATARS = 'avatars';

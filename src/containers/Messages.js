@@ -14,7 +14,7 @@ import { MessagesContainer } from '../components/messagesPanel';
 import { getMsgSubscription } from '../data/messages/messages.actions';
 import { getFilteredMessages, getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
-import { getRoomState, updateLastActive } from '../data/room/room.selectors';
+import { getRoomState } from '../data/room/room.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
 // import { toggleTag } from '../data/tags/tags.actions';
@@ -22,10 +22,7 @@ import Spinner from '../components/Spinner';
 
 const propTypes = {
   actionGetMsgSubscription: PropTypes.func.isRequired,
-  // actionTogglePin: PropTypes.func.isRequired,
-  // actionToggleTag: PropTypes.func.isRequired,
   hasMoreMessages: PropTypes.bool.isRequired,
-  isLoadingMessages: PropTypes.bool.isRequired,
   isLoadingMembers: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(
     PropTypes.shape({
@@ -44,16 +41,12 @@ const propTypes = {
     })
   ).isRequired,
   roomId: PropTypes.string.isRequired,
-  // tags: PropTypes.arrayOf(
-  //   PropTypes.shape({ name: PropTypes.string.isRequired, isSelected: PropTypes.bool.isRequired })
-  // ).isRequired,
   userId: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
 const mapStateToProps = state => ({
-  isLoadingMessages: state.messages.isLoading,
   isLoadingMembers: state.members.isLoading,
   hasMoreMessages: state.messages.hasMoreMessages,
   lastMsgDoc: state.messages.lastMsgDoc,
@@ -61,13 +54,10 @@ const mapStateToProps = state => ({
   messages: getMessagesState(state),
   messagesFiltered: getFilteredMessages(state),
   roomId: getRoomState(state).id,
-  // tagsSelected: getTagsSelectedState(state),
   userId: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
-  // actionTogglePin: (id, isPinned) => dispatch(togglePinMsg(id, isPinned)),
-  // actionToggleTag: tagName => dispatch(toggleTag(tagName)),
   actionGetMsgSubscription: (roomId, lastMsgDoc, userId) =>
     dispatch(getMsgSubscription(roomId, lastMsgDoc, userId)),
 });
@@ -187,7 +177,7 @@ class Messages extends React.Component {
   };
 
   render() {
-    const { hasMoreMessages, isLoadingMessages, messagesFiltered, userId } = this.props;
+    const { hasMoreMessages, messagesFiltered, userId } = this.props;
 
     // if (isLoadingMessages) return <Spinner />;
 

@@ -7,7 +7,9 @@ const initialState = {
   id: '',
   isLoading: true,
   isLoadingMembers: true,
-  memberUserIds: [],
+  members: {
+    default: { isOnline: false, isTyping: false, mostRecentSignOut: 0 },
+  },
   msgIdBeingRepliedTo: '',
   name: '',
   pathname: '',

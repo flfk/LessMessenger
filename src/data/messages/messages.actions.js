@@ -1,4 +1,3 @@
-import shortid from 'shortid';
 import { MESSAGES_PER_LOAD } from '../../utils/Constants';
 import { db, dbTimestamp, firebase, storage } from '../firebase';
 // import { getTags } from '../../utils/Helpers';

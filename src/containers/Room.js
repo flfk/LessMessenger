@@ -16,7 +16,6 @@ import {
   changeUserStatusToOnline,
   getRoomSubscription,
   inviteMember,
-  loadRoom,
   toggleInviteMember,
 } from '../data/room/room.actions';
 import { getMemberIds } from '../data/room/room.selectors';
@@ -75,7 +74,6 @@ const mapDispatchToProps = dispatch => ({
   actionGetRoomSubscription: pathname => dispatch(getRoomSubscription(pathname)),
   actionInviteMember: (email, inviterName, roomId, roomName, roomPathname) =>
     dispatch(inviteMember(email, inviterName, roomId, roomName, roomPathname)),
-  // actionLoadRoom: pathname => dispatch(loadRoom(pathname)),
   actionToggleInviteMember: () => dispatch(toggleInviteMember()),
 });
 
@@ -99,12 +97,14 @@ class Room extends React.Component {
   componentDidUpdate(prevProps) {
     // if the room has loaded + there is a userID + has not loaded members
     const { hasLoadedMembers } = this.state;
-    const { actionChangeUserStatusToOnline, roomId, userId } = this.props;
+    const { actionChangeUserStatusToOnline, memberUserIds, roomId, roomName, userId } = this.props;
     // console.log('roomId userId', roomId, userId);
-    if (!hasLoadedMembers && roomId && userId) {
-      console.log('loading members');
+    if (!hasLoadedMembers && memberUserIds.length > 0 && roomId && userId) {
       this.loadMembers();
       actionChangeUserStatusToOnline(roomId, userId);
+    }
+    if (!prevProps.roomName && roomName) {
+      mixpanel.track('Visited Room', { id: roomId, name: roomName });
     }
   }
 
@@ -143,10 +143,7 @@ class Room extends React.Component {
   };
 
   loadRoom = async pathname => {
-    // const { actionLoadRoom } = this.props;
-    // const room = await actionLoadRoom(pathname);
     await this.subscribeRoom(pathname);
-    // if (room) mixpanel.track('Visited Room', { name: room.name });
   };
 
   loadMembers = () => {
@@ -185,14 +182,7 @@ class Room extends React.Component {
 
   render() {
     const { hasLoadedMembers, hasRoomAccess, toLandingPage } = this.state;
-    const {
-      actionToggleInviteMember,
-      error,
-      isInvitingMember,
-      isLoading,
-      memberUserIds,
-      userId,
-    } = this.props;
+    const { actionToggleInviteMember, error, isInvitingMember, isLoading, userId } = this.props;
 
     if (toLandingPage) return this.goToLandingPage();
 

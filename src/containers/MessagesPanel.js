@@ -23,11 +23,13 @@ const propTypes = {
   isTyping: PropTypes.bool.isRequired,
   msgIdBeingRepliedTo: PropTypes.string.isRequired,
   roomId: PropTypes.string.isRequired,
-  roomMembers: PropTypes.shape({
-    isOnline: PropTypes.bool.isRequired,
-    isTyping: PropTypes.bool.isRequired,
-    mostRecentSignOut: PropTypes.number.isRequired,
-  }).isRequired,
+  roomMembers: PropTypes.objectOf(
+    PropTypes.shape({
+      isOnline: PropTypes.bool.isRequired,
+      isTyping: PropTypes.bool.isRequired,
+      mostRecentSignOut: PropTypes.number.isRequired,
+    }).isRequired
+  ).isRequired,
   userId: PropTypes.string.isRequired,
 };
 

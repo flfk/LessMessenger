@@ -21,7 +21,11 @@ export const addDocEmailRequest = async emailReq => {
 export const addUserIdToMembers = (roomId, userId) => async dispatch => {
   try {
     const roomRef = db.collection(COLL_ROOMS).doc(roomId);
-    roomRef.update({ memberUserIds: firebase.firestore.FieldValue.arrayUnion(userId) });
+    roomRef.update({
+      [`members.${userId}.isOnline`]: true,
+      [`members.${userId}.isTyping`]: false,
+      [`members.${userId}.mostRecentSignOut`]: 0,
+    });
   } catch (error) {
     console.error('Error room.actions, addUserIdToMembers', error);
   }
@@ -29,7 +33,6 @@ export const addUserIdToMembers = (roomId, userId) => async dispatch => {
 
 export const changeUserStatusToOnline = (roomId, userId) => async dispatch => {
   // connect to old Realtime DB and the list of connections
-  console.log('marking user as online', roomId, userId);
   const onlineRef = oldRealTimeDb.ref('.info/connected');
   const oldRealTimeDbRef = `/status/${roomId}/${userId}`;
   onlineRef.on('value', snapshot => {
@@ -60,17 +63,17 @@ export const createRoom = (email, room) => async dispatch => {
     const pathnameUpdated = pathnameIsTaken ? `${pathname}-${shortid.generate()}` : pathname;
     roomUpdated = { ...room, pathname: pathnameUpdated };
     roomAdded = await db.collection(COLL_ROOMS).add(roomUpdated);
-    dispatch({
-      type: CREATE_ROOM.SUCCESS,
-      payload: { ...roomUpdated, id: roomAdded.id },
-    });
     const emailReq = {
       email,
       roomName: room.name,
       roomURL: `${BASE_URL}${pathnameUpdated}`,
       type: 'signUp',
     };
-    addDocEmailRequest(emailReq);
+    await addDocEmailRequest(emailReq);
+    dispatch({
+      type: CREATE_ROOM.SUCCESS,
+      payload: { pathname: pathnameUpdated, id: roomAdded.id },
+    });
   } catch (error) {
     dispatch({
       type: CREATE_ROOM.ERROR,
@@ -116,38 +119,38 @@ export const inviteMember = (
   }
 };
 
-export const loadRoom = pathname => async dispatch => {
-  dispatch({
-    type: LOAD_ROOM.PENDING,
-  });
-  let room = null;
-  try {
-    const roomRef = db.collection(COLL_ROOMS).where('pathname', '==', pathname);
-    const snapshot = await roomRef.limit(1).get();
+// export const loadRoom = pathname => async dispatch => {
+//   dispatch({
+//     type: LOAD_ROOM.PENDING,
+//   });
+//   let room = null;
+//   try {
+//     const roomRef = db.collection(COLL_ROOMS).where('pathname', '==', pathname);
+//     const snapshot = await roomRef.limit(1).get();
 
-    if (snapshot.size === 0) {
-      dispatch({
-        type: LOAD_ROOM.ERROR,
-      });
-    }
+//     if (snapshot.size === 0) {
+//       dispatch({
+//         type: LOAD_ROOM.ERROR,
+//       });
+//     }
 
-    snapshot.forEach(doc => {
-      room = doc.data();
-      const { id } = doc;
-      room.id = id;
-      dispatch({
-        type: LOAD_ROOM.SUCCESS,
-        payload: room,
-      });
-    });
-  } catch (error) {
-    console.error('Error room.actions, loadRoom', error);
-    dispatch({
-      type: LOAD_ROOM.ERROR,
-    });
-  }
-  return room;
-};
+//     snapshot.forEach(doc => {
+//       room = doc.data();
+//       const { id } = doc;
+//       room.id = id;
+//       dispatch({
+//         type: LOAD_ROOM.SUCCESS,
+//         payload: room,
+//       });
+//     });
+//   } catch (error) {
+//     console.error('Error room.actions, loadRoom', error);
+//     dispatch({
+//       type: LOAD_ROOM.ERROR,
+//     });
+//   }
+//   return room;
+// };
 
 export const toggleInviteMember = () => dispatch => {
   dispatch({
@@ -158,7 +161,6 @@ export const toggleInviteMember = () => dispatch => {
 export const updateDocRoom = async (id, fields) => {
   try {
     const roomRef = db.collection(COLL_ROOMS).doc(id);
-    console.log('room.actions, updateDocUser, fields', fields);
     await roomRef.update({ ...fields });
   } catch (error) {
     console.log('Error room.actions, updateDocRoom', error);
@@ -206,7 +208,6 @@ const handleRoomSnapshot = dispatch => async snapshot => {
       const room = doc.data();
       const { id } = doc;
       room.id = id;
-      console.log('room added', room);
       dispatch({
         type: LOAD_ROOM.SUCCESS,
         payload: room,
@@ -219,7 +220,6 @@ const handleRoomSnapshot = dispatch => async snapshot => {
       const room = doc.data();
       const { id } = doc;
       room.id = id;
-      console.log('room updated', room);
       dispatch({
         type: UPDATE_ROOM.SUCCESS,
         payload: room,
@@ -240,9 +240,6 @@ export const getRoomSubscription = pathname => async dispatch => {
       .where('pathname', '==', pathname)
       .limit(1);
     subscription = roomRef.onSnapshot(handleRoomSnapshot(dispatch));
-    dispatch({
-      type: LOAD_ROOM.SUCCESS,
-    });
   } catch (error) {
     console.log('room.actions, getRoomSubscription', error);
   }

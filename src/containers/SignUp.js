@@ -11,7 +11,6 @@ import Fonts from '../utils/Fonts';
 import InputText from '../components/InputText';
 import Spinner from '../components/Spinner';
 import LogIn from './LogIn';
-import { getParams, getTimestamp } from '../utils/Helpers';
 
 import { createRoom, inviteMember } from '../data/room/room.actions';
 import { createUser } from '../data/user/user.actions';
@@ -70,6 +69,7 @@ class SignUp extends React.Component {
     roomNameErrMsg: '',
     roomNameIsValid: false,
     showLogIn: false,
+    toRoom: false,
   };
 
   componentDidMount() {
@@ -97,9 +97,12 @@ class SignUp extends React.Component {
     const { userId } = this.props;
     return {
       emailsInvited: [inviteeEmail],
-      memberUserIds: [userId],
-      mostRecentSignInById: {
-        [userId]: getTimestamp(),
+      // memberUserIds: [userId],
+      // mostRecentSignInById: {
+      //   [userId]: getTimestamp(),
+      // },
+      members: {
+        [userId]: { isOnline: false, isTyping: false, mostRecentSignOut: 0 },
       },
       name: roomName,
       pathname: roomName.replace(' ', '-'),
@@ -121,15 +124,18 @@ class SignUp extends React.Component {
 
   handleCreateRoom = async () => {
     if (this.isRoomFormValid()) {
+      console.log('handling create room with valid form');
       const { email, inviteeEmail } = this.state;
       const { actionCreateRoom } = this.props;
       const newRoom = this.getNewRoom();
       const roomAdded = await actionCreateRoom(email, newRoom);
-      mixpanel.track('Created Room', { roomId: roomAdded.id });
+      console.log('handleCreateRoom complete', roomAdded);
+      mixpanel.track('Created Room', { id: roomAdded.id });
       if (inviteeEmail) {
         this.handleInviteMember(roomAdded);
         mixpanel.track('Invited Teammate', { roomId: roomAdded.id });
       }
+      this.setState({ toRoom: true });
     }
   };
 
@@ -251,6 +257,7 @@ class SignUp extends React.Component {
       roomNameErrMsg,
       roomNameIsValid,
       showLogIn,
+      toRoom,
     } = this.state;
 
     const { errorCode, isPending, newRoomPathname, userId } = this.props;
@@ -261,7 +268,7 @@ class SignUp extends React.Component {
 
     const signUpErrMsg = errorCode ? <Fonts.Err>{this.getErrorText(errorCode)}</Fonts.Err> : null;
 
-    if (isCreatingNewRoom && newRoomPathname) return this.goToRoom();
+    if (isCreatingNewRoom && toRoom && newRoomPathname) return this.goToRoom();
 
     const emailDiv =
       isCreatingNewRoom && emailIsValid ? null : (
