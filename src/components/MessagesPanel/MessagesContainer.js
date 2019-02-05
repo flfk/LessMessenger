@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
 const MessagesContainer = styled.div`
+  height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -8,6 +8,7 @@ const Wrapper = styled.div`
   margin: auto;
   width: 100%;
   max-width: 880px;
+  height: calc(100% - 72px);
 
   ${Media.tablet} {
     width: auto;

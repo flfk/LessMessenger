@@ -121,7 +121,7 @@ MemberAnimation.defaultProps = defaultProps;
 
 const Wrapper = styled.div`
   // overflow: visible;
-  margin-top: -12px;
+  margin-top: -48px;
   margin-left: 64px;
   height: 48px;
   width: 300px;

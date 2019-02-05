@@ -260,16 +260,23 @@ class MessagePanel extends React.Component {
         <AnimationInOffice
           key={member.id}
           avatar={member.avatar}
-          isOnline={member.isOnline}
+          isOnline={roomMembers[member.id].isOnline}
           isTyping={roomMembers[member.id].isTyping}
         />
       ));
+
+    const dropZoneStyle = {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      height: '100%',
+    };
 
     return (
       <Container>
         <Dropzone onDrop={this.onDrop} onFileDialogCancel={this.onCancel}>
           {({ getRootProps }) => (
-            <div {...getRootProps()} style={{ display: 'flex', flexDirection: 'column' }}>
+            <div {...getRootProps()} style={dropZoneStyle}>
               <Messages />
               <AnimationInOffice.Wrapper>{animations}</AnimationInOffice.Wrapper>
               <Input.Wrapper>
