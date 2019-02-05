@@ -101,9 +101,8 @@ class Messages extends React.Component {
     const { hasRenderedInitialMessages } = this.state;
     const { messages, messagesFiltered, userId } = this.props;
     const newMsg = messagesFiltered[messagesFiltered.length - 1];
-    const wasNewMsgAdded = newMsg.id !== prevNewestMsg.id;
-
-    if (wasNewMsgAdded && !hasRenderedInitialMessages) {
+    const wasNewMsgAdded = newMsg && prevNewestMsg ? newMsg.id !== prevNewestMsg.id : false;
+    if (!hasRenderedInitialMessages) {
       this.scrollToNewMessages();
     } else if (wasNewMsgAdded && newMsg && newMsg.senderUserId !== userId) {
       this.scrollToBottom();
