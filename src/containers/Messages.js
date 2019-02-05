@@ -20,11 +20,10 @@ import Spinner from '../components/Spinner';
 // import { toggleTag } from '../data/tags/tags.actions';
 // import { getTagsSelectedState } from '../data/tags/tags.selectors';
 
-const NEW_MESSAGES_SPACER_HEIGHT = 468;
-
 const propTypes = {
   actionGetMsgSubscription: PropTypes.func.isRequired,
   hasMoreMessages: PropTypes.bool.isRequired,
+  hasLoadedMessages: PropTypes.bool.isRequired,
   isLoadingMembers: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(
     PropTypes.shape({
@@ -75,9 +74,8 @@ const mapDispatchToProps = dispatch => ({
 
 class Messages extends React.Component {
   state = {
-    hasCompletedFirstLoad: false,
+    hasRenderedInitialMessages: false,
     subscriptions: [],
-    newMessagesSpacerHeight: 0,
   };
 
   componentDidMount() {
@@ -87,13 +85,6 @@ class Messages extends React.Component {
   componentDidUpdate(prevProps) {
     const prevNewestMsg = prevProps.messagesFiltered[prevProps.messagesFiltered.length - 1];
     this.handleScrolling(prevNewestMsg);
-    if (
-      (!prevProps.hasLoadedMessages && this.props.hasLoadedMessages) ||
-      (this.props.hasLoadedMessages && prevProps.messages.length !== this.props.messages.length)
-    ) {
-      console.log('new message');
-      this.setNewMessagesSpacerHeight();
-    }
   }
 
   componentWillUnmount() {
@@ -101,39 +92,26 @@ class Messages extends React.Component {
     subscriptions.map(sub => sub());
   }
 
-  setNewMessagesSpacerHeight = () => {
-    const newMessagesHeight = this.newMessagesElement.clientHeight;
-    console.log('newMessagesclientHeight is ', this.newMessagesElement.clientHeight);
-    console.log('newMessagesscrollHeight is ', this.newMessagesElement.scrollHeight);
-    console.log('newMessagesoffsetHeight is ', this.newMessagesElement.offsetHeight);
-    console.log(
-      'newMessages.getBoundingClientRect() is ',
-      this.newMessagesElement.getBoundingClientRect()
-    );
-    const newSpacerHeight =
-      newMessagesHeight >= NEW_MESSAGES_SPACER_HEIGHT
-        ? 0
-        : NEW_MESSAGES_SPACER_HEIGHT - newMessagesHeight;
-    console.log('newSpacerHeight is ', newSpacerHeight);
-    // this.setState({ newMessagesSpacerHeight: newSpacerHeight });
-  };
-
   handleLoad = () => {
     const { hasMoreMessages, lastMsgDoc } = this.props;
     if (hasMoreMessages) this.subscribeMessages(lastMsgDoc);
   };
 
   handleScrolling = prevNewestMsg => {
-    const { hasCompletedFirstLoad } = this.state;
+    const { hasRenderedInitialMessages } = this.state;
     const { messages, messagesFiltered, userId } = this.props;
     const newMsg = messagesFiltered[messagesFiltered.length - 1];
     const wasNewMsgAdded = newMsg !== prevNewestMsg;
 
-    if (wasNewMsgAdded && newMsg && newMsg.senderUserId !== userId) this.scrollToBottom();
-    if (!hasCompletedFirstLoad) this.scrollToBottom();
+    if (!hasRenderedInitialMessages) {
+      this.scrollToNewMessages();
+    } else if (wasNewMsgAdded && newMsg && newMsg.senderUserId !== userId) {
+      this.scrollToBottom();
+    }
 
-    if (!hasCompletedFirstLoad && messages.length === MESSAGES_PER_LOAD)
-      this.setState({ hasCompletedFirstLoad: true });
+    if (!hasRenderedInitialMessages && messages.length === MESSAGES_PER_LOAD + 1) {
+      this.setState({ hasRenderedInitialMessages: true });
+    }
   };
 
   getMsgElement = (msg, hasHeader = true) => {
@@ -206,7 +184,15 @@ class Messages extends React.Component {
     this.setState({ subscriptions: subscriptionsUpdated });
   };
 
+  scrollToNewMessages = () => {
+    console.log('scroll to new Messages');
+    if (this.newMessagesEl) {
+      this.newMessagesEl.scrollIntoView(true);
+    }
+  };
+
   scrollToBottom = () => {
+    console.log('scroll to new bottom');
     if (this.messagesEnd) {
       this.messagesEnd.scrollIntoView({ behavior: 'auto' });
     }
@@ -222,18 +208,23 @@ class Messages extends React.Component {
       userId,
     } = this.props;
 
-    // console.log(hasLoadedMessages);
     if (!hasLoadedMessages) return null;
-
-    // if (isLoadingMessages) return <Spinner />;
 
     const mostRecentSignOut = roomMembers[userId].mostRecentSignOut || 0;
     const messagesOld = messagesFiltered.filter(msg => msg.timestamp < mostRecentSignOut);
     const messagesNew = messagesFiltered.filter(msg => msg.timestamp >= mostRecentSignOut);
 
     const messagesOldElement = this.getMessagesByDateElement(messagesOld);
+    const messagesWrapperHeight =
+      (this.newMessagesEl && this.newMessagesEl.parentElement.parentElement.clientHeight) || 568;
     const messagesNewElement = (
-      <div ref={newMessagesElement => (this.newMessagesElement = newMessagesElement)}>
+      <div
+        ref={newMessagesEl => (this.newMessagesEl = newMessagesEl)}
+        style={{
+          minHeight: `${messagesWrapperHeight}px`,
+        }}
+      >
+        <Divider text={'New messages'} />
         {this.getMessagesByDateElement(messagesNew)}
       </div>
     );
@@ -251,19 +242,17 @@ class Messages extends React.Component {
             useWindow={false}
           >
             {messagesOldElement}
-            <Divider text={'New messages'} />
             {messagesNewElement}
             <div
               style={{
-                backgroundColor: 'red',
                 width: '100%',
                 height: `${newMessagesSpacerHeight}px`,
               }}
             />
             <div
               style={{ float: 'left', clear: 'both' }}
-              ref={el => {
-                this.messagesEnd = el;
+              ref={messagesEnd => {
+                this.messagesEnd = messagesEnd;
               }}
             />
           </InfiniteScroll>
