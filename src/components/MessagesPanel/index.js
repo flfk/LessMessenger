@@ -1,4 +1,5 @@
 export { default as AnimationInOffice } from './AnimationInOffice';
+export { default as CancelBtn } from './CancelBtn';
 export { default as Container } from './Container';
 export { default as Divider } from './Divider';
 export { default as Input } from './Input';

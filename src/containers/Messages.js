@@ -171,11 +171,6 @@ class Messages extends React.Component {
       })
       .value();
 
-  // selectTag = id => () => {
-  //   const { actionToggleTag } = this.props;
-  //   actionToggleTag(id);
-  // };
-
   subscribeMessages = async (lastMsgDoc = null) => {
     const { subscriptions } = this.state;
     const { actionGetMsgSubscription, roomId, userId } = this.props;
@@ -185,14 +180,12 @@ class Messages extends React.Component {
   };
 
   scrollToNewMessages = () => {
-    console.log('scroll to new Messages');
     if (this.newMessagesEl) {
       this.newMessagesEl.scrollIntoView(true);
     }
   };
 
   scrollToBottom = () => {
-    console.log('scroll to new bottom');
     if (this.messagesEnd) {
       this.messagesEnd.scrollIntoView({ behavior: 'auto' });
     }
@@ -224,7 +217,7 @@ class Messages extends React.Component {
           minHeight: `${messagesWrapperHeight}px`,
         }}
       >
-        <Divider text={'New messages'} />
+        <Divider text="New messages" />
         {this.getMessagesByDateElement(messagesNew)}
       </div>
     );

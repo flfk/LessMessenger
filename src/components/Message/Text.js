@@ -40,6 +40,10 @@ const Reply = styled(Message)`
   text-overflow: ellipsis;
 `;
 
+const ReplyWrapper = styled.div`
+  display: flex;
+`;
+
 const Wrapper = styled.div`
   min-height: 21px;
   margin-left: 16px;
@@ -64,6 +68,7 @@ Text.Message = Message;
 Text.Tag = Tag;
 Text.Timestamp = Timestamp;
 Text.Reply = Reply;
+Text.ReplyWrapper = ReplyWrapper;
 Text.Wrapper = Wrapper;
 
 export default Text;

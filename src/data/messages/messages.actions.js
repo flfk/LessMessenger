@@ -43,6 +43,7 @@ export const updateMsgInState = msg => dispatch => {
 };
 
 export const cancelReply = () => dispatch => {
+  console.log('messages.actions cancel reply');
   dispatch({
     type: CANCEL_REPLY.SUCCESS,
   });
@@ -72,23 +73,6 @@ export const editMsg = msg => async dispatch => {
   await updateDocMsg(msg.id, { content: msg.content });
 };
 
-// const getTagIds = async (content, roomId, tags) => {
-//   const msgTags = getTags(content);
-//   const tagNames = tags.map(item => item.name);
-//   const tagIds = await Promise.all(
-//     msgTags.map(async tagName => {
-//       const tagIndex = tagNames.indexOf(tagName);
-//       if (tagIndex > -1) {
-//         return tags[tagIndex].id;
-//       }
-//       const newTag = await createTag(roomId, tagName);
-//       return newTag.id;
-//     })
-//   );
-//   // console.log('tagIds', tagIds);
-//   return tagIds;
-// };
-
 export const toggleSaveMsg = (msg, userId) => async dispatch => {
   const { savesByUserId } = msg;
   const msgUpdated = { ...msg };
@@ -111,23 +95,11 @@ export const replyToMsg = msgId => dispatch => {
   });
 };
 
-// export const sendMessage = (msg, tags) => async dispatch => {
 export const sendMessage = msg => async dispatch => {
   try {
-    // const tagIds = await getTagIds(msg.content, msg.roomId, tags);
-    // tagIds.forEach(id => {
-    //   const tag = tags.find(item => item.id === id);
-    //   dispatch(updateDateLastUsed(tag));
-    // });
     await db
       .collection(COLL_MESSAGES)
-      // Maybe problem is that using add with firebase.firestore.FieldValue.serverTimestamp() so use set instead
       .add({ ...msg, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-    // .doc(shortid.generate())
-    // .set({
-    //   ...msg,
-    //   timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    // });
     dispatch({
       type: SEND_MESSAGE.SUCCESS,
     });
@@ -228,7 +200,7 @@ const handleMsgSnapshot = (dispatch, userId) => async snapshot => {
   });
   messagesAdded.map(msg => dispatch(addMessage(msg)));
   messagesUpdated.map(msg => dispatch(updateMsgInState(msg)));
-  console.log('all messages loaded', messagesAdded.length, messagesUpdated.length);
+  // console.log('all messages loaded', messagesAdded.length, messagesUpdated.length);
   dispatch({
     type: LOADING_MESSAGES.SUCCESS,
   });
