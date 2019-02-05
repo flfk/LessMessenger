@@ -232,6 +232,7 @@ class Messages extends React.Component {
             loader={<Spinner key="InfiniteScrollMessages" />}
             loadMore={this.handleLoad}
             useWindow={false}
+            threshold={10}
           >
             {messagesOldElement}
             {messagesNewElement}
