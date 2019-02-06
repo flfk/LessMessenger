@@ -77,6 +77,7 @@ type Snapshot = number | null;
 class Messages extends React.Component<Props, State, Snapshot> {
   state = {
     hasRenderedInitialMessages: false,
+    hasCompletedInitialLoad: false,
     subscriptions: [],
     mostRecentSignIn: 0,
   };
@@ -86,23 +87,14 @@ class Messages extends React.Component<Props, State, Snapshot> {
   componentDidMount() {
     this.subscribeMessages();
     this.setState({ mostRecentSignIn: Math.floor(new Date()) });
-    this.scrollToNewMessages();
   }
 
   componentDidUpdate(prevProps: Props, prevState: State, snapshot: Snapshot) {
-    // If we have a snapshot value, then we've just added new items.
-    // Adjust scroll so these new items don't push the old ones out of view.
-    const { messages } = this.props;
-
-    if (snapshot && snapshot.scrollType === 'toBottom') {
-      console.log('scroll to Bottom');
-      this.scrollToBottom();
-    }
-
-    if (snapshot && snapshot.scrollType === 'noChange') {
-      console.log('no scroll change');
+    if (snapshot && snapshot.scrollType === 'toNewMessages')
+      this.newMessagesEl.scrollIntoView(true);
+    if (snapshot && snapshot.scrollType === 'toBottom') this.scrollToBottom();
+    if (snapshot && snapshot.scrollType === 'noChange')
       this.scrollParentRef.scrollTop += this.scrollParentRef.scrollHeight - snapshot;
-    }
   }
 
   componentWillUnmount() {
@@ -111,49 +103,34 @@ class Messages extends React.Component<Props, State, Snapshot> {
   }
 
   getSnapshotBeforeUpdate(prevProps) {
-    // Are we adding new items to the list?
-    // Capture the current height of the list so we can adjust scroll later.
     if (!this.scrollParentRef) return null;
 
-    const { mostRecentSignIn } = this.state;
-    const { hasMoreMessages, messages, messagesFiltered, roomMembers, userId } = this.props;
-    const mostRecentSignOut = roomMembers[userId].mostRecentSignOut;
-    const wasMsgAdded = prevProps.messagesFiltered.length < messagesFiltered.length;
+    const { hasCompletedInitialLoad, mostRecentSignIn } = this.state;
+    const { hasMoreMessages, messages, messagesFiltered, userId } = this.props;
 
+    const isInitialLoad = messages.length <= MESSAGES_PER_LOAD;
+    if (!hasCompletedInitialLoad && isInitialLoad) {
+      this.setState({ hasCompletedInitialLoad: true });
+      return { scrollType: 'toNewMessages' };
+    }
+
+    const wasMsgAdded = prevProps.messagesFiltered.length < messagesFiltered.length;
     if (wasMsgAdded) {
       const msgAdded = messagesFiltered[messagesFiltered.length - 1];
-      const isInitialLoad = messages.length === MESSAGES_PER_LOAD;
-      if (isInitialLoad) return { scrollType: 'toNewMessages' };
 
       const wasOldMsgAdded = msgAdded.timestamp < mostRecentSignIn;
       const wasSentByUser = msgAdded.senderUserId === userId;
-      console.log('msgAdded, userId', msgAdded, userId);
-      console.log('wasOldMsgAdded', wasOldMsgAdded);
-      console.log('wasSentByUser', wasSentByUser);
       if (wasOldMsgAdded || wasSentByUser)
         return { scrollType: 'noChange', value: this.scrollParentRef.scrollHeight };
       if (!wasOldMsgAdded && !wasSentByUser) return { scrollType: 'toBottom' };
-
-      // console.log('isInitialLoad', isInitialLoad);
     }
 
-    // no more messages to load
     if (prevProps.hasMoreMessages && !hasMoreMessages) {
-      console.log('hasNoMoreMessages');
-      return this.scrollParentRef.scrollHeight;
+      return { scrollType: 'noChange', value: this.scrollParentRef.scrollHeight };
     }
-
-    // user sent a message
-
-    // other user sent a message
 
     return null;
   }
-
-  // componentDidUpdate(prevProps) {
-  //   const prevNewestMsg = prevProps.messagesFiltered[prevProps.messagesFiltered.length - 1];
-  //   this.handleScrolling(prevNewestMsg);
-  // }
 
   handleLoad = () => {
     const { hasMoreMessages, lastMsgDoc } = this.props;
