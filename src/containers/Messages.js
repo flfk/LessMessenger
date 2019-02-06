@@ -17,8 +17,8 @@ import { getMembersState } from '../data/members/members.selectors';
 import { getRoomState } from '../data/room/room.selectors';
 import Scrollable from '../components/Scrollable';
 import Spinner from '../components/Spinner';
-// import { toggleTag } from '../data/tags/tags.actions';
-// import { getTagsSelectedState } from '../data/tags/tags.selectors';
+
+const DEFAULT_SCROLL_EL_HEIGHT_PX = 568;
 
 const propTypes = {
   actionGetMsgSubscription: PropTypes.func.isRequired,
@@ -72,24 +72,19 @@ const mapDispatchToProps = dispatch => ({
     dispatch(getMsgSubscription(roomId, lastMsgDoc, userId)),
 });
 
-type Snapshot = number | null;
-
-class Messages extends React.Component<Props, State, Snapshot> {
+class Messages extends React.Component {
   state = {
-    hasRenderedInitialMessages: false,
     hasCompletedInitialLoad: false,
     subscriptions: [],
     mostRecentSignIn: 0,
   };
-
-  listRef = React.createRef();
 
   componentDidMount() {
     this.subscribeMessages();
     this.setState({ mostRecentSignIn: Math.floor(new Date()) });
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State, snapshot: Snapshot) {
+  componentDidUpdate(prevProps, prevState, snapshot) {
     if (snapshot && snapshot.scrollType === 'toNewMessages')
       this.newMessagesEl.scrollIntoView(true);
     if (snapshot && snapshot.scrollType === 'toBottom') this.scrollToBottom();
@@ -137,22 +132,6 @@ class Messages extends React.Component<Props, State, Snapshot> {
     if (hasMoreMessages) this.subscribeMessages(lastMsgDoc);
   };
 
-  handleScrolling = prevNewestMsg => {
-    const { hasRenderedInitialMessages } = this.state;
-    const { messages, messagesFiltered, userId } = this.props;
-    const newMsg = messagesFiltered[messagesFiltered.length - 1];
-    const wasNewMsgAdded = newMsg && prevNewestMsg ? newMsg.id !== prevNewestMsg.id : false;
-    if (!hasRenderedInitialMessages) {
-      this.scrollToNewMessages();
-    } else if (wasNewMsgAdded && newMsg && newMsg.senderUserId !== userId) {
-      this.scrollToBottom();
-    }
-
-    if (!hasRenderedInitialMessages && messages.length === MESSAGES_PER_LOAD + 1) {
-      this.setState({ hasRenderedInitialMessages: true });
-    }
-  };
-
   getMsgEl = (msg, hasHeader = true) => {
     const { members, messages } = this.props;
     const sender = members.find(member => member.id === msg.senderUserId);
@@ -180,6 +159,24 @@ class Messages extends React.Component<Props, State, Snapshot> {
         senderName={sender.name}
       />
     );
+  };
+
+  getNewMessagesEl = messagesNew => {
+    const messagesWrapperHeight =
+      (this.newMessagesEl && this.newMessagesEl.parentElement.parentElement.clientHeight) ||
+      DEFAULT_SCROLL_EL_HEIGHT_PX;
+    const messagesNewEl = (
+      <div
+        ref={newMessagesEl => (this.newMessagesEl = newMessagesEl)}
+        style={{
+          minHeight: `${messagesWrapperHeight}px`,
+        }}
+      >
+        <Divider text="New messages" />
+        {this.getMessagesByDateElement(messagesNew)}
+      </div>
+    );
+    return messagesNewEl;
   };
 
   getMessagesByDateElement = messages =>
@@ -218,20 +215,6 @@ class Messages extends React.Component<Props, State, Snapshot> {
     this.setState({ subscriptions: subscriptionsUpdated });
   };
 
-  scrollToNewMessages = () => {
-    console.log('scrollingToNewMessages', this);
-    if (this.newMessagesEl) {
-      console.log('scrollingToNewMessages true');
-      this.newMessagesEl.scrollIntoView(true);
-    }
-  };
-
-  scrollToBottom = () => {
-    if (this.messagesEnd) {
-      this.messagesEnd.scrollIntoView({ behavior: 'auto' });
-    }
-  };
-
   render() {
     const { newMessagesSpacerHeight } = this.state;
     const {
@@ -249,19 +232,7 @@ class Messages extends React.Component<Props, State, Snapshot> {
     const messagesNew = messagesFiltered.filter(msg => msg.timestamp >= mostRecentSignOut);
 
     const messagesOldEl = this.getMessagesByDateElement(messagesOld);
-    const messagesWrapperHeight =
-      (this.newMessagesEl && this.newMessagesEl.parentElement.parentElement.clientHeight) || 568;
-    const messagesNewEl = (
-      <div
-        ref={newMessagesEl => (this.newMessagesEl = newMessagesEl)}
-        style={{
-          minHeight: `${messagesWrapperHeight}px`,
-        }}
-      >
-        <Divider text="New messages" />
-        {this.getMessagesByDateElement(messagesNew)}
-      </div>
-    );
+    const messagesNewEl = this.getNewMessagesEl(messagesNew);
 
     const noMoreMessagesEl = !hasMoreMessages ? <Divider text="No more messages" /> : null;
 
