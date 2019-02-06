@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 
-import Media from '../../utils/Media';
-
 const Content = styled.div`
   display: flex;
   flex-direction: column;

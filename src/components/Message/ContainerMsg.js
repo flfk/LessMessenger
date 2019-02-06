@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 import Colors from '../../utils/Colors';
-import Fonts from '../../utils/Fonts';
 
 const ContainerMsg = styled.div`
   padding: 0px 16px 0px 16px;

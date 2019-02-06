@@ -4,7 +4,6 @@ import React from 'react';
 import { MdCancel } from 'react-icons/md';
 
 import Colors from '../../utils/Colors';
-import Darken from '../../utils/Darken';
 
 const propTypes = {
   isImage: PropTypes.bool,

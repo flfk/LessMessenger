@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import moment from 'moment-timezone';
 
@@ -92,7 +91,7 @@ class NavBar extends React.Component {
   };
 
   render() {
-    const { showDropDown, timestamp, showPopupAddMember } = this.state;
+    const { showDropDown, timestamp } = this.state;
 
     const {
       actionToggleInviteMember,

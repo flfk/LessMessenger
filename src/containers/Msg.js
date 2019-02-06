@@ -1,21 +1,16 @@
-// import mixpanel from 'mixpanel-browser';
 import axios from 'axios';
 import Emojify from 'react-emojione';
 import React from 'react';
 import { connect } from 'react-redux';
 import { FaFileDownload, FaEdit, FaRegSave, FaReply, FaTrashAlt } from 'react-icons/fa';
-// import { TiPinOutline, TiPin } from 'react-icons/ti';
 import Linkify from 'react-linkify';
-import reactStringReplace from 'react-string-replace';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 
-import { REGEX_TAG, REGEX_TIMER } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import {
   Btn,
   ContainerMsg,
-  Countdown,
   DownloadIcon,
   ImgPreview,
   ProfileImg,
@@ -23,9 +18,6 @@ import {
 } from '../components/message';
 import { Input } from '../components/messagesPanel';
 import { deleteMsg, editMsg, replyToMsg, toggleSaveMsg } from '../data/messages/messages.actions';
-// import { getTagsState } from '../data/tags/tags.selectors';
-
-// NOTE POSSIBLY GET RID OF PINS LOGIC (REMOVED BTN)
 
 const propTypes = {
   actionDeleteMsg: PropTypes.func.isRequired,
@@ -33,11 +25,9 @@ const propTypes = {
   actionToggleSave: PropTypes.func.isRequired,
   actionReplyToMsg: PropTypes.func.isRequired,
   hasHeader: PropTypes.bool.isRequired,
-  // handleTogglePin: PropTypes.func.isRequired,
   msgBeingRepliedTo: PropTypes.string,
   senderBeingRepliedTo: PropTypes.string,
   profileImgURL: PropTypes.string.isRequired,
-  // selectTag: PropTypes.func.isRequired,
   senderName: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
 };
@@ -48,13 +38,11 @@ const defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  // tags: getTagsState(state),
   userId: state.user.id,
 });
 
 const mapDispatchToProps = dispatch => ({
   actionDeleteMsg: id => dispatch(deleteMsg(id)),
-  // actionEditMsg: (msg, tags) => dispatch(editMsg(msg, tags)),
   actionEditMsg: msg => dispatch(editMsg(msg)),
   actionReplyToMsg: id => dispatch(replyToMsg(id)),
   actionToggleSave: (msg, userId) => dispatch(toggleSaveMsg(msg, userId)),
@@ -79,7 +67,7 @@ class Msg extends React.Component {
     const isImg = msg.type.indexOf('image/') > -1;
     if (isImg) {
       return (
-        <a href={msg.downloadURL} target="_blank">
+        <a href={msg.downloadURL} target="_blank" rel="noopener noreferrer">
           <ImgPreview src={msg.downloadURL} />
         </a>
       );
@@ -91,46 +79,6 @@ class Msg extends React.Component {
         </DownloadIcon>{' '}
         {msg.fileName}
       </Text.Attachment>
-    );
-  };
-
-  // getTag = word => {
-  //   const { msg, selectTag, tags } = this.props;
-  //   const tag = tags.find(item => item.name === word.toLowerCase());
-  //   if (!tag) return `${word} `;
-  //   const wordTagged = reactStringReplace(word, REGEX_TAG, match => (
-  //     <Text.Tag key={tag.id} color={tag.color} isSelected={false} onClick={selectTag(tag.id)}>
-  //       {match}{' '}
-  //     </Text.Tag>
-  //   ));
-  //   return wordTagged;
-  // };
-
-  getTimer = word => {
-    const { msg } = this.props;
-    const regExTime = /\d+:\d+:\d+/gi;
-    const input = word.match(regExTime)[0].split(':');
-    const momentTo = moment(msg.timestamp)
-      .add({ days: input[0], hours: input[1], minutes: input[2] })
-      .valueOf();
-    return <Countdown key={`${msg.timestamp}_${word}`} date={momentTo} />;
-  };
-
-  getTextWithTags = text => {
-    // const { msg } = this.props;
-    // const words = text.split(' ').map(word => {
-    //   if (msg.hasTimer) {
-    //     const isTimer = word.match(REGEX_TIMER) !== null;
-    //     if (isTimer) return this.getTimer(word);
-    //   }
-    //   if (msg.tagIds && msg.tagIds.length > 0) return this.getTag(word);
-    //   return `${word} `;
-    // });
-
-    return (
-      <Linkify properties={{ target: '_blank', style: { color: 'black', opacity: '0.8' } }}>
-        <Emojify style={{ height: 16, width: 16 }}>{text}</Emojify>
-      </Linkify>
     );
   };
 
@@ -162,7 +110,6 @@ class Msg extends React.Component {
   handleEditSave = () => {
     const { editInput } = this.state;
     const { actionEditMsg, msg } = this.props;
-    // actionEditMsg({ ...msg, content: editInput }, tags);
     actionEditMsg({ ...msg, content: editInput });
     this.handleEditCancel();
   };
@@ -175,7 +122,6 @@ class Msg extends React.Component {
       actionReplyToMsg,
       actionToggleSave,
       hasHeader,
-      // handleTogglePin,
       msg,
       msgBeingRepliedTo,
       senderBeingRepliedTo,
@@ -195,7 +141,13 @@ class Msg extends React.Component {
 
     const attachment = msg.hasAttachment ? this.getAttachmentElement() : null;
 
-    let text = <Text.Message>{this.getTextWithTags(msg.content)}</Text.Message>;
+    let text = (
+      <Text.Message>
+        <Linkify properties={{ target: '_blank', style: { color: 'black', opacity: '0.8' } }}>
+          <Emojify style={{ height: 16, width: 16 }}>{msg.content}</Emojify>
+        </Linkify>
+      </Text.Message>
+    );
 
     if (isBeingEdited) {
       text = (

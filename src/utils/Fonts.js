@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import 'typeface-roboto';
 
 import Colors from './Colors';
-import Media from './Media';
 
 const FontFamily = {
   header: 'Roboto, sans-serif',

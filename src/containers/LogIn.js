@@ -74,8 +74,8 @@ class LogIn extends React.Component {
       const { email, password } = this.state;
       const { actionLogIn } = this.props;
       actionLogIn(email, password);
-      // mixpanel.identify(email);
-      // mixpanel.track('Logged In');
+      mixpanel.identify(email);
+      mixpanel.track('Logged In');
     }
   };
 

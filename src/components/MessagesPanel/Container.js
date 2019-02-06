@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-import Colors from '../../utils/Colors';
 import Media from '../../utils/Media';
 
 const Container = styled.div`

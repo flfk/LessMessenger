@@ -1,8 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Colors from '../../utils/Colors';
-
 import { MdAddCircleOutline } from 'react-icons/md';
 
 const Wrapper = styled.div`
