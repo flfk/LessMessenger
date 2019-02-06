@@ -16,13 +16,9 @@ const Spinner = () => {
 
   return (
     <div>
-      <Content.Spacing />
-      <Content.Spacing />
       <Content.Row justifyCenter>
-        <Lottie options={defaultOptions} height={48} width={48} />
+        <Lottie options={defaultOptions} height={40} width={40} />
       </Content.Row>
-      <Content.Spacing />
-      <Content.Spacing />
     </div>
   );
 };

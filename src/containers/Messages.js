@@ -72,25 +72,88 @@ const mapDispatchToProps = dispatch => ({
     dispatch(getMsgSubscription(roomId, lastMsgDoc, userId)),
 });
 
-class Messages extends React.Component {
+type Snapshot = number | null;
+
+class Messages extends React.Component<Props, State, Snapshot> {
   state = {
     hasRenderedInitialMessages: false,
     subscriptions: [],
+    mostRecentSignIn: 0,
   };
+
+  listRef = React.createRef();
 
   componentDidMount() {
     this.subscribeMessages();
+    this.setState({ mostRecentSignIn: Math.floor(new Date()) });
+    this.scrollToNewMessages();
   }
 
-  componentDidUpdate(prevProps) {
-    const prevNewestMsg = prevProps.messagesFiltered[prevProps.messagesFiltered.length - 1];
-    this.handleScrolling(prevNewestMsg);
+  componentDidUpdate(prevProps: Props, prevState: State, snapshot: Snapshot) {
+    // If we have a snapshot value, then we've just added new items.
+    // Adjust scroll so these new items don't push the old ones out of view.
+    const { messages } = this.props;
+
+    if (snapshot && snapshot.scrollType === 'toBottom') {
+      console.log('scroll to Bottom');
+      this.scrollToBottom();
+    }
+
+    if (snapshot && snapshot.scrollType === 'noChange') {
+      console.log('no scroll change');
+      this.scrollParentRef.scrollTop += this.scrollParentRef.scrollHeight - snapshot;
+    }
   }
 
   componentWillUnmount() {
     const { subscriptions } = this.state;
     subscriptions.map(sub => sub());
   }
+
+  getSnapshotBeforeUpdate(prevProps) {
+    // Are we adding new items to the list?
+    // Capture the current height of the list so we can adjust scroll later.
+    if (!this.scrollParentRef) return null;
+
+    const { mostRecentSignIn } = this.state;
+    const { hasMoreMessages, messages, messagesFiltered, roomMembers, userId } = this.props;
+    const mostRecentSignOut = roomMembers[userId].mostRecentSignOut;
+    const wasMsgAdded = prevProps.messagesFiltered.length < messagesFiltered.length;
+
+    if (wasMsgAdded) {
+      const msgAdded = messagesFiltered[messagesFiltered.length - 1];
+      const isInitialLoad = messages.length === MESSAGES_PER_LOAD;
+      if (isInitialLoad) return { scrollType: 'toNewMessages' };
+
+      const wasOldMsgAdded = msgAdded.timestamp < mostRecentSignIn;
+      const wasSentByUser = msgAdded.senderUserId === userId;
+      console.log('msgAdded, userId', msgAdded, userId);
+      console.log('wasOldMsgAdded', wasOldMsgAdded);
+      console.log('wasSentByUser', wasSentByUser);
+      if (wasOldMsgAdded || wasSentByUser)
+        return { scrollType: 'noChange', value: this.scrollParentRef.scrollHeight };
+      if (!wasOldMsgAdded && !wasSentByUser) return { scrollType: 'toBottom' };
+
+      // console.log('isInitialLoad', isInitialLoad);
+    }
+
+    // no more messages to load
+    if (prevProps.hasMoreMessages && !hasMoreMessages) {
+      console.log('hasNoMoreMessages');
+      return this.scrollParentRef.scrollHeight;
+    }
+
+    // user sent a message
+
+    // other user sent a message
+
+    return null;
+  }
+
+  // componentDidUpdate(prevProps) {
+  //   const prevNewestMsg = prevProps.messagesFiltered[prevProps.messagesFiltered.length - 1];
+  //   this.handleScrolling(prevNewestMsg);
+  // }
 
   handleLoad = () => {
     const { hasMoreMessages, lastMsgDoc } = this.props;
@@ -113,7 +176,7 @@ class Messages extends React.Component {
     }
   };
 
-  getMsgElement = (msg, hasHeader = true) => {
+  getMsgEl = (msg, hasHeader = true) => {
     const { members, messages } = this.props;
     const sender = members.find(member => member.id === msg.senderUserId);
     if (!sender) return null;
@@ -155,7 +218,7 @@ class Messages extends React.Component {
             : !(group[index - 1].senderUserId === msg.senderUserId);
           const timeDiffLastMsg = isFirstInGroup ? 0 : msg.timestamp - group[index - 1].timestamp;
           const hasHeader = isNewSender || timeDiffLastMsg > MIN_TIME_DIFF_UNTIL_HEADER_MILLIS;
-          return this.getMsgElement(msg, hasHeader);
+          return this.getMsgEl(msg, hasHeader);
         });
         return (
           <div key={date}>
@@ -179,7 +242,9 @@ class Messages extends React.Component {
   };
 
   scrollToNewMessages = () => {
+    console.log('scrollingToNewMessages', this);
     if (this.newMessagesEl) {
+      console.log('scrollingToNewMessages true');
       this.newMessagesEl.scrollIntoView(true);
     }
   };
@@ -206,10 +271,10 @@ class Messages extends React.Component {
     const messagesOld = messagesFiltered.filter(msg => msg.timestamp < mostRecentSignOut);
     const messagesNew = messagesFiltered.filter(msg => msg.timestamp >= mostRecentSignOut);
 
-    const messagesOldElement = this.getMessagesByDateElement(messagesOld);
+    const messagesOldEl = this.getMessagesByDateElement(messagesOld);
     const messagesWrapperHeight =
       (this.newMessagesEl && this.newMessagesEl.parentElement.parentElement.clientHeight) || 568;
-    const messagesNewElement = (
+    const messagesNewEl = (
       <div
         ref={newMessagesEl => (this.newMessagesEl = newMessagesEl)}
         style={{
@@ -220,6 +285,8 @@ class Messages extends React.Component {
         {this.getMessagesByDateElement(messagesNew)}
       </div>
     );
+
+    const noMoreMessagesEl = !hasMoreMessages ? <Divider text="No more messages" /> : null;
 
     return (
       <MessagesContainer>
@@ -234,8 +301,9 @@ class Messages extends React.Component {
             useWindow={false}
             threshold={10}
           >
-            {messagesOldElement}
-            {messagesNewElement}
+            {noMoreMessagesEl}
+            {messagesOldEl}
+            {messagesNewEl}
             <div
               style={{
                 width: '100%',
