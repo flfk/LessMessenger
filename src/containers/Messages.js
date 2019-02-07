@@ -87,7 +87,8 @@ class Messages extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (snapshot && snapshot.scrollType === 'toNewMessages')
       this.newMessagesEl.scrollIntoView(true);
-    if (snapshot && snapshot.scrollType === 'toBottom') this.scrollToBottom();
+    if (snapshot && snapshot.scrollType === 'toBottom')
+      this.scrollParentRef.scrollTop = this.scrollParentRef.clientHeight;
     if (snapshot && snapshot.scrollType === 'noChange')
       this.scrollParentRef.scrollTop += this.scrollParentRef.scrollHeight - snapshot;
   }
@@ -129,7 +130,10 @@ class Messages extends React.Component {
 
   handleLoad = () => {
     const { hasMoreMessages, lastMsgDoc } = this.props;
+    console.log('handleLoad lastMsgDoc', lastMsgDoc.data());
     if (hasMoreMessages) this.subscribeMessages(lastMsgDoc);
+    // if (hasMoreMessages) this.subscribeMessages();
+    console.log('handleLoad');
   };
 
   getMsgEl = (msg, hasHeader = true) => {
@@ -237,6 +241,37 @@ class Messages extends React.Component {
     const noMoreMessagesEl = !hasMoreMessages ? <Divider text="No more messages" /> : null;
 
     return (
+      <Scrollable ref={ref => (this.scrollParentRef = ref)}>
+        <InfiniteScroll
+          getScrollParent={() => this.scrollParentRef}
+          hasMore={hasMoreMessages}
+          initialLoad={false}
+          isReverse
+          loader={<Spinner key="InfiniteScrollMessages" />}
+          loadMore={this.handleLoad}
+          useWindow={false}
+          threshold={10}
+        >
+          {noMoreMessagesEl}
+          {messagesOldEl}
+          {messagesNewEl}
+          <div
+            style={{
+              width: '100%',
+              height: `${newMessagesSpacerHeight}px`,
+            }}
+          />
+          <div
+            style={{ float: 'left', clear: 'both' }}
+            ref={messagesEnd => {
+              this.messagesEnd = messagesEnd;
+            }}
+          />
+        </InfiniteScroll>
+      </Scrollable>
+    );
+
+    return (
       <MessagesContainer>
         <Scrollable ref={ref => (this.scrollParentRef = ref)}>
           <InfiniteScroll
@@ -246,6 +281,7 @@ class Messages extends React.Component {
             isReverse
             loader={<Spinner key="InfiniteScrollMessages" />}
             loadMore={this.handleLoad}
+            // loadMore={() => console.log('loading more')}
             useWindow={false}
             threshold={10}
           >

@@ -55,3 +55,7 @@ class App extends Component {
 }
 
 export default App;
+
+// import FIRESTORE_TEST from './FIRESTORE_TEST';
+
+// export default FIRESTORE_TEST;

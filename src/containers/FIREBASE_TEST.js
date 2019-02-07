@@ -11,6 +11,7 @@ import Fonts from '../utils/Fonts';
 import { getPathname } from '../utils/Helpers';
 import MessagesPanel from './MessagesPanel';
 import { getMemberSubscription } from '../data/members/members.actions';
+import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
 import {
   addUserIdToMembers,
   changeUserStatusToOnline,
@@ -24,9 +25,9 @@ import Spinner from '../components/Spinner';
 import SignUp from './SignUp';
 // import TagPanel from './TagPanel';
 
-import FIRESTORE_TEST from '../FIRESTORE_TEST';
-
 const propTypes = {
+  actionSendMessage: PropTypes.func.isRequired,
+
   actionAddUserIdToMembers: PropTypes.func.isRequired,
   actionChangeUserStatusToOnline: PropTypes.func.isRequired,
   actionGetMemberSubscription: PropTypes.func.isRequired,
@@ -77,6 +78,8 @@ const mapDispatchToProps = dispatch => ({
   actionInviteMember: (email, inviterName, roomId, roomName, roomPathname) =>
     dispatch(inviteMember(email, inviterName, roomId, roomName, roomPathname)),
   actionToggleInviteMember: () => dispatch(toggleInviteMember()),
+
+  actionSendMessage: (message, tags) => dispatch(sendMessage(message, tags)),
 });
 
 class Room extends React.Component {
@@ -183,38 +186,19 @@ class Room extends React.Component {
   };
 
   render() {
-    const { hasLoadedMembers, hasRoomAccess, toLandingPage } = this.state;
-    const { actionToggleInviteMember, error, isInvitingMember, isLoading, userId } = this.props;
-
-    if (toLandingPage) return this.goToLandingPage();
-
-    if (error) return <ErrorScreen />;
-
-    if (!userId) return <SignUp />;
-
-    if (isLoading || !hasLoadedMembers) return <Spinner />;
-
-    if (hasLoadedMembers && !hasRoomAccess)
-      return (
-        <Content>
-          <Fonts.H2 isCentered>
-            Oops, looks like you don't have access to this workspace. Contact your room
-            administrator to request an invitation.
-          </Fonts.H2>
-        </Content>
-      );
-
-    const addMemberPopup = isInvitingMember ? (
-      <AddMemberPopup
-        handleClose={actionToggleInviteMember}
-        handleInviteMember={this.handleInviteMember}
-      />
-    ) : null;
+    const { actionSendMessage } = this.props;
+    const testMsg = {
+      content: 'hello world',
+      hasAttachment: false,
+      roomId: 'abc',
+      savesByUserId: [],
+      seenByUserId: ['xyz'],
+      senderUserId: 'xyz',
+    };
 
     return (
       <Wrapper>
-        <MessagesPanel />
-        {addMemberPopup}
+        <button onClick={() => actionSendMessage(testMsg)}>Click To Test</button>
       </Wrapper>
     );
   }

@@ -6,10 +6,10 @@ import 'firebase/storage';
 
 const config = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: 'tagchat-bca37.firebaseapp.com',
-  databaseURL: 'https://tagchat-bca37.firebaseio.com',
-  projectId: 'tagchat-bca37',
-  storageBucket: 'tagchat-bca37.appspot.com',
+  authDomain: 'lessmessenger-19425.firebaseapp.com',
+  databaseURL: 'https://lessmessenger-19425.firebaseio.com',
+  projectId: 'lessmessenger-19425',
+  storageBucket: '',
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_Id,
 };
 

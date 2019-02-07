@@ -28,7 +28,7 @@ const updateDocMsg = async (id, fields) => {
   await msgRef.update({ ...fields });
 };
 
-const updateLastMsgDoc = doc => dispatch => {
+export const updateLastMsgDoc = doc => dispatch => {
   dispatch({
     type: SET_LAST_MSG_DOC.SUCCESS,
     payload: doc,
@@ -155,7 +155,7 @@ const handleMsgSnapshot = (dispatch, userId) => async snapshot => {
       const { id } = doc;
       msg.id = id;
       // Mark as seen if not already marked as seen
-      if (!msg.seenByUserId || !(msg.seenByUserId.indexOf(userId) > -1)) markMsgAsSeen(id, userId);
+      // if (!msg.seenByUserId || !(msg.seenByUserId.indexOf(userId) > -1)) markMsgAsSeen(id, userId);
       // convert firestore timestamp to unix
       // console.log('snapshot event change add', msg);
       msg.timestamp =

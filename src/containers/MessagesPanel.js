@@ -8,7 +8,12 @@ import { REGEX_TIMER, TYPING_TIMEOUT_MILLIS } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import Messages from './Messages';
 // import { createTag } from '../data/tags/tags.actions';
-import { cancelReply, sendMessage, uploadFile } from '../data/messages/messages.actions';
+import {
+  cancelReply,
+  getMsgSubscription,
+  sendMessage,
+  uploadFile,
+} from '../data/messages/messages.actions';
 import { getMessagesState } from '../data/messages/messages.selectors';
 import { getMembersState } from '../data/members/members.selectors';
 import {
@@ -56,7 +61,64 @@ const mapDispatchToProps = dispatch => ({
   actionCancelReply: () => dispatch(cancelReply()),
   actionSendMessage: (message, tags) => dispatch(sendMessage(message, tags)),
   actionToggleIsTyping: (id, isTyping, roomId) => dispatch(toggleIsTyping(id, isTyping, roomId)),
+
+  actionGetMsgSubscription: (roomId, lastMsgDoc) =>
+    dispatch(getMsgSubscription(roomId, lastMsgDoc)),
 });
+
+const ROOM_ID = '';
+
+class Test extends React.Component {
+  state = {
+    subscriptions: [],
+  };
+
+  componentDidMount() {
+    this.testSubscribeMessages();
+  }
+
+  componentWillUnmount() {
+    const { subscriptions } = this.state;
+    subscriptions.map(sub => sub());
+  }
+
+  testGetNewMsg = () => ({
+    content: 'hello world',
+    hasAttachment: false,
+    roomId: ROOM_ID,
+    savesByUserId: [],
+    seenByUserId: ['xyz'],
+    senderUserId: 'xyz',
+  });
+
+  testHandleSend = () => {
+    const { actionSendMessage } = this.props;
+    const msg = this.testGetNewMsg();
+    actionSendMessage(msg);
+  };
+
+  testSubscribeMessages = async (lastMsgDoc = null) => {
+    const { subscriptions } = this.state;
+    const { actionGetMsgSubscription } = this.props;
+    const newSub = await actionGetMsgSubscription(ROOM_ID, lastMsgDoc);
+    const subscriptionsUpdated = [...subscriptions, newSub];
+    this.setState({ subscriptions: subscriptionsUpdated });
+  };
+
+  render() {
+    console.log('messages', this.props.messages);
+    return (
+      <div>
+        <button onClick={this.testHandleSend}>Click To Test</button>
+      </div>
+    );
+  }
+}
+
+const TestConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Test);
 
 class MessagePanel extends React.Component {
   state = {
@@ -120,7 +182,7 @@ class MessagePanel extends React.Component {
 
   handleSubmit = async () => {
     const { files, msgInput } = this.state;
-    const { actionCancelReply, actionSendMessage, msgIdBeingRepliedTo, roomId, tags } = this.props;
+    const { actionCancelReply, actionSendMessage, msgIdBeingRepliedTo, roomId } = this.props;
 
     const newMsg = await this.getNewMsg(msgInput);
     this.setState({ files: [], msgInput: '' });
@@ -130,11 +192,11 @@ class MessagePanel extends React.Component {
           const uploadTask = await uploadFile(file, roomId);
           const downloadURL = await uploadTask.ref.getDownloadURL();
           const attachmentFields = this.getAttachmentFields(downloadURL, file);
-          actionSendMessage({ ...newMsg, ...attachmentFields }, tags);
+          actionSendMessage({ ...newMsg, ...attachmentFields });
         })
       );
     } else {
-      actionSendMessage(newMsg, tags);
+      actionSendMessage(newMsg);
     }
     if (msgIdBeingRepliedTo) actionCancelReply();
     mixpanel.track('Sent Message', { roomId });
@@ -258,30 +320,51 @@ class MessagePanel extends React.Component {
     };
 
     return (
-      <Container>
-        <Dropzone onDrop={this.onDrop} onFileDialogCancel={this.onCancel}>
-          {({ getRootProps }) => (
-            <div {...getRootProps()} style={dropZoneStyle}>
-              <Messages />
-              <AnimationInOffice.Wrapper>{animations}</AnimationInOffice.Wrapper>
-              <Input.Wrapper>
-                {reply}
-                <Thumbnails.Container>{thumbnails}</Thumbnails.Container>
-                <Input
-                  type="text"
-                  placeholder="Type a message..."
-                  onChange={this.handleChangeMsgInput}
-                  id={msgInput}
-                  onKeyDown={this.handleKeyPress}
-                  maxRows={10}
-                  value={msgInput}
-                />
-              </Input.Wrapper>
-            </div>
-          )}
-        </Dropzone>
-      </Container>
+      <div>
+        <TestConnected />
+        <Messages />
+        <Input.Wrapper>
+          <Input
+            type="text"
+            placeholder="Type a message..."
+            onChange={this.handleChangeMsgInput}
+            id={msgInput}
+            onKeyDown={this.handleKeyPress}
+            maxRows={10}
+            value={msgInput}
+          />
+        </Input.Wrapper>
+      </div>
     );
+
+    // return (
+    //   <div>
+    //     <TestConnected />
+    //     <Container>
+    //       <Dropzone onDrop={this.onDrop} onFileDialogCancel={this.onCancel}>
+    //         {({ getRootProps }) => (
+    //           <div {...getRootProps()} style={dropZoneStyle}>
+    //             <Messages />
+    //             <AnimationInOffice.Wrapper>{animations}</AnimationInOffice.Wrapper>
+    //             <Input.Wrapper>
+    //               {reply}
+    //               <Thumbnails.Container>{thumbnails}</Thumbnails.Container>
+    //               <Input
+    //                 type="text"
+    //                 placeholder="Type a message..."
+    //                 onChange={this.handleChangeMsgInput}
+    //                 id={msgInput}
+    //                 onKeyDown={this.handleKeyPress}
+    //                 maxRows={10}
+    //                 value={msgInput}
+    //               />
+    //             </Input.Wrapper>
+    //           </div>
+    //         )}
+    //       </Dropzone>
+    //     </Container>
+    //   </div>
+    // );
   }
 }
 
