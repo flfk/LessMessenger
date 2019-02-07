@@ -165,6 +165,8 @@ const handleMsgSnapshot = (dispatch, userId) => async snapshot => {
       messagesAdded.push(msg);
       // dispatch(addMessage(msg));
       // update last Msg Doc to be used as reference for following load
+
+      console.log('added', doc.data());
       dispatch(updateLastMsgDoc(doc));
     }
     if (change.type === 'modified') {
@@ -185,6 +187,8 @@ const handleMsgSnapshot = (dispatch, userId) => async snapshot => {
       const msgUpdated = { ...msg };
       if (msgUpdated.seenByUserId) delete msgUpdated.seenByUserId;
       messagesUpdated.push(msgUpdated);
+      console.log('modified', doc.data());
+      // dispatch(updateLastMsgDoc(doc));
     }
     if (change.type === 'removed') {
       const { doc } = change;

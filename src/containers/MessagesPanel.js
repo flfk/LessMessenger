@@ -106,7 +106,6 @@ class Test extends React.Component {
   };
 
   render() {
-    console.log('messages', this.props.messages);
     return (
       <div>
         <button onClick={this.testHandleSend}>Click To Test</button>
@@ -319,52 +318,49 @@ class MessagePanel extends React.Component {
       height: '100%',
     };
 
-    return (
-      <div>
-        <TestConnected />
-        <Messages />
-        <Input.Wrapper>
-          <Input
-            type="text"
-            placeholder="Type a message..."
-            onChange={this.handleChangeMsgInput}
-            id={msgInput}
-            onKeyDown={this.handleKeyPress}
-            maxRows={10}
-            value={msgInput}
-          />
-        </Input.Wrapper>
-      </div>
-    );
-
     // return (
     //   <div>
     //     <TestConnected />
-    //     <Container>
-    //       <Dropzone onDrop={this.onDrop} onFileDialogCancel={this.onCancel}>
-    //         {({ getRootProps }) => (
-    //           <div {...getRootProps()} style={dropZoneStyle}>
-    //             <Messages />
-    //             <AnimationInOffice.Wrapper>{animations}</AnimationInOffice.Wrapper>
-    //             <Input.Wrapper>
-    //               {reply}
-    //               <Thumbnails.Container>{thumbnails}</Thumbnails.Container>
-    //               <Input
-    //                 type="text"
-    //                 placeholder="Type a message..."
-    //                 onChange={this.handleChangeMsgInput}
-    //                 id={msgInput}
-    //                 onKeyDown={this.handleKeyPress}
-    //                 maxRows={10}
-    //                 value={msgInput}
-    //               />
-    //             </Input.Wrapper>
-    //           </div>
-    //         )}
-    //       </Dropzone>
-    //     </Container>
+    //     <Messages />
+    //     <Input.Wrapper>
+    //       <Input
+    //         type="text"
+    //         placeholder="Type a message..."
+    //         onChange={this.handleChangeMsgInput}
+    //         id={msgInput}
+    //         onKeyDown={this.handleKeyPress}
+    //         maxRows={10}
+    //         value={msgInput}
+    //       />
+    //     </Input.Wrapper>
     //   </div>
     // );
+
+    return (
+      <Container>
+        <Dropzone onDrop={this.onDrop} onFileDialogCancel={this.onCancel}>
+          {({ getRootProps }) => (
+            <div {...getRootProps()} style={dropZoneStyle}>
+              <Messages />
+              <AnimationInOffice.Wrapper>{animations}</AnimationInOffice.Wrapper>
+              <Input.Wrapper>
+                {reply}
+                <Thumbnails.Container>{thumbnails}</Thumbnails.Container>
+                <Input
+                  type="text"
+                  placeholder="Type a message..."
+                  onChange={this.handleChangeMsgInput}
+                  id={msgInput}
+                  onKeyDown={this.handleKeyPress}
+                  maxRows={10}
+                  value={msgInput}
+                />
+              </Input.Wrapper>
+            </div>
+          )}
+        </Dropzone>
+      </Container>
+    );
   }
 }
 

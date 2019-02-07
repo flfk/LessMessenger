@@ -87,10 +87,10 @@ class Messages extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (snapshot && snapshot.scrollType === 'toNewMessages')
       this.newMessagesEl.scrollIntoView(true);
-    if (snapshot && snapshot.scrollType === 'toBottom')
-      this.scrollParentRef.scrollTop = this.scrollParentRef.clientHeight;
+    // if (snapshot && snapshot.scrollType === 'toBottom')
+    // this.scrollParentRef.scrollTop = this.scrollParentRef.clientHeight;
     if (snapshot && snapshot.scrollType === 'noChange')
-      this.scrollParentRef.scrollTop += this.scrollParentRef.scrollHeight - snapshot;
+      this.scrollParentRef.scrollTop += this.scrollParentRef.scrollHeight - snapshot.value;
   }
 
   componentWillUnmount() {
@@ -133,7 +133,6 @@ class Messages extends React.Component {
     console.log('handleLoad lastMsgDoc', lastMsgDoc.data());
     if (hasMoreMessages) this.subscribeMessages(lastMsgDoc);
     // if (hasMoreMessages) this.subscribeMessages();
-    console.log('handleLoad');
   };
 
   getMsgEl = (msg, hasHeader = true) => {
@@ -231,6 +230,8 @@ class Messages extends React.Component {
 
     if (!hasLoadedMessages) return null;
 
+    console.log('subscriptions', this.state.subscriptions.length);
+
     const mostRecentSignOut = roomMembers[userId].mostRecentSignOut || 0;
     const messagesOld = messagesFiltered.filter(msg => msg.timestamp < mostRecentSignOut);
     const messagesNew = messagesFiltered.filter(msg => msg.timestamp >= mostRecentSignOut);
@@ -240,36 +241,36 @@ class Messages extends React.Component {
 
     const noMoreMessagesEl = !hasMoreMessages ? <Divider text="No more messages" /> : null;
 
-    return (
-      <Scrollable ref={ref => (this.scrollParentRef = ref)}>
-        <InfiniteScroll
-          getScrollParent={() => this.scrollParentRef}
-          hasMore={hasMoreMessages}
-          initialLoad={false}
-          isReverse
-          loader={<Spinner key="InfiniteScrollMessages" />}
-          loadMore={this.handleLoad}
-          useWindow={false}
-          threshold={10}
-        >
-          {noMoreMessagesEl}
-          {messagesOldEl}
-          {messagesNewEl}
-          <div
-            style={{
-              width: '100%',
-              height: `${newMessagesSpacerHeight}px`,
-            }}
-          />
-          <div
-            style={{ float: 'left', clear: 'both' }}
-            ref={messagesEnd => {
-              this.messagesEnd = messagesEnd;
-            }}
-          />
-        </InfiniteScroll>
-      </Scrollable>
-    );
+    // return (
+    //   <Scrollable ref={ref => (this.scrollParentRef = ref)}>
+    //     <InfiniteScroll
+    //       getScrollParent={() => this.scrollParentRef}
+    //       hasMore={hasMoreMessages}
+    //       initialLoad={false}
+    //       isReverse
+    //       loader={<Spinner key="InfiniteScrollMessages" />}
+    //       loadMore={this.handleLoad}
+    //       useWindow={false}
+    //       threshold={10}
+    //     >
+    //       {noMoreMessagesEl}
+    //       {messagesOldEl}
+    //       {messagesNewEl}
+    //       <div
+    //         style={{
+    //           width: '100%',
+    //           height: `${newMessagesSpacerHeight}px`,
+    //         }}
+    //       />
+    //       <div
+    //         style={{ float: 'left', clear: 'both' }}
+    //         ref={messagesEnd => {
+    //           this.messagesEnd = messagesEnd;
+    //         }}
+    //       />
+    //     </InfiniteScroll>
+    //   </Scrollable>
+    // );
 
     return (
       <MessagesContainer>

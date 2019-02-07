@@ -16,7 +16,7 @@ const initialState = {
   isLoading: true,
   hasLoaded: false,
   hasMoreMessages: true,
-  lastMsgDoc: {},
+  lastMsgDoc: null,
 };
 
 const reducerMessages = (state = initialState, action) => {
@@ -51,6 +51,21 @@ const reducerMessages = (state = initialState, action) => {
         hasLoaded: true,
       };
     case SET_LAST_MSG_DOC.SUCCESS:
+      // Need to test that a timestamp exists and it is the last message
+      // console.log('lastMsgDoc', action.payload.data());
+      // If no server timestamp on message ignore
+      if (!action.payload.data().timestamp) {
+        return { ...state };
+      }
+      // If no last msg doc yet accept last msg doc
+      if (!state.lastMsgDoc) {
+        return { ...state, lastMsgDoc: action.payload };
+        // Only accept a new doc with a timestamp less then current lastMsgDoc
+      } else if (
+        state.lastMsgDoc.data().timestamp.toMillis() < action.payload.data().timestamp.toMillis()
+      ) {
+        return { ...state };
+      }
       return { ...state, lastMsgDoc: action.payload };
     case SIGNOUT_USER.SUCCESS:
       return {
