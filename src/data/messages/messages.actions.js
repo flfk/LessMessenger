@@ -185,6 +185,7 @@ const handleMsgSnapshot = (dispatch, userId) => async snapshot => {
       const msgUpdated = { ...msg };
       if (msgUpdated.seenByUserId) delete msgUpdated.seenByUserId;
       messagesUpdated.push(msgUpdated);
+      dispatch(updateLastMsgDoc(doc));
     }
     if (change.type === 'removed') {
       const { doc } = change;

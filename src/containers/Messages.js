@@ -89,7 +89,7 @@ class Messages extends React.Component {
       this.newMessagesEl.scrollIntoView(true);
     if (snapshot && snapshot.scrollType === 'toBottom') this.scrollToBottom();
     if (snapshot && snapshot.scrollType === 'noChange')
-      this.scrollParentRef.scrollTop += this.scrollParentRef.scrollHeight - snapshot;
+      this.scrollParentRef.scrollTop += this.scrollParentRef.scrollHeight - snapshot.value;
   }
 
   componentWillUnmount() {
