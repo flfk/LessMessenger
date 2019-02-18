@@ -207,6 +207,12 @@ class Messages extends React.Component {
       })
       .value();
 
+  scrollToBottom = () => {
+    if (this.messagesEnd) {
+      this.messagesEnd.scrollIntoView({ behavior: 'auto' });
+    }
+  };
+
   subscribeMessages = async (lastMsgDoc = null) => {
     const { subscriptions } = this.state;
     const { actionGetMsgSubscription, roomId, userId } = this.props;

@@ -54,6 +54,10 @@ export const fetchDocUser = async userId => {
 
     user = snapshot.data();
     user.id = snapshot.id;
+
+    // update timezone if in new area
+    const timezone = moment.tz.guess();
+    if (user.timezone !== timezone) updateDocUser(user.id, { timezone });
   } catch (error) {
     console.error('Error user.actions, fetchDocUser', error);
   }
@@ -97,14 +101,14 @@ export const getLoggedInUser = () => async dispatch => {
   }
 };
 
-// const updateDocUser = async (id, fields) => {
-//   try {
-//     const userRef = db.collection(COLL_USERS).doc(id);
-//     await userRef.update({ ...fields });
-//   } catch (error) {
-//     console.log('Error user.actions, updateDocUser', error);
-//   }
-// };
+const updateDocUser = async (id, fields) => {
+  try {
+    const userRef = db.collection(COLL_USERS).doc(id);
+    await userRef.update({ ...fields });
+  } catch (error) {
+    console.log('Error user.actions, updateDocUser', error);
+  }
+};
 
 export const toggleIsTyping = (id, isTyping, roomId) => dispatch => {
   dispatch({
